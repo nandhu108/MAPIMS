@@ -12,8 +12,11 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h1 class="mapims-logo">MAPIMS</h1>
-                    <p class="tagline" data-translate="header.tagline">Professional Healthcare Excellence</p>
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="MAPIMS Logo" class="logo-image">
+                    <div>
+                        <h1 class="mapims-logo">MAPIMS</h1>
+                        <p class="tagline" data-translate="header.tagline">Professional Healthcare Excellence</p>
+                    </div>
                 </div>
                 <div class="language-switcher">
                     <button id="languageToggle" class="language-toggle" onclick="toggleLanguage()" title="Switch Language">

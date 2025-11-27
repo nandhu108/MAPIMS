@@ -10,8 +10,11 @@
     <div class="admin-login-container">
         <div class="admin-login-card">
             <div class="logo">
-                <h1 class="mapims-logo">MAPIMS</h1>
-                <p class="tagline">Admin Portal</p>
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="MAPIMS Logo" class="logo-image">
+                <div>
+                    <h1 class="mapims-logo">MAPIMS</h1>
+                    <p class="tagline">Admin Portal</p>
+                </div>
             </div>
             <form id="adminLoginForm">
                 <div class="form-group">
