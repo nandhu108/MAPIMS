@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookings - MAPIMS Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mapims.css') }}">
+</head>
+<body class="admin-body">
+    <header class="admin-header">
+        <div class="container">
+            <div class="admin-header-content">
+                <div class="logo">
+                    <h1 class="mapims-logo">MAPIMS</h1>
+                    <p class="tagline">Admin Portal</p>
+                </div>
+                <nav class="admin-nav">
+                    <a href="/admin/dashboard">Dashboard</a>
+                    <a href="/admin/leads">Leads</a>
+                    <a href="/admin/bookings">Bookings</a>
+                    <a href="/admin/analytics">Analytics</a>
+                    <a href="/admin/logout">Logout</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            <h1 class="admin-page-title">All Bookings</h1>
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Reference</th>
+                            <th>Patient</th>
+                            <th>Package</th>
+                            <th>Total Amount</th>
+                            <th>Booking Date</th>
+                            <th>Time</th>
+                            <th>Sample Type</th>
+                            <th>Payment Status</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.booking_reference }}</td>
+                            <td>{{ booking.patient_name }}<br>{{ booking.patient_phone }}</td>
+                            <td>{{ booking.package_name }}</td>
+                            <td>₹{{ booking.total_price }}</td>
+                            <td>{% if booking.booking_date %}{{ booking.booking_date.strftime('%Y-%m-%d') }}{% else %}N/A{% endif %}</td>
+                            <td>{{ booking.booking_time }}</td>
+                            <td>{{ booking.sample_type }}</td>
+                            <td><span class="status-badge {{ booking.payment_status }}">{{ booking.payment_status }}</span></td>
+                            <td><span class="status-badge {{ booking.booking_status }}">{{ booking.booking_status }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+

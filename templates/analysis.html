@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Health Analysis - MAPIMS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mapims.css') }}">
+</head>
+<body>
+    <header class="mapims-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1 class="mapims-logo">MAPIMS</h1>
+                    <p class="tagline">Professional Healthcare Excellence</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="analysis-main">
+        <div class="container">
+            <div class="analysis-container">
+                <h1 class="page-title">Your AI Health Analysis</h1>
+                <p class="page-subtitle">Based on your inputs, MAPIMS AI System recommends...</p>
+
+                <div id="analysisContent">
+                    <!-- Content will be loaded via JavaScript -->
+                </div>
+
+                <div class="analysis-actions">
+                    <a href="{{ url_for('packages') }}" class="cta-button">View Recommended Packages</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Load analysis data from template or API
+        {% if ai_analysis %}
+        const analysisData = {{ ai_analysis|tojson }};
+        displayAnalysis(analysisData);
+        {% else %}
+        fetch('/api/get-analysis')
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    displayAnalysis(data.analysis);
+                } else {
+                    window.location.href = "{{ url_for('packages') }}";
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                window.location.href = "{{ url_for('packages') }}";
+            });
+        {% endif %}
+
+        function displayAnalysis(analysis) {
+            const content = document.getElementById('analysisContent');
+            const riskScore = analysis.risk_score || 'Moderate';
+            const riskClass = riskScore.toLowerCase();
+            
+            content.innerHTML = `
+                <div class="risk-score-card ${riskClass}">
+                    <h2>Health Risk Score: ${riskScore}</h2>
+                </div>
+                
+                <div class="health-risks-section">
+                    <h3>Health Risks by Category</h3>
+                    <div class="risks-grid">
+                        <div class="risk-item">
+                            <h4>Cardiovascular</h4>
+                            <p>${analysis.health_risks?.cardiovascular || 'Standard screening recommended'}</p>
+                        </div>
+                        <div class="risk-item">
+                            <h4>Metabolic</h4>
+                            <p>${analysis.health_risks?.metabolic || 'Standard screening recommended'}</p>
+                        </div>
+                        <div class="risk-item">
+                            <h4>Respiratory</h4>
+                            <p>${analysis.health_risks?.respiratory || 'No significant risks identified'}</p>
+                        </div>
+                        <div class="risk-item">
+                            <h4>Other</h4>
+                            <p>${analysis.health_risks?.other || 'Routine monitoring advised'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reasoning-box">
+                    <h3>AI Recommendation</h3>
+                    <p>${analysis.reasoning || 'Based on your health profile, MAPIMS recommends comprehensive health screening.'}</p>
+                </div>
+
+                ${analysis.priority_factors ? `
+                <div class="priority-factors">
+                    <h3>Key Factors Considered</h3>
+                    <ul>
+                        ${analysis.priority_factors.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                </div>
+                ` : ''}
+
+                ${analysis.ml_analysis ? `
+                <div class="ml-analysis-section">
+                    <h3>ML-Powered Specialized Analysis</h3>
+                    <div class="ml-modules-grid">
+                        <div class="ml-module-card ${analysis.ml_analysis.diabetes.risk_level.toLowerCase()}">
+                            <h4>🩺 Diabetes Risk Assessment</h4>
+                            <div class="ml-score">
+                                <span class="score-value">${analysis.ml_analysis.diabetes.risk_score}/100</span>
+                                <span class="score-level">${analysis.ml_analysis.diabetes.risk_level}</span>
+                            </div>
+                            <p class="ml-confidence">Confidence: ${(analysis.ml_analysis.diabetes.confidence * 100).toFixed(0)}%</p>
+                            ${analysis.ml_analysis.diabetes.priority_tests.length > 0 ? `
+                            <div class="ml-tests">
+                                <strong>Priority Tests:</strong>
+                                <ul>
+                                    ${analysis.ml_analysis.diabetes.priority_tests.map(test => `<li>${test}</li>`).join('')}
+                                </ul>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="ml-module-card ${analysis.ml_analysis.heart_disease.risk_level.toLowerCase()}">
+                            <h4>❤️ Heart Disease Risk Assessment</h4>
+                            <div class="ml-score">
+                                <span class="score-value">${analysis.ml_analysis.heart_disease.risk_score}/100</span>
+                                <span class="score-level">${analysis.ml_analysis.heart_disease.risk_level}</span>
+                            </div>
+                            <p class="ml-confidence">Confidence: ${(analysis.ml_analysis.heart_disease.confidence * 100).toFixed(0)}%</p>
+                            ${analysis.ml_analysis.heart_disease.priority_tests.length > 0 ? `
+                            <div class="ml-tests">
+                                <strong>Priority Tests:</strong>
+                                <ul>
+                                    ${analysis.ml_analysis.heart_disease.priority_tests.map(test => `<li>${test}</li>`).join('')}
+                                </ul>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="ml-module-card ${analysis.ml_analysis.thyroid.risk_level.toLowerCase()}">
+                            <h4>🦋 Thyroid Risk Assessment</h4>
+                            <div class="ml-score">
+                                <span class="score-value">${analysis.ml_analysis.thyroid.risk_score}/100</span>
+                                <span class="score-level">${analysis.ml_analysis.thyroid.risk_level}</span>
+                            </div>
+                            <p class="ml-confidence">Confidence: ${(analysis.ml_analysis.thyroid.confidence * 100).toFixed(0)}%</p>
+                            ${analysis.ml_analysis.thyroid.priority_tests.length > 0 ? `
+                            <div class="ml-tests">
+                                <strong>Priority Tests:</strong>
+                                <ul>
+                                    ${analysis.ml_analysis.thyroid.priority_tests.map(test => `<li>${test}</li>`).join('')}
+                                </ul>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <p class="ml-overall-confidence">Overall ML Analysis Confidence: ${(analysis.ml_analysis.overall_confidence * 100).toFixed(0)}%</p>
+                </div>
+                ` : ''}
+            `;
+        }
+    </script>
+</body>
+</html>
+

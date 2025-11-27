@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leads - MAPIMS Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mapims.css') }}">
+</head>
+<body class="admin-body">
+    <header class="admin-header">
+        <div class="container">
+            <div class="admin-header-content">
+                <div class="logo">
+                    <h1 class="mapims-logo">MAPIMS</h1>
+                    <p class="tagline">Admin Portal</p>
+                </div>
+                <nav class="admin-nav">
+                    <a href="/admin/dashboard">Dashboard</a>
+                    <a href="/admin/leads">Leads</a>
+                    <a href="/admin/bookings">Bookings</a>
+                    <a href="/admin/analytics">Analytics</a>
+                    <a href="/admin/logout">Logout</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            <h1 class="admin-page-title">All Leads / Patients</h1>
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>BMI</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Risk Score</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in patients %}
+                        <tr>
+                            <td>{{ patient.name }}</td>
+                            <td>{{ patient.age }}</td>
+                            <td>{{ patient.gender }}</td>
+                            <td>{{ patient.bmi }} ({{ patient.bmi_category }})</td>
+                            <td>{{ patient.phone }}</td>
+                            <td>{{ patient.email }}</td>
+                            <td><span class="risk-badge">{{ patient.ai_analysis.risk_score if patient.ai_analysis else 'N/A' }}</span></td>
+                            <td>{% if patient.submitted_at %}{{ patient.submitted_at.strftime('%Y-%m-%d %H:%M') }}{% else %}N/A{% endif %}</td>
+                            <td><span class="status-badge">{{ patient.status }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+

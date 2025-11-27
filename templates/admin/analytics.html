@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - MAPIMS Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mapims.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        .analytics-main {
+            padding: 40px 0;
+            background: var(--mapims-light-grey);
+        }
+        
+        .analytics-header {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .chart-container {
+            background: var(--mapims-white);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--mapims-grey);
+            margin-bottom: 32px;
+        }
+        
+        .chart-container h3 {
+            color: var(--mapims-red);
+            margin-bottom: 24px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        
+        .metric-card {
+            background: var(--mapims-white);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid var(--mapims-red);
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--mapims-red);
+            margin-bottom: 8px;
+        }
+        
+        .metric-label {
+            color: var(--mapims-text-light);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .analytics-section {
+            background: var(--mapims-white);
+            padding: 36px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--mapims-grey);
+        }
+        
+        .analytics-section h2 {
+            color: var(--mapims-red);
+            margin-bottom: 24px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .data-table th {
+            background: var(--mapims-red-gradient);
+            color: var(--mapims-white);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--mapims-grey);
+            font-size: 0.95rem;
+        }
+        
+        .data-table tr:hover {
+            background: var(--mapims-light-grey);
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .filter-controls select,
+        .filter-controls input {
+            padding: 10px 16px;
+            border: 2px solid var(--mapims-grey);
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .filter-controls select:focus,
+        .filter-controls input:focus {
+            outline: none;
+            border-color: var(--mapims-red);
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <header class="admin-header">
+        <div class="container">
+            <div class="admin-header-content">
+                <div class="logo">
+                    <h1 class="mapims-logo">MAPIMS</h1>
+                    <p class="tagline">Analytics Dashboard</p>
+                </div>
+                <nav class="admin-nav">
+                    <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('admin_leads') }}">Leads</a>
+                    <a href="{{ url_for('admin_bookings') }}">Bookings</a>
+                    <a href="{{ url_for('admin_analytics') }}" style="background: rgba(255,255,255,0.2);">Analytics</a>
+                    <a href="{{ url_for('admin_logout') }}">Logout</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="analytics-main">
+        <div class="container">
+            <div class="analytics-header">
+                <h1 class="admin-page-title">Analytics & Insights</h1>
+                <p style="color: var(--mapims-text-light); margin-top: 8px;">Comprehensive analytics and data insights</p>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">{{ total_patients }}</div>
+                    <div class="metric-label">Total Patients</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ total_bookings }}</div>
+                    <div class="metric-label">Total Bookings</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ confirmed_bookings }}</div>
+                    <div class="metric-label">Confirmed</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ total_revenue }}</div>
+                    <div class="metric-label">Total Revenue (₹)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ avg_risk_score }}</div>
+                    <div class="metric-label">Avg Risk Score</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ conversion_rate }}%</div>
+                    <div class="metric-label">Conversion Rate</div>
+                </div>
+            </div>
+
+            <!-- Package Distribution Chart -->
+            <div class="chart-container">
+                <h3>Package Distribution</h3>
+                <div class="chart-wrapper">
+                    <canvas id="packageChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Risk Score Distribution Chart -->
+            <div class="chart-container">
+                <h3>Health Risk Score Distribution</h3>
+                <div class="chart-wrapper">
+                    <canvas id="riskChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Age Distribution Chart -->
+            <div class="chart-container">
+                <h3>Patient Age Distribution</h3>
+                <div class="chart-wrapper">
+                    <canvas id="ageChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Revenue Trend Chart -->
+            <div class="chart-container">
+                <h3>Revenue Trend (Last 30 Days)</h3>
+                <div class="chart-wrapper">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Risk Factors -->
+            <div class="analytics-section">
+                <h2>Top Health Risk Factors</h2>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Risk Factor</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for factor in top_risk_factors %}
+                            <tr>
+                                <td>{{ factor.name }}</td>
+                                <td>{{ factor.count }}</td>
+                                <td>{{ factor.percentage }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Package Performance -->
+            <div class="analytics-section">
+                <h2>Package Performance</h2>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Package</th>
+                                <th>Bookings</th>
+                                <th>Revenue</th>
+                                <th>Avg Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for package in package_performance %}
+                            <tr>
+                                <td>{{ package.name }}</td>
+                                <td>{{ package.bookings }}</td>
+                                <td>₹{{ package.revenue }}</td>
+                                <td>₹{{ package.avg_price }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Monthly Trends -->
+            <div class="analytics-section">
+                <h2>Monthly Trends</h2>
+                <div class="chart-wrapper" style="height: 400px;">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Package Distribution Chart
+        const packageCtx = document.getElementById('packageChart').getContext('2d');
+        new Chart(packageCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ package_labels|tojson }},
+                datasets: [{
+                    data: {{ package_data|tojson }},
+                    backgroundColor: [
+                        '#E31837',
+                        '#B8142C',
+                        '#F04A5F',
+                        '#FF6B7A',
+                        '#FF8A95',
+                        '#FFA8B0'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Risk Score Distribution Chart
+        const riskCtx = document.getElementById('riskChart').getContext('2d');
+        new Chart(riskCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ risk_labels|tojson }},
+                datasets: [{
+                    label: 'Patients',
+                    data: {{ risk_data|tojson }},
+                    backgroundColor: '#E31837'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Age Distribution Chart
+        const ageCtx = document.getElementById('ageChart').getContext('2d');
+        new Chart(ageCtx, {
+            type: 'line',
+            data: {
+                labels: {{ age_labels|tojson }},
+                datasets: [{
+                    label: 'Patients',
+                    data: {{ age_data|tojson }},
+                    borderColor: '#E31837',
+                    backgroundColor: 'rgba(227, 24, 55, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Revenue Trend Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: {{ revenue_labels|tojson }},
+                datasets: [{
+                    label: 'Revenue (₹)',
+                    data: {{ revenue_data|tojson }},
+                    borderColor: '#E31837',
+                    backgroundColor: 'rgba(227, 24, 55, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Monthly Trends Chart
+        const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+        new Chart(monthlyCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ monthly_labels|tojson }},
+                datasets: [
+                    {
+                        label: 'Patients',
+                        data: {{ monthly_patients|tojson }},
+                        backgroundColor: '#E31837'
+                    },
+                    {
+                        label: 'Bookings',
+                        data: {{ monthly_bookings|tojson }},
+                        backgroundColor: '#B8142C'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+

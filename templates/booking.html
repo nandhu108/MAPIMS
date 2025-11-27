@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Health Checkup - MAPIMS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mapims.css') }}">
+</head>
+<body>
+    <header class="mapims-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1 class="mapims-logo">MAPIMS</h1>
+                    <p class="tagline">Professional Healthcare Excellence</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="booking-main">
+        <div class="container">
+            <h1 class="page-title">Complete Your Booking</h1>
+
+            <div class="booking-summary">
+                <h2>Selected Package</h2>
+                <div class="summary-card">
+                    <h3>{{ package.name }}</h3>
+                    <p>₹{{ package.price }}</p>
+                    <ul>
+                        {% for item in package.includes %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                {% if addons %}
+                <h2>Additional Tests</h2>
+                <div class="summary-card">
+                    <ul>
+                        {% for addon in addons %}
+                        <li>{{ addon.name }} - ₹{{ addon.price }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+
+            <form id="bookingForm" class="booking-form">
+                <div class="form-section">
+                    <h2>Select Date & Time</h2>
+                    <div class="form-group">
+                        <label for="booking_date">Preferred Date <span class="required">*</span></label>
+                        <input type="date" id="booking_date" name="booking_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="booking_time">Preferred Time <span class="required">*</span></label>
+                        <select id="booking_time" name="booking_time" required>
+                            <option value="">Select Time</option>
+                            <option value="09:00">9:00 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="12:00">12:00 PM</option>
+                            <option value="14:00">2:00 PM</option>
+                            <option value="15:00">3:00 PM</option>
+                            <option value="16:00">4:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Sample Collection</h2>
+                    <div class="form-group">
+                        <label>Collection Type <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="sample_type" value="hospital" checked>
+                                <span>Visit Hospital</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="sample_type" value="home">
+                                <span>Home Sample Collection</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="addressGroup" style="display: none;">
+                        <label for="address">Home Address <span class="required">*</span></label>
+                        <textarea id="address" name="address" rows="3" placeholder="Enter your complete address"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Payment</h2>
+                    <div class="payment-summary">
+                        <div class="payment-row">
+                            <span>Package Price:</span>
+                            <span>₹{{ package.price }}</span>
+                        </div>
+                        {% if addons %}
+                        {% for addon in addons %}
+                        <div class="payment-row">
+                            <span>{{ addon.name }}:</span>
+                            <span>₹{{ addon.price }}</span>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        <div class="payment-row total">
+                            <span>Total Amount:</span>
+                            <span>₹<span id="totalPrice">{{ package.price + (addons|sum(attribute='price') if addons else 0) }}</span></span>
+                        </div>
+                    </div>
+                    <p class="payment-note">Payment will be collected at the time of sample collection</p>
+                </div>
+
+                <button type="submit" class="cta-button">Confirm Booking</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Set minimum date to tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('booking_date').min = tomorrow.toISOString().split('T')[0];
+
+        document.querySelectorAll('input[name="sample_type"]').forEach(radio => {
+            radio.addEventListener('change', function(e) {
+                document.getElementById('addressGroup').style.display = e.target.value === 'home' ? 'block' : 'none';
+                if (e.target.value === 'home') {
+                    document.getElementById('address').required = true;
+                } else {
+                    document.getElementById('address').required = false;
+                }
+            });
+        });
+
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const addons = {{ addons|tojson if addons else '[]' }};
+            const totalPrice = {{ package.price }} + (addons.reduce((sum, a) => sum + a.price, 0));
+            
+            const formData = {
+                package_id: '{{ package.id }}',
+                package_name: '{{ package.name }}',
+                package_price: {{ package.price }},
+                addons: addons,
+                total_price: totalPrice,
+                booking_date: document.getElementById('booking_date').value,
+                booking_time: document.getElementById('booking_time').value,
+                sample_type: document.querySelector('input[name="sample_type"]:checked').value,
+                address: document.getElementById('address').value
+            };
+
+            fetch('/api/create-booking', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof fbq !== 'undefined') {
+                        fbq('track', 'Purchase', {value: totalPrice, currency: 'INR'});
+                    }
+                    window.location.href = "{{ url_for('confirmation') }}";
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to create booking'));
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('Network error. Please try again.');
+            });
+        });
+    </script>
+</body>
+</html>
+

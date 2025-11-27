@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Assessment - MAPIMS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mapims.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="mapims-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1 class="mapims-logo">MAPIMS</h1>
+                    <p class="tagline" data-translate="header.tagline">Professional Healthcare Excellence</p>
+                </div>
+                <div class="language-switcher">
+                    <button id="languageToggle" class="language-toggle" onclick="toggleLanguage()" title="Switch Language">
+                        <span id="languageIcon">த</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="assessment-main">
+        <div class="container">
+            <div class="assessment-container">
+                <div class="progress-bar">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <p data-translate="step.basicInfo">Basic Info</p>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <p data-translate="step.symptoms">Symptoms</p>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <p data-translate="step.medicalHistory">Medical History</p>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <div class="step-circle">4</div>
+                        <p data-translate="step.lifestyle">Lifestyle</p>
+                    </div>
+                    <div class="progress-step" data-step="5">
+                        <div class="step-circle">5</div>
+                        <p data-translate="step.contact">Contact</p>
+                    </div>
+                </div>
+
+                <form id="assessmentForm" class="assessment-form">
+                    <!-- Step 1: Basic Info -->
+                    <div class="form-step active" data-step="1">
+                        <h2 class="step-title" data-translate="form.basicInfo">Basic Information</h2>
+                        <div class="form-group">
+                            <label for="name" data-translate="form.name">Full Name <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="age" data-translate="form.age">Age <span class="required">*</span></label>
+                                <input type="number" id="age" name="age" required min="1" max="120" onchange="checkDynamicFields()">
+                            </div>
+                            <div class="form-group">
+                                <label for="gender" data-translate="form.gender">Gender <span class="required">*</span></label>
+                                <select id="gender" name="gender" required onchange="checkDynamicFields()">
+                                    <option value="" data-translate="form.selectGender">Select</option>
+                                    <option value="male" data-translate="form.male">Male</option>
+                                    <option value="female" data-translate="form.female">Female</option>
+                                    <option value="other" data-translate="form.other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="weight" data-translate="form.weight">Weight (kg) <span class="required">*</span></label>
+                                <input type="number" id="weight" name="weight" required min="1" max="500" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="height" data-translate="form.height">Height (cm) <span class="required">*</span></label>
+                                <input type="number" id="height" name="height" required min="50" max="300" step="0.1">
+                            </div>
+                        </div>
+                        <div class="bmi-display" id="bmiDisplay" style="display: none;">
+                            <p data-translate="form.bmi">Your BMI: <strong id="bmiValue"></strong> (<span id="bmiCategory"></span>)</p>
+                        </div>
+                        
+                        <!-- Female-specific fields (Pregnancy & Menstrual Health) -->
+                        <div id="femaleFields" class="dynamic-section" style="display: none;">
+                            <h3 class="section-subtitle" data-translate="form.pregnancy">Pregnancy & Menstrual Health</h3>
+                            <div class="form-group">
+                                <label data-translate="form.pregnant">Are you currently pregnant?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="pregnant" value="yes">
+                                        <span data-translate="form.pregnantYes">Yes</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="pregnant" value="no" checked>
+                                        <span data-translate="form.pregnantNo">No</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="menstrual_cycle" data-translate="form.menstrualCycle">Menstrual cycle regularity</label>
+                                <select id="menstrual_cycle" name="menstrual_cycle">
+                                    <option value="" data-translate="form.selectGender">Select</option>
+                                    <option value="regular" data-translate="form.regular">Regular</option>
+                                    <option value="irregular" data-translate="form.irregular">Irregular</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="menopause_status" data-translate="form.menopause">Menopause status</label>
+                                <select id="menopause_status" name="menopause_status">
+                                    <option value="" data-translate="form.selectGender">Select</option>
+                                    <option value="pre" data-translate="form.preMenopause">Pre-menopause</option>
+                                    <option value="menopause" data-translate="form.menopause">Menopause</option>
+                                    <option value="post" data-translate="form.postMenopause">Post-menopause</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="birth_control">
+                                    <span data-translate="form.birthControl">Using birth control?</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Age > 45 specific fields (Cardiac & Diabetes) -->
+                        <div id="age45Fields" class="dynamic-section" style="display: none;">
+                            <h3 class="section-subtitle" data-translate="form.cardiacHealth">Cardiac Health</h3>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="chest_pain">
+                                    <span data-translate="form.chestPain">Experience chest pain or discomfort?</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="shortness_breath">
+                                    <span data-translate="form.shortnessBreath">Shortness of breath during activity?</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="heart_palpitations">
+                                    <span data-translate="form.heartPalpitations">Heart palpitations or irregular heartbeat?</span>
+                                </label>
+                            </div>
+                            
+                            <h3 class="section-subtitle" data-translate="form.diabetesQuestions">Diabetes Screening</h3>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="frequent_thirst">
+                                    <span data-translate="form.frequentThirst">Frequent thirst or excessive urination?</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="blurred_vision">
+                                    <span data-translate="form.blurredVision">Blurred vision?</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="slow_healing">
+                                    <span data-translate="form.slowHealing">Slow healing of wounds?</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="family_diabetes">
+                                    <span data-translate="form.familyDiabetes">Family history of diabetes?</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Pediatric fields (< 12 years) -->
+                        <div id="pediatricFields" class="dynamic-section" style="display: none;">
+                            <h3 class="section-subtitle" data-translate="form.pediatricChecklist">Pediatric Health Checklist</h3>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="vaccination_up_to_date">
+                                    <span data-translate="form.vaccination">Up-to-date with vaccinations?</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="growth_concerns" data-translate="form.growthConcerns">Any growth or development concerns?</label>
+                                <textarea id="growth_concerns" name="growth_concerns" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="school_performance" data-translate="form.schoolPerformance">School performance concerns?</label>
+                                <textarea id="school_performance" name="school_performance" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="pediatric_allergies" data-translate="form.allergies">Known allergies?</label>
+                                <textarea id="pediatric_allergies" name="pediatric_allergies" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="sleep_patterns_normal">
+                                    <span data-translate="form.sleepPatterns">Sleep patterns normal?</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn-next" onclick="nextStep()" data-translate="form.next">Next: Symptoms</button>
+                    </div>
+
+                    <!-- Step 2: Symptoms -->
+                    <div class="form-step" data-step="2">
+                        <h2 class="step-title" data-translate="form.symptoms">Current Symptoms</h2>
+                        <div class="form-group">
+                            <label for="symptoms" data-translate="form.describeSymptoms">Describe any symptoms you're experiencing</label>
+                            <div class="voice-input-container">
+                                <textarea id="symptoms" name="symptoms" rows="5" data-translate-placeholder="form.symptomsPlaceholder" placeholder="e.g., frequent headaches, fatigue, chest pain, shortness of breath..."></textarea>
+                                <button type="button" id="voiceInputBtn" class="voice-input-btn" onclick="toggleVoiceInput()" title="Click to start voice input (Chrome/Edge/Safari)">
+                                    <span id="voiceIcon">🎤</span>
+                                    <span id="voiceText" data-translate="form.voiceInput">Voice Input</span>
+                                </button>
+                            </div>
+                            <div id="voiceStatus" class="voice-status" style="display: none;">
+                                <span id="voiceStatusText" data-translate="form.recording">Recording... Speak now</span>
+                                <button type="button" class="btn-stop-recording" onclick="stopVoiceInput()" data-translate="form.stopRecording">Stop Recording</button>
+                            </div>
+                            <div id="voiceBrowserWarning" style="display: none; margin-top: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; color: #856404; font-size: 0.9rem;">
+                                <strong>Note:</strong> Voice input works best in Chrome, Edge, or Safari browsers. Make sure your microphone is connected and permissions are granted.
+                            </div>
+                        </div>
+                        <div class="symptom-categories">
+                            <h3 data-translate="form.commonSymptoms">Common Symptom Categories</h3>
+                            <div class="category-tags">
+                                <span class="tag" onclick="addSymptom('Headache')">Headache</span>
+                                <span class="tag" onclick="addSymptom('Fatigue')">Fatigue</span>
+                                <span class="tag" onclick="addSymptom('Chest Pain')">Chest Pain</span>
+                                <span class="tag" onclick="addSymptom('Shortness of Breath')">Shortness of Breath</span>
+                                <span class="tag" onclick="addSymptom('Dizziness')">Dizziness</span>
+                                <span class="tag" onclick="addSymptom('Joint Pain')">Joint Pain</span>
+                                <span class="tag" onclick="addSymptom('Fever')">Fever</span>
+                                <span class="tag" onclick="addSymptom('Cough')">Cough</span>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-back" onclick="prevStep()" data-translate="form.back">Back</button>
+                            <button type="button" class="btn-next" onclick="nextStep()" data-translate="form.next">Next: Medical History</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Medical History -->
+                    <div class="form-step" data-step="3">
+                        <h2 class="step-title" data-translate="form.medicalHistory">Medical History</h2>
+                        <div class="form-group">
+                            <label for="medical_history" data-translate="form.pastSurgeries">Past Surgeries & Chronic Conditions</label>
+                            <textarea id="medical_history" name="medical_history" rows="4" data-translate-placeholder="form.medicalHistoryPlaceholder" placeholder="e.g., diabetes, hypertension, heart disease, surgeries..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="family_history" data-translate="form.familyHistory">Family Medical History</label>
+                            <textarea id="family_history" name="family_history" rows="4" data-translate-placeholder="form.familyHistoryPlaceholder" placeholder="e.g., family history of diabetes, heart disease, cancer..."></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-back" onclick="prevStep()" data-translate="form.back">Back</button>
+                            <button type="button" class="btn-next" onclick="nextStep()" data-translate="form.next">Next: Lifestyle</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Lifestyle -->
+                    <div class="form-step" data-step="4">
+                        <h2 class="step-title" data-translate="form.lifestyle">Lifestyle Information</h2>
+                        <div class="form-group">
+                            <label for="lifestyle" data-translate="form.lifestyleInfo">Sleep, Stress, Exercise, Habits</label>
+                            <textarea id="lifestyle" name="lifestyle" rows="5" data-translate-placeholder="form.lifestylePlaceholder" placeholder="e.g., sleep 6-7 hours, moderate stress, exercise 3 times/week, non-smoker..."></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-back" onclick="prevStep()" data-translate="form.back">Back</button>
+                            <button type="button" class="btn-next" onclick="nextStep()" data-translate="form.next">Next: Contact</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Contact Details -->
+                    <div class="form-step" data-step="5">
+                        <h2 class="step-title" data-translate="form.contact">Contact Details</h2>
+                        <div class="form-group">
+                            <label for="phone" data-translate="form.phone">Phone Number <span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" required placeholder="+91 1234567890">
+                        </div>
+                        <div class="form-group">
+                            <label for="email" data-translate="form.email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="your.email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="consent" name="consent" required>
+                                <span data-translate="form.consent">I consent to MAPIMS using my health information for assessment and recommendations</span>
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-back" onclick="prevStep()" data-translate="form.back">Back</button>
+                            <button type="submit" class="btn-submit" data-translate="form.submit">Submit Assessment</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p data-translate="common.loading">Analyzing your health profile with AI...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/translations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/assessment.js') }}"></script>
+</body>
+</html>
+

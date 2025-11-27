@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Checkup Packages - MAPIMS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mapims.css') }}">
+</head>
+<body>
+    <header class="mapims-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1 class="mapims-logo">MAPIMS</h1>
+                    <p class="tagline">Professional Healthcare Excellence</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="packages-main">
+        <div class="container">
+            <h1 class="page-title">Recommended Health Checkup Packages</h1>
+            <p class="page-subtitle">Choose the package that best fits your health needs</p>
+
+            <div class="packages-grid">
+                {% for package_id, package in packages.items() %}
+                <div class="package-card {% if package_id in recommended_packages %}recommended{% endif %}">
+                    {% if package_id in recommended_packages %}
+                    <div class="recommended-badge">AI Recommended</div>
+                    {% endif %}
+                    <h3 class="package-name">{{ package.name }}</h3>
+                    <div class="package-price">₹{{ package.price }}</div>
+                    <p class="package-description">{{ package.description }}</p>
+                    <div class="package-duration">Duration: {{ package.duration }}</div>
+                    <div class="package-includes">
+                        <h4>Includes:</h4>
+                        <ul>
+                            {% for item in package.includes %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <button class="btn-select-package" onclick="selectPackage('{{ package_id }}')">
+                        Select Package
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div id="addonsSection" style="display: none;">
+                <h2 class="section-title">Add Additional Tests</h2>
+                <div class="addons-grid">
+                    {% for addon_id, addon in addon_tests.items() %}
+                    <div class="addon-card">
+                        <label class="addon-checkbox">
+                            <input type="checkbox" value="{{ addon_id }}" data-price="{{ addon.price }}">
+                            <span class="addon-name">{{ addon.name }}</span>
+                            <span class="addon-price">+₹{{ addon.price }}</span>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="package-actions">
+                <button class="cta-button" onclick="proceedToBooking()">Proceed to Booking</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let selectedPackage = null;
+        let selectedAddons = [];
+
+        function selectPackage(packageId) {
+            selectedPackage = packageId;
+            document.querySelectorAll('.package-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.package-card').classList.add('selected');
+            document.getElementById('addonsSection').style.display = 'block';
+        }
+
+        function proceedToBooking() {
+            if (!selectedPackage) {
+                alert('Please select a package');
+                return;
+            }
+
+            selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox input:checked'))
+                .map(cb => ({
+                    id: cb.value,
+                    name: cb.closest('.addon-card').querySelector('.addon-name').textContent,
+                    price: parseInt(cb.dataset.price)
+                }));
+
+            fetch('/api/select-package', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    package_id: selectedPackage,
+                    addons: selectedAddons
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = "{{ url_for('booking') }}";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+

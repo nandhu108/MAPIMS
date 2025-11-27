@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed - MAPIMS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mapims.css') }}">
+</head>
+<body>
+    <header class="mapims-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1 class="mapims-logo">MAPIMS</h1>
+                    <p class="tagline">Professional Healthcare Excellence</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="confirmation-main">
+        <div class="container">
+            <div class="confirmation-card">
+                <div class="success-icon">✓</div>
+                <h1 class="confirmation-title">Your Booking is Confirmed!</h1>
+                <p class="confirmation-subtitle">MAPIMS – Professional Healthcare Excellence</p>
+                
+                <div class="confirmation-details">
+                    <p><strong>Booking Reference:</strong> {{ booking_reference }}</p>
+                    <p>We have sent a confirmation message to your registered phone number and email.</p>
+                </div>
+
+                <div class="confirmation-message">
+                    <p>Thank you for choosing MAPIMS for your healthcare needs. Our team will contact you soon to confirm your appointment details.</p>
+                    <p>We are committed to providing you with professional, accurate, and compassionate medical care.</p>
+                </div>
+
+                <div class="confirmation-actions">
+                    <a href="{{ url_for('landing') }}" class="cta-button">Return to Home</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+
