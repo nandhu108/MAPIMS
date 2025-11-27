@@ -68,6 +68,18 @@ body {
     align-items: center;
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo img {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+}
+
 .language-switcher {
     display: flex;
     align-items: center;
@@ -2211,6 +2223,14 @@ body {
     
     .header-nav {
         display: none;
+    }
+    
+    .logo img {
+        height: 40px;
+    }
+    
+    .mapims-logo {
+        font-size: 1.5rem;
     }
     
     .packages-grid {

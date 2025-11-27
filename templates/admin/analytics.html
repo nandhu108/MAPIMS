@@ -147,8 +147,11 @@
         <div class="container">
             <div class="admin-header-content">
                 <div class="logo">
-                    <h1 class="mapims-logo">MAPIMS</h1>
-                    <p class="tagline">Analytics Dashboard</p>
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="MAPIMS Logo" class="logo-image">
+                    <div>
+                        <h1 class="mapims-logo">MAPIMS</h1>
+                        <p class="tagline">Analytics Dashboard</p>
+                    </div>
                 </div>
                 <nav class="admin-nav">
                     <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
