@@ -953,14 +953,42 @@ def booking():
 def create_booking():
     """Create booking"""
     try:
+        if not request.is_json:
+            return jsonify({'success': False, 'error': 'Invalid request format'}), 400
+            
         data = request.json
+        if not data:
+            return jsonify({'success': False, 'error': 'No data received'}), 400
+        
         patient_id = session.get('patient_id')
         
         if not patient_id:
-            return jsonify({'success': False, 'error': 'No patient data found'}), 400
+            return jsonify({'success': False, 'error': 'No patient data found. Please complete the assessment first.'}), 400
+        
+        # Validate required fields
+        if not data.get('booking_date'):
+            return jsonify({'success': False, 'error': 'Booking date is required'}), 400
+        
+        # Set default booking time to 8:00 AM if not provided
+        booking_time = data.get('booking_time', '08:00')
+        
+        # Sample type defaults to hospital if not provided
+        sample_type = data.get('sample_type', 'hospital')
         
         # Get patient data
-        patient = patients_collection.find_one({'_id': ObjectId(patient_id)})
+        try:
+            patient = patients_collection.find_one({'_id': ObjectId(patient_id)})
+            if not patient:
+                return jsonify({'success': False, 'error': 'Patient record not found'}), 404
+        except Exception as e:
+            app.logger.error(f"Error finding patient: {str(e)}")
+            return jsonify({'success': False, 'error': 'Invalid patient ID'}), 400
+        
+        # Parse booking date
+        try:
+            booking_date = datetime.strptime(data.get('booking_date'), '%Y-%m-%d')
+        except ValueError as e:
+            return jsonify({'success': False, 'error': 'Invalid booking date format'}), 400
         
         booking_document = {
             'patient_id': patient_id,
@@ -969,28 +997,40 @@ def create_booking():
             'patient_email': patient.get('email', ''),
             'package_id': data.get('package_id'),
             'package_name': data.get('package_name'),
-            'package_price': data.get('package_price'),
+            'package_price': data.get('package_price', 0),
             'addons': data.get('addons', []),
-            'total_price': data.get('total_price'),
-            'booking_date': datetime.strptime(data.get('booking_date'), '%Y-%m-%d'),
-            'booking_time': data.get('booking_time'),
-            'sample_type': data.get('sample_type', 'hospital'),  # 'hospital' or 'home'
+            'total_price': data.get('total_price', 0),
+            'booking_date': booking_date,
+            'booking_time': booking_time,
+            'sample_type': sample_type,
             'address': data.get('address', ''),
+            'fasting_consent': data.get('fasting_consent', False),
             'payment_status': 'pending',
             'booking_status': 'confirmed',
             'created_at': datetime.utcnow(),
             'booking_reference': f"MAP{datetime.now().strftime('%Y%m%d%H%M%S')}"
         }
         
-        result = bookings_collection.insert_one(booking_document)
-        booking_id = str(result.inserted_id)
+        # Insert booking into database
+        try:
+            result = bookings_collection.insert_one(booking_document)
+            booking_id = str(result.inserted_id)
+            app.logger.info(f"Booking created: {booking_id} for patient {patient_id}")
+        except Exception as e:
+            app.logger.error(f"Database error creating booking: {str(e)}")
+            return jsonify({'success': False, 'error': 'Failed to save booking to database'}), 500
         
         # Update patient status
-        patients_collection.update_one(
-            {'_id': ObjectId(patient_id)},
-            {'$set': {'status': 'booking_completed', 'booking_id': booking_id}}
-        )
+        try:
+            patients_collection.update_one(
+                {'_id': ObjectId(patient_id)},
+                {'$set': {'status': 'booking_completed', 'booking_id': booking_id}}
+            )
+        except Exception as e:
+            app.logger.warning(f"Failed to update patient status: {str(e)}")
+            # Don't fail the booking if patient update fails
         
+        # Store in session
         session['booking_id'] = booking_id
         session['booking_reference'] = booking_document['booking_reference']
         
@@ -1001,7 +1041,10 @@ def create_booking():
         })
     
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        app.logger.error(f"Error creating booking: {str(e)}")
+        import traceback
+        app.logger.error(traceback.format_exc())
+        return jsonify({'success': False, 'error': f'Server error: {str(e)}'}), 500
 
 @app.route('/confirmation')
 def confirmation():

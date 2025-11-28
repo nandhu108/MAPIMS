@@ -387,6 +387,46 @@ document.addEventListener('DOMContentLoaded', function() {
             calculateBMI();
         }
     }
+    
+    // Ensure consent checkbox is clickable and works properly
+    const consentCheckbox = document.getElementById('consent');
+    const consentLabel = consentCheckbox?.closest('.checkbox-label');
+    
+    if (consentCheckbox && consentLabel) {
+        // Ensure checkbox is clickable
+        consentCheckbox.style.pointerEvents = 'auto';
+        consentCheckbox.style.cursor = 'pointer';
+        consentCheckbox.style.position = 'relative';
+        consentCheckbox.style.zIndex = '10';
+        
+        // Make sure label is clickable
+        consentLabel.style.cursor = 'pointer';
+        consentLabel.style.pointerEvents = 'auto';
+        
+        // Ensure span doesn't block clicks
+        const consentSpan = consentLabel.querySelector('span');
+        if (consentSpan) {
+            consentSpan.style.pointerEvents = 'auto';
+            consentSpan.style.cursor = 'pointer';
+        }
+        
+        // Add click handler to label as fallback (native behavior should work, but this ensures it)
+        consentLabel.addEventListener('click', function(e) {
+            // If clicking on label or span (not the checkbox itself), toggle checkbox
+            if (e.target === consentLabel || e.target === consentSpan) {
+                e.preventDefault();
+                consentCheckbox.checked = !consentCheckbox.checked;
+                // Trigger change event for form validation
+                const changeEvent = new Event('change', { bubbles: true, cancelable: true });
+                consentCheckbox.dispatchEvent(changeEvent);
+            }
+        });
+        
+        // Ensure checkbox click works
+        consentCheckbox.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent label handler from firing
+        });
+    }
 });
 
 // Calculate BMI on weight/height change
@@ -414,6 +454,7 @@ function calculateBMI() {
     // Validate inputs
     if (isNaN(weight) || isNaN(height) || weight <= 0 || height <= 0) {
         bmiDisplay.style.display = 'none';
+        bmiDisplay.style.visibility = 'hidden';
         return;
     }
     
@@ -422,17 +463,19 @@ function calculateBMI() {
     const bmi = (weight / (heightM * heightM)).toFixed(1);
     const category = getBMICategory(parseFloat(bmi));
     
-    // Update display
+    // Update display - always show when valid
     bmiDisplay.style.display = 'block';
+    bmiDisplay.style.visibility = 'visible';
     bmiValue.textContent = bmi;
     bmiCategory.textContent = category;
 }
 
 function getBMICategory(bmi) {
-    if (bmi < 18.5) return 'Underweight';
-    if (bmi < 25) return 'Normal';
-    if (bmi < 30) return 'Overweight';
-    return 'Obese';
+    const lang = (typeof currentLanguage !== 'undefined' && currentLanguage === 'ta') ? 'ta' : 'en';
+    if (bmi < 18.5) return lang === 'ta' ? 'குறைந்த எடை' : 'Underweight';
+    if (bmi < 25) return lang === 'ta' ? 'இயல்பான' : 'Normal';
+    if (bmi < 30) return lang === 'ta' ? 'அதிக எடை' : 'Overweight';
+    return lang === 'ta' ? 'உடல் பருமன்' : 'Obese';
 }
 
 function nextStep() {
@@ -503,14 +546,31 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
     const age = parseInt(document.getElementById('age').value);
     const gender = document.getElementById('gender').value;
     const phone = document.getElementById('phone').value.trim();
-    const weight = parseFloat(document.getElementById('weight')?.value) || 0;
-    const height = parseFloat(document.getElementById('height')?.value) || 0;
+    const weightValue = document.getElementById('weight')?.value.trim() || '';
+    const heightValue = document.getElementById('height')?.value.trim() || '';
+    const weight = parseFloat(weightValue);
+    const height = parseFloat(heightValue);
     const email = document.getElementById('email')?.value.trim() || '';
     const preferredContact = document.getElementById('preferred_contact')?.value || '';
     
     // Validate required fields before submission
-    if (!name || !age || !gender || !phone || !weight || !height) {
+    if (!name || !age || !gender || !phone) {
         alert('Please fill in all required fields (marked with *)');
+        document.getElementById('loadingOverlay').style.display = 'none';
+        return;
+    }
+    
+    // Validate weight and height as numeric strings
+    if (!weightValue || isNaN(weight) || weight <= 0) {
+        alert('Please enter a valid weight (kg)');
+        document.getElementById('weight')?.focus();
+        document.getElementById('loadingOverlay').style.display = 'none';
+        return;
+    }
+    
+    if (!heightValue || isNaN(height) || height <= 0) {
+        alert('Please enter a valid height (cm)');
+        document.getElementById('height')?.focus();
         document.getElementById('loadingOverlay').style.display = 'none';
         return;
     }

@@ -20,8 +20,13 @@
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="MAPIMS Logo" class="logo-image">
                     <div>
                         <h1 class="mapims-logo">MAPIMS</h1>
-                        <p class="tagline">Professional Healthcare Excellence</p>
+                        <p class="tagline" data-translate="header.tagline">Professional Healthcare Excellence</p>
                     </div>
+                </div>
+                <div class="language-switcher">
+                    <button id="languageToggle" class="language-toggle" onclick="toggleLanguage()" title="Switch Language">
+                        <span id="languageIcon">த</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -30,31 +35,222 @@
     <main class="analysis-main">
         <div class="container">
             <div class="analysis-container">
-                <h1 class="page-title">Your AI Health Analysis</h1>
-                <p class="page-subtitle">Based on your inputs, MAPIMS AI System recommends...</p>
+                <h1 class="page-title" data-translate="analysis.title">Your AI Health Analysis</h1>
+                <p class="page-subtitle" data-translate="analysis.subtitle">Based on your inputs, MAPIMS AI System recommends...</p>
 
                 <div id="analysisContent">
                     <!-- Content will be loaded via JavaScript -->
                 </div>
 
                 <div class="analysis-actions">
-                    <a href="{{ url_for('packages') }}" class="cta-button">View Recommended Packages</a>
+                    <a href="{{ url_for('packages') }}" class="cta-button">
+                        <span data-translate="analysis.viewPackages">View Recommended Packages</span>
+                    </a>
                 </div>
             </div>
         </div>
     </main>
 
+    <script src="{{ url_for('static', filename='js/translations.js') }}"></script>
     <script>
+        function toggleLanguage() {
+            const newLang = (typeof currentLanguage !== 'undefined' && currentLanguage === 'en') ? 'ta' : 'en';
+            if (typeof setLanguage === 'function') {
+                setLanguage(newLang);
+            }
+        }
+        
+        // Store analysisData globally for re-translation
+        let analysisData = null;
+        
+        function displayAnalysis(analysis) {
+            const content = document.getElementById('analysisContent');
+            const riskScore = analysis.risk_score || 'Moderate';
+            const riskClass = riskScore.toLowerCase();
+            
+            const lang = (typeof currentLanguage !== 'undefined' && currentLanguage === 'ta') ? 'ta' : 'en';
+            const t = (key) => {
+                if (typeof translations !== 'undefined' && translations[lang] && translations[lang][key]) {
+                    return translations[lang][key];
+                }
+                return key;
+            };
+            
+            // Translate risk score
+            let translatedRiskScore = riskScore;
+            if (riskScore === 'Low' || riskScore === 'Low Risk' || riskScore === 'குறைந்த') {
+                translatedRiskScore = t('analysis.riskLow');
+            } else if (riskScore === 'Moderate' || riskScore === 'Moderate Risk' || riskScore === 'மிதமான') {
+                translatedRiskScore = t('analysis.riskModerate');
+            } else if (riskScore === 'High' || riskScore === 'High Risk' || riskScore === 'அதிக') {
+                translatedRiskScore = t('analysis.riskHigh');
+            }
+            
+            // Translate risk levels in ML analysis
+            function translateRiskLevel(level) {
+                if (level === 'Low' || level === 'LOW') {
+                    return t('analysis.riskLow');
+                } else if (level === 'Moderate' || level === 'MODERATE') {
+                    return t('analysis.riskModerate');
+                } else if (level === 'High' || level === 'HIGH') {
+                    return t('analysis.riskHigh');
+                }
+                return level;
+            }
+            
+            content.innerHTML = `
+                <div class="risk-score-card ${riskClass}">
+                    <h2 data-translate="analysis.riskScore">Health Risk Score</h2>: <span id="riskScoreValue">${translatedRiskScore}</span>
+                </div>
+                
+                <div class="health-risks-section">
+                    <h3 data-translate="analysis.healthRisks">Health Risks by Category</h3>
+                    <div class="risks-grid">
+                        <div class="risk-item">
+                            <h4 data-translate="analysis.categoryCardiovascular">Cardiovascular</h4>
+                            <p>${analysis.health_risks?.cardiovascular || 'Standard screening recommended'}</p>
+                        </div>
+                        <div class="risk-item">
+                            <h4 data-translate="analysis.categoryMetabolic">Metabolic</h4>
+                            <p>${analysis.health_risks?.metabolic || 'Standard screening recommended'}</p>
+                        </div>
+                        <div class="risk-item">
+                            <h4 data-translate="analysis.categoryRespiratory">Respiratory</h4>
+                            <p>${analysis.health_risks?.respiratory || 'No significant risks identified'}</p>
+                        </div>
+                        <div class="risk-item">
+                            <h4 data-translate="analysis.categoryOther">Other</h4>
+                            <p>${analysis.health_risks?.other || 'Routine monitoring advised'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reasoning-box">
+                    <h3 data-translate="analysis.recommendation">AI Recommendation</h3>
+                    <p>${analysis.reasoning || 'Based on your health profile, MAPIMS recommends comprehensive health screening.'}</p>
+                </div>
+
+                ${analysis.priority_factors ? `
+                <div class="priority-factors">
+                    <h3 data-translate="analysis.priorityFactors">Key Factors Considered</h3>
+                    <ul>
+                        ${analysis.priority_factors.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                </div>
+                ` : ''}
+
+                ${analysis.ml_analysis ? `
+                <div class="ml-analysis-section">
+                    <h3 data-translate="analysis.mlPowered">ML-Powered Specialized Analysis</h3>
+                    <div class="ml-modules-grid">
+                        <div class="ml-module-card ${analysis.ml_analysis.diabetes.risk_level.toLowerCase()}">
+                            <h4 data-translate="analysis.diabetesRisk">🩺 Diabetes Risk Assessment</h4>
+                            <div class="ml-score">
+                                <span class="score-value">${analysis.ml_analysis.diabetes.risk_score}/100</span>
+                                <span class="score-level" data-original-level="${analysis.ml_analysis.diabetes.risk_level}">${translateRiskLevel(analysis.ml_analysis.diabetes.risk_level)}</span>
+                            </div>
+                            <p class="ml-confidence"><span data-translate="analysis.confidence">Confidence</span>: ${(analysis.ml_analysis.diabetes.confidence * 100).toFixed(0)}%</p>
+                            ${analysis.ml_analysis.diabetes.priority_tests.length > 0 ? `
+                            <div class="ml-tests">
+                                <strong data-translate="analysis.priorityTests">Priority Tests:</strong>
+                                <ul>
+                                    ${analysis.ml_analysis.diabetes.priority_tests.map(test => {
+                                        const translatedTest = (typeof translateTestName === 'function') ? translateTestName(test) : test;
+                                        return `<li data-original-test="${test}">${translatedTest}</li>`;
+                                    }).join('')}
+                                </ul>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="ml-module-card ${analysis.ml_analysis.heart_disease.risk_level.toLowerCase()}">
+                            <h4 data-translate="analysis.heartDiseaseRisk">❤️ Heart Disease Risk Assessment</h4>
+                            <div class="ml-score">
+                                <span class="score-value">${analysis.ml_analysis.heart_disease.risk_score}/100</span>
+                                <span class="score-level" data-original-level="${analysis.ml_analysis.heart_disease.risk_level}">${translateRiskLevel(analysis.ml_analysis.heart_disease.risk_level)}</span>
+                            </div>
+                            <p class="ml-confidence"><span data-translate="analysis.confidence">Confidence</span>: ${(analysis.ml_analysis.heart_disease.confidence * 100).toFixed(0)}%</p>
+                            ${analysis.ml_analysis.heart_disease.priority_tests.length > 0 ? `
+                            <div class="ml-tests">
+                                <strong data-translate="analysis.priorityTests">Priority Tests:</strong>
+                                <ul>
+                                    ${analysis.ml_analysis.heart_disease.priority_tests.map(test => {
+                                        const translatedTest = (typeof translateTestName === 'function') ? translateTestName(test) : test;
+                                        return `<li data-original-test="${test}">${translatedTest}</li>`;
+                                    }).join('')}
+                                </ul>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="ml-module-card ${analysis.ml_analysis.thyroid.risk_level.toLowerCase()}">
+                            <h4 data-translate="analysis.thyroidRisk">🦋 Thyroid Risk Assessment</h4>
+                            <div class="ml-score">
+                                <span class="score-value">${analysis.ml_analysis.thyroid.risk_score}/100</span>
+                                <span class="score-level" data-original-level="${analysis.ml_analysis.thyroid.risk_level}">${translateRiskLevel(analysis.ml_analysis.thyroid.risk_level)}</span>
+                            </div>
+                            <p class="ml-confidence"><span data-translate="analysis.confidence">Confidence</span>: ${(analysis.ml_analysis.thyroid.confidence * 100).toFixed(0)}%</p>
+                            ${analysis.ml_analysis.thyroid.priority_tests.length > 0 ? `
+                            <div class="ml-tests">
+                                <strong data-translate="analysis.priorityTests">Priority Tests:</strong>
+                                <ul>
+                                    ${analysis.ml_analysis.thyroid.priority_tests.map(test => {
+                                        const translatedTest = (typeof translateTestName === 'function') ? translateTestName(test) : test;
+                                        return `<li data-original-test="${test}">${translatedTest}</li>`;
+                                    }).join('')}
+                                </ul>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <p class="ml-overall-confidence"><span data-translate="analysis.overallConfidence">Overall ML Analysis Confidence</span>: ${(analysis.ml_analysis.overall_confidence * 100).toFixed(0)}%</p>
+                </div>
+                ` : ''}
+            `;
+            
+            // Translate the dynamically inserted content
+            setTimeout(() => {
+                translatePage();
+                // Also translate priority test items
+                document.querySelectorAll('.ml-tests li').forEach(element => {
+                    const originalTest = element.getAttribute('data-original-test');
+                    if (originalTest && typeof translateTestName === 'function') {
+                        const translated = translateTestName(originalTest);
+                        if (translated !== originalTest) {
+                            element.textContent = translated;
+                        }
+                    }
+                });
+                
+                // Translate risk levels
+                document.querySelectorAll('.score-level').forEach(element => {
+                    const originalLevel = element.getAttribute('data-original-level');
+                    if (originalLevel) {
+                        let translated = originalLevel;
+                        if (originalLevel === 'Low' || originalLevel === 'LOW') {
+                            translated = t('analysis.riskLow');
+                        } else if (originalLevel === 'Moderate' || originalLevel === 'MODERATE') {
+                            translated = t('analysis.riskModerate');
+                        } else if (originalLevel === 'High' || originalLevel === 'HIGH') {
+                            translated = t('analysis.riskHigh');
+                        }
+                        element.textContent = translated;
+                    }
+                });
+            }, 100);
+        }
+        
         // Load analysis data from template or API
         {% if ai_analysis %}
-        const analysisData = {{ ai_analysis|tojson }};
+        analysisData = {{ ai_analysis|tojson }};
         displayAnalysis(analysisData);
         {% else %}
         fetch('/api/get-analysis')
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    displayAnalysis(data.analysis);
+                    analysisData = data.analysis;
+                    displayAnalysis(analysisData);
                 } else {
                     window.location.href = "{{ url_for('packages') }}";
                 }
@@ -64,113 +260,6 @@
                 window.location.href = "{{ url_for('packages') }}";
             });
         {% endif %}
-
-        function displayAnalysis(analysis) {
-            const content = document.getElementById('analysisContent');
-            const riskScore = analysis.risk_score || 'Moderate';
-            const riskClass = riskScore.toLowerCase();
-            
-            content.innerHTML = `
-                <div class="risk-score-card ${riskClass}">
-                    <h2>Health Risk Score: ${riskScore}</h2>
-                </div>
-                
-                <div class="health-risks-section">
-                    <h3>Health Risks by Category</h3>
-                    <div class="risks-grid">
-                        <div class="risk-item">
-                            <h4>Cardiovascular</h4>
-                            <p>${analysis.health_risks?.cardiovascular || 'Standard screening recommended'}</p>
-                        </div>
-                        <div class="risk-item">
-                            <h4>Metabolic</h4>
-                            <p>${analysis.health_risks?.metabolic || 'Standard screening recommended'}</p>
-                        </div>
-                        <div class="risk-item">
-                            <h4>Respiratory</h4>
-                            <p>${analysis.health_risks?.respiratory || 'No significant risks identified'}</p>
-                        </div>
-                        <div class="risk-item">
-                            <h4>Other</h4>
-                            <p>${analysis.health_risks?.other || 'Routine monitoring advised'}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="reasoning-box">
-                    <h3>AI Recommendation</h3>
-                    <p>${analysis.reasoning || 'Based on your health profile, MAPIMS recommends comprehensive health screening.'}</p>
-                </div>
-
-                ${analysis.priority_factors ? `
-                <div class="priority-factors">
-                    <h3>Key Factors Considered</h3>
-                    <ul>
-                        ${analysis.priority_factors.map(f => `<li>${f}</li>`).join('')}
-                    </ul>
-                </div>
-                ` : ''}
-
-                ${analysis.ml_analysis ? `
-                <div class="ml-analysis-section">
-                    <h3>ML-Powered Specialized Analysis</h3>
-                    <div class="ml-modules-grid">
-                        <div class="ml-module-card ${analysis.ml_analysis.diabetes.risk_level.toLowerCase()}">
-                            <h4>🩺 Diabetes Risk Assessment</h4>
-                            <div class="ml-score">
-                                <span class="score-value">${analysis.ml_analysis.diabetes.risk_score}/100</span>
-                                <span class="score-level">${analysis.ml_analysis.diabetes.risk_level}</span>
-                            </div>
-                            <p class="ml-confidence">Confidence: ${(analysis.ml_analysis.diabetes.confidence * 100).toFixed(0)}%</p>
-                            ${analysis.ml_analysis.diabetes.priority_tests.length > 0 ? `
-                            <div class="ml-tests">
-                                <strong>Priority Tests:</strong>
-                                <ul>
-                                    ${analysis.ml_analysis.diabetes.priority_tests.map(test => `<li>${test}</li>`).join('')}
-                                </ul>
-                            </div>
-                            ` : ''}
-                        </div>
-
-                        <div class="ml-module-card ${analysis.ml_analysis.heart_disease.risk_level.toLowerCase()}">
-                            <h4>❤️ Heart Disease Risk Assessment</h4>
-                            <div class="ml-score">
-                                <span class="score-value">${analysis.ml_analysis.heart_disease.risk_score}/100</span>
-                                <span class="score-level">${analysis.ml_analysis.heart_disease.risk_level}</span>
-                            </div>
-                            <p class="ml-confidence">Confidence: ${(analysis.ml_analysis.heart_disease.confidence * 100).toFixed(0)}%</p>
-                            ${analysis.ml_analysis.heart_disease.priority_tests.length > 0 ? `
-                            <div class="ml-tests">
-                                <strong>Priority Tests:</strong>
-                                <ul>
-                                    ${analysis.ml_analysis.heart_disease.priority_tests.map(test => `<li>${test}</li>`).join('')}
-                                </ul>
-                            </div>
-                            ` : ''}
-                        </div>
-
-                        <div class="ml-module-card ${analysis.ml_analysis.thyroid.risk_level.toLowerCase()}">
-                            <h4>🦋 Thyroid Risk Assessment</h4>
-                            <div class="ml-score">
-                                <span class="score-value">${analysis.ml_analysis.thyroid.risk_score}/100</span>
-                                <span class="score-level">${analysis.ml_analysis.thyroid.risk_level}</span>
-                            </div>
-                            <p class="ml-confidence">Confidence: ${(analysis.ml_analysis.thyroid.confidence * 100).toFixed(0)}%</p>
-                            ${analysis.ml_analysis.thyroid.priority_tests.length > 0 ? `
-                            <div class="ml-tests">
-                                <strong>Priority Tests:</strong>
-                                <ul>
-                                    ${analysis.ml_analysis.thyroid.priority_tests.map(test => `<li>${test}</li>`).join('')}
-                                </ul>
-                            </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                    <p class="ml-overall-confidence">Overall ML Analysis Confidence: ${(analysis.ml_analysis.overall_confidence * 100).toFixed(0)}%</p>
-                </div>
-                ` : ''}
-            `;
-        }
     </script>
 </body>
 </html>
