@@ -20,8 +20,13 @@
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="MAPIMS Logo" class="logo-image">
                     <div>
                         <h1 class="mapims-logo">MAPIMS</h1>
-                        <p class="tagline">Professional Healthcare Excellence</p>
+                        <p class="tagline" data-translate="header.tagline">Professional Healthcare Excellence</p>
                     </div>
+                </div>
+                <div class="language-switcher">
+                    <button id="languageToggle" class="language-toggle" onclick="toggleLanguage()" title="Switch Language">
+                        <span id="languageIcon">த</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -29,80 +34,90 @@
 
     <main class="booking-main">
         <div class="container">
-            <h1 class="page-title">Complete Your Booking</h1>
+            <h1 class="page-title" data-translate="booking.title">Complete Your Booking</h1>
 
             <div class="booking-summary">
-                <h2>Selected Package</h2>
+                <h2 data-translate="booking.selectedPackage">Selected Package</h2>
                 <div class="summary-card">
-                    <h3>{{ package.name }}</h3>
+                    <h3 class="package-name-booking" data-package-id="{{ package.id }}" data-original-name="{{ package.name }}">{{ package.name }}</h3>
                     <p>₹{{ package.price }}</p>
                     <ul>
                         {% for item in package.includes %}
-                        <li>{{ item }}</li>
+                        <li class="test-item-booking" data-original-text="{{ item }}">{{ item }}</li>
                         {% endfor %}
                     </ul>
                 </div>
 
                 {% if addons %}
-                <h2>Additional Tests</h2>
+                <h2 data-translate="booking.additionalTests">Additional Tests</h2>
                 <div class="summary-card">
                     <ul>
                         {% for addon in addons %}
-                        <li>{{ addon.name }} - ₹{{ addon.price }}</li>
+                        <li class="addon-item-booking" data-original-text="{{ addon.name }}">{{ addon.name }} - ₹{{ addon.price }}</li>
                         {% endfor %}
                     </ul>
                 </div>
                 {% endif %}
             </div>
 
-            <form id="bookingForm" class="booking-form">
-                <div class="form-section">
-                    <h2>Select Date & Time</h2>
-                    <div class="form-group">
-                        <label for="booking_date">Preferred Date <span class="required">*</span></label>
-                        <input type="date" id="booking_date" name="booking_date" required>
+            <!-- Fasting Consent Modal -->
+            <div id="fastingModal" class="fasting-modal">
+                <div class="fasting-modal-content">
+                    <div class="fasting-modal-header">
+                        <h2 data-translate="fasting.title">Important: Fasting Instructions</h2>
+                        <button type="button" class="fasting-modal-close" id="fastingModalClose" aria-label="Close">&times;</button>
                     </div>
-                    <div class="form-group">
-                        <label for="booking_time">Preferred Time <span class="required">*</span></label>
-                        <select id="booking_time" name="booking_time" required>
-                            <option value="">Select Time</option>
-                            <option value="09:00">9:00 AM</option>
-                            <option value="10:00">10:00 AM</option>
-                            <option value="11:00">11:00 AM</option>
-                            <option value="12:00">12:00 PM</option>
-                            <option value="14:00">2:00 PM</option>
-                            <option value="15:00">3:00 PM</option>
-                            <option value="16:00">4:00 PM</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h2>Sample Collection</h2>
-                    <div class="form-group">
-                        <label>Collection Type <span class="required">*</span></label>
-                        <div class="radio-group">
-                            <label class="radio-label">
-                                <input type="radio" name="sample_type" value="hospital" checked>
-                                <span>Visit Hospital</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="sample_type" value="home">
-                                <span>Home Sample Collection</span>
+                    <div class="fasting-modal-body">
+                        <div class="fasting-icon">
+                            <span class="fasting-icon-symbol">🍽️</span>
+                        </div>
+                        <div class="fasting-content">
+                            <h3 data-translate="fasting.subtitle">Come in Empty Stomach for Your Health Checkup</h3>
+                            <div class="fasting-instructions">
+                                <p class="fasting-important" data-translate="fasting.important">Please follow these instructions carefully to ensure accurate test results:</p>
+                                <ul class="fasting-list">
+                                    <li data-translate-html="fasting.instruction0" class="fasting-highlight"></li>
+                                    <li data-translate-html="fasting.instruction1"></li>
+                                    <li data-translate-html="fasting.instruction2"></li>
+                                    <li data-translate-html="fasting.instruction3"></li>
+                                    <li data-translate-html="fasting.instruction4"></li>
+                                    <li data-translate-html="fasting.instruction5"></li>
+                                    <li data-translate-html="fasting.instruction6"></li>
+                                </ul>
+                                <div class="fasting-note">
+                                    <p data-translate-html="fasting.note"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fasting-consent">
+                            <label class="fasting-checkbox-label">
+                                <input type="checkbox" id="fastingConsent" name="fastingConsent" required>
+                                <span data-translate="fasting.consentText">
+                                    I understand and agree to come in empty stomach (fasting) for my health checkup test at 8:00 AM in the morning to the hospital. I acknowledge that I have read all the instructions above.
+                                </span>
                             </label>
                         </div>
                     </div>
-                    <div class="form-group" id="addressGroup" style="display: none;">
-                        <label for="address">Home Address <span class="required">*</span></label>
-                        <textarea id="address" name="address" rows="3" placeholder="Enter your complete address"></textarea>
+                    <div class="fasting-modal-footer">
+                        <button type="button" class="cta-button" id="fastingConsentButton" disabled data-translate="fasting.acknowledge">I Understand & Acknowledge</button>
+                    </div>
+                </div>
+            </div>
+
+            <form id="bookingForm" class="booking-form">
+                <div class="form-section">
+                    <h2 data-translate="booking.selectDate">Select Date</h2>
+                    <div class="form-group">
+                        <label for="booking_date" data-translate="booking.preferredDate">Preferred Date <span class="required">*</span></label>
+                        <input type="date" id="booking_date" name="booking_date" required>
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <h2>Payment</h2>
+                    <h2 data-translate="booking.payment">Payment</h2>
                     <div class="payment-summary">
                         <div class="payment-row">
-                            <span>Package Price:</span>
+                            <span data-translate="booking.packagePrice">Package Price:</span>
                             <span>₹{{ package.price }}</span>
                         </div>
                         {% if addons %}
@@ -114,74 +129,276 @@
                         {% endfor %}
                         {% endif %}
                         <div class="payment-row total">
-                            <span>Total Amount:</span>
+                            <span data-translate="booking.totalAmount">Total Amount:</span>
                             <span>₹<span id="totalPrice">{{ package.price + (addons|sum(attribute='price') if addons else 0) }}</span></span>
                         </div>
                     </div>
-                    <p class="payment-note">Payment will be collected at the time of sample collection</p>
+                    <p class="payment-note" data-translate="booking.paymentNote">Payment will be collected at the time of visit</p>
                 </div>
 
-                <button type="submit" class="cta-button">Confirm Booking</button>
+                <button type="submit" class="cta-button">
+                    <span data-translate="booking.confirm">Confirm Booking</span>
+                </button>
             </form>
         </div>
     </main>
 
+    <script src="{{ url_for('static', filename='js/translations.js') }}"></script>
     <script>
-        // Set minimum date to tomorrow
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById('booking_date').min = tomorrow.toISOString().split('T')[0];
-
-        document.querySelectorAll('input[name="sample_type"]').forEach(radio => {
-            radio.addEventListener('change', function(e) {
-                document.getElementById('addressGroup').style.display = e.target.value === 'home' ? 'block' : 'none';
-                if (e.target.value === 'home') {
-                    document.getElementById('address').required = true;
-                } else {
-                    document.getElementById('address').required = false;
+        function toggleLanguage() {
+            const newLang = (typeof currentLanguage !== 'undefined' && currentLanguage === 'en') ? 'ta' : 'en';
+            if (typeof setLanguage === 'function') {
+                setLanguage(newLang);
+            }
+        }
+        
+        // Function to translate booking page content
+        function translateBookingPage() {
+            // Translate package name
+            const packageNameEl = document.querySelector('.package-name-booking');
+            if (packageNameEl) {
+                const packageId = packageNameEl.getAttribute('data-package-id');
+                if (packageId && typeof getPackageTranslationKey === 'function') {
+                    const transKey = getPackageTranslationKey(packageId);
+                    if (transKey && typeof t === 'function') {
+                        const translated = t(transKey);
+                        if (translated !== transKey) {
+                            packageNameEl.textContent = translated;
+                        }
+                    }
+                }
+            }
+            
+            // Translate test items
+            document.querySelectorAll('.test-item-booking, .addon-item-booking').forEach(element => {
+                const originalText = element.getAttribute('data-original-text');
+                if (originalText && typeof translateTestName === 'function') {
+                    const translated = translateTestName(originalText);
+                    if (translated !== originalText) {
+                        // For addon items, preserve the price part
+                        if (element.classList.contains('addon-item-booking')) {
+                            const parts = element.textContent.split(' - ₹');
+                            if (parts.length === 2) {
+                                element.textContent = translated + ' - ₹' + parts[1];
+                            } else {
+                                element.textContent = translated;
+                            }
+                        } else {
+                            element.textContent = translated;
+                        }
+                    }
                 }
             });
-        });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set minimum date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dateInput = document.getElementById('booking_date');
+            if (dateInput) {
+                dateInput.min = tomorrow.toISOString().split('T')[0];
+            }
+            
+            // Fasting Modal Management
+            const fastingModal = document.getElementById('fastingModal');
+            const fastingConsentCheckbox = document.getElementById('fastingConsent');
+            const fastingConsentButton = document.getElementById('fastingConsentButton');
+            const fastingModalClose = document.getElementById('fastingModalClose');
+            let fastingConsentGiven = false;
+            
+            // Show modal when date is selected
+            if (dateInput) {
+                dateInput.addEventListener('change', function() {
+                    if (this.value && !fastingConsentGiven) {
+                        fastingModal.style.display = 'flex';
+                        document.body.style.overflow = 'hidden'; // Prevent scrolling
+                        // Apply translations when modal is shown
+                        if (typeof translatePage === 'function') {
+                            setTimeout(() => {
+                                translatePage();
+                            }, 100);
+                        }
+                    }
+                });
+            }
+            
+            // Enable/disable consent button based on checkbox
+            if (fastingConsentCheckbox) {
+                fastingConsentCheckbox.addEventListener('change', function() {
+                    if (fastingConsentButton) {
+                        fastingConsentButton.disabled = !this.checked;
+                    }
+                });
+            }
+            
+            // Handle consent button click
+            if (fastingConsentButton) {
+                fastingConsentButton.addEventListener('click', function() {
+                    if (fastingConsentCheckbox && fastingConsentCheckbox.checked) {
+                        fastingConsentGiven = true;
+                        fastingModal.style.display = 'none';
+                        document.body.style.overflow = ''; // Restore scrolling
+                    }
+                });
+            }
+            
+            // Handle modal close button
+            if (fastingModalClose) {
+                fastingModalClose.addEventListener('click', function() {
+                    fastingModal.style.display = 'none';
+                    document.body.style.overflow = ''; // Restore scrolling
+                });
+            }
+            
+            // Close modal when clicking outside
+            if (fastingModal) {
+                fastingModal.addEventListener('click', function(e) {
+                    if (e.target === fastingModal) {
+                        fastingModal.style.display = 'none';
+                        document.body.style.overflow = ''; // Restore scrolling
+                    }
+                });
+            }
+            
+            // Translate booking page on load
+            setTimeout(() => {
+                translateBookingPage();
+                // Also translate modal content if it's visible
+                if (typeof translatePage === 'function') {
+                    translatePage();
+                }
+            }, 100);
+            
+            // Re-translate modal when language is toggled
+            const originalToggleLanguage = window.toggleLanguage;
+            if (typeof originalToggleLanguage === 'function') {
+                window.toggleLanguage = function() {
+                    originalToggleLanguage();
+                    setTimeout(() => {
+                        if (typeof translatePage === 'function') {
+                            translatePage();
+                        }
+                    }, 100);
+                };
+            }
 
-        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+
+            document.getElementById('bookingForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const addons = {{ addons|tojson if addons else '[]' }};
-            const totalPrice = {{ package.price }} + (addons.reduce((sum, a) => sum + a.price, 0));
+            // Validate form
+            const bookingDate = document.getElementById('booking_date').value;
             
+            if (!bookingDate) {
+                alert('Please select a booking date');
+                return;
+            }
+            
+            // Get addons data safely
+            let addons = [];
+            {% if addons and addons|length > 0 %}
+            addons = {{ addons|tojson|safe }};
+            {% else %}
+            addons = [];
+            {% endif %}
+            
+            // Ensure addons is always an array
+            if (!Array.isArray(addons)) {
+                console.warn('Addons is not an array, converting...');
+                addons = [];
+            }
+            
+            // Calculate total price
+            const packagePrice = {{ package.price|default(0) }};
+            const addonTotal = addons.reduce(function(sum, a) {
+                return sum + (parseInt(a.price) || 0);
+            }, 0);
+            const totalPrice = packagePrice + addonTotal;
+            
+            // Validate fasting consent
+            if (!fastingConsentGiven) {
+                alert('Please acknowledge the fasting instructions before proceeding with booking.');
+                const selectedDate = document.getElementById('booking_date').value;
+                if (selectedDate && fastingModal) {
+                    fastingModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                }
+                return;
+            }
+            
+            // Prepare form data
             const formData = {
-                package_id: '{{ package.id }}',
-                package_name: '{{ package.name }}',
-                package_price: {{ package.price }},
+                package_id: '{{ package.id|default("")|e }}',
+                package_name: '{{ package.name|default("")|e }}',
+                package_price: packagePrice,
                 addons: addons,
                 total_price: totalPrice,
-                booking_date: document.getElementById('booking_date').value,
-                booking_time: document.getElementById('booking_time').value,
-                sample_type: document.querySelector('input[name="sample_type"]:checked').value,
-                address: document.getElementById('address').value
+                booking_date: bookingDate,
+                booking_time: '08:00', // Fixed time: 8:00 AM
+                sample_type: 'hospital', // Default to hospital visit
+                address: '', // Not required anymore
+                fasting_consent: true // Store consent status
             };
+            
+            console.log('Submitting booking:', formData);
+
+            // Show loading state
+            const submitButton = document.querySelector('button[type="submit"]');
+            const submitButtonSpan = submitButton.querySelector('span');
+            const originalText = submitButtonSpan ? submitButtonSpan.textContent : submitButton.textContent;
+            submitButton.disabled = true;
+            if (submitButtonSpan) {
+                submitButtonSpan.textContent = 'Processing...';
+            } else {
+                submitButton.textContent = 'Processing...';
+            }
 
             fetch('/api/create-booking', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(formData)
             })
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return r.json();
+            })
             .then(data => {
+                console.log('Booking response:', data);
                 if (data.success) {
                     if (typeof fbq !== 'undefined') {
                         fbq('track', 'Purchase', {value: totalPrice, currency: 'INR'});
                     }
-                    window.location.href = "{{ url_for('confirmation') }}";
+                    // Show success message
+                    alert('Booking confirmed successfully! Redirecting to home page...');
+                    // Redirect to landing page (first page)
+                    window.location.href = "{{ url_for('landing') }}";
                 } else {
+                    submitButton.disabled = false;
+                    const submitButtonSpan = submitButton.querySelector('span');
+                    if (submitButtonSpan) {
+                        submitButtonSpan.textContent = originalText;
+                    } else {
+                        submitButton.textContent = originalText;
+                    }
                     alert('Error: ' + (data.error || 'Failed to create booking'));
                 }
             })
             .catch(err => {
                 console.error('Error:', err);
-                alert('Network error. Please try again.');
+                submitButton.disabled = false;
+                const submitButtonSpan = submitButton.querySelector('span');
+                if (submitButtonSpan) {
+                    submitButtonSpan.textContent = originalText;
+                } else {
+                    submitButton.textContent = originalText;
+                }
+                alert('Network error. Please try again. Error: ' + err.message);
             });
         });
+        }); // Close DOMContentLoaded
     </script>
 </body>
 </html>
