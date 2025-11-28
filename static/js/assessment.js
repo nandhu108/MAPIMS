@@ -127,25 +127,98 @@ function checkDynamicFields() {
     const femaleFields = document.getElementById('femaleFields');
     const age45Fields = document.getElementById('age45Fields');
     const pediatricFields = document.getElementById('pediatricFields');
+    const pregnancyQuestion = document.getElementById('pregnancyQuestion');
+    const menstrualQuestion = document.getElementById('menstrualQuestion');
+    const menopauseQuestion = document.getElementById('menopauseQuestion');
+    const birthControlQuestion = document.getElementById('birthControlQuestion');
+    const youngChildFields = document.getElementById('youngChildFields');
+    const adolescentFields = document.getElementById('adolescentFields');
     
     // Hide all dynamic sections first
     if (femaleFields) femaleFields.style.display = 'none';
     if (age45Fields) age45Fields.style.display = 'none';
     if (pediatricFields) pediatricFields.style.display = 'none';
     
-    // Show female-specific fields if gender is female
-    if (gender === 'female' && femaleFields) {
-        femaleFields.style.display = 'block';
+    // Validate age
+    if (!age || age < 1 || age > 120) {
+        return; // Invalid age
     }
     
-    // Show age > 45 fields if age is greater than 45
-    if (age > 45 && age45Fields) {
-        age45Fields.style.display = 'block';
+    // CHILDREN AND TEENAGERS (< 18 years)
+    if (age < 18) {
+        // Always show pediatric fields for children
+        if (pediatricFields) {
+            pediatricFields.style.display = 'block';
+            
+            // Show age-appropriate fields within pediatric section
+            if (youngChildFields) {
+                youngChildFields.style.display = age < 12 ? 'block' : 'none';
+            }
+            if (adolescentFields) {
+                adolescentFields.style.display = age >= 12 ? 'block' : 'none';
+            }
+        }
+        
+        // For female teenagers (13-17), also show limited women's health questions
+        if (gender === 'female' && age >= 13 && femaleFields) {
+            femaleFields.style.display = 'block';
+            
+            // Pregnancy - only for older teenagers (16-17)
+            if (pregnancyQuestion) {
+                pregnancyQuestion.style.display = (age >= 16) ? 'block' : 'none';
+            }
+            
+            // Menstrual cycle - for teenagers who may have started (13+)
+            if (menstrualQuestion) {
+                menstrualQuestion.style.display = 'block';
+            }
+            
+            // No menopause questions for teenagers
+            if (menopauseQuestion) {
+                menopauseQuestion.style.display = 'none';
+            }
+            
+            // Birth control - only for older teenagers (16-17)
+            if (birthControlQuestion) {
+                birthControlQuestion.style.display = (age >= 16) ? 'block' : 'none';
+            }
+        }
+        
+        // No adult screening questions for children
+        return;
     }
     
-    // Show pediatric fields if age is less than 12
-    if (age > 0 && age < 12 && pediatricFields) {
-        pediatricFields.style.display = 'block';
+    // ADULTS (age 18+)
+    if (age >= 18) {
+        // Show female-specific fields for adult females
+        if (gender === 'female' && femaleFields) {
+            femaleFields.style.display = 'block';
+            
+            // Pregnancy question - reproductive age (18-50)
+            if (pregnancyQuestion) {
+                pregnancyQuestion.style.display = (age >= 18 && age <= 50) ? 'block' : 'none';
+            }
+            
+            // Menstrual cycle - for reproductive age (18-55)
+            if (menstrualQuestion) {
+                menstrualQuestion.style.display = (age >= 18 && age <= 55) ? 'block' : 'none';
+            }
+            
+            // Menopause question - for older females (40+)
+            if (menopauseQuestion) {
+                menopauseQuestion.style.display = (age >= 40) ? 'block' : 'none';
+            }
+            
+            // Birth control - reproductive age (18-50)
+            if (birthControlQuestion) {
+                birthControlQuestion.style.display = (age >= 18 && age <= 50) ? 'block' : 'none';
+            }
+        }
+        
+        // Show age 40+ screening fields for cardiovascular and diabetes
+        if (age >= 40 && age45Fields) {
+            age45Fields.style.display = 'block';
+        }
     }
 }
 
@@ -300,27 +373,61 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initial check
     checkDynamicFields();
+    
+    // Set up BMI calculation
+    const weightField = document.getElementById('weight');
+    const heightField = document.getElementById('height');
+    
+    if (weightField && heightField) {
+        weightField.addEventListener('input', calculateBMI);
+        weightField.addEventListener('change', calculateBMI);
+        heightField.addEventListener('input', calculateBMI);
+        heightField.addEventListener('change', calculateBMI);
+        
+        // Calculate BMI on initial load if values exist
+        if (weightField.value && heightField.value) {
+            calculateBMI();
+        }
+    }
 });
 
 // Calculate BMI on weight/height change
-document.getElementById('weight')?.addEventListener('input', calculateBMI);
-document.getElementById('height')?.addEventListener('input', calculateBMI);
-
 function calculateBMI() {
-    const weight = parseFloat(document.getElementById('weight').value);
-    const height = parseFloat(document.getElementById('height').value);
+    const weightField = document.getElementById('weight');
+    const heightField = document.getElementById('height');
+    const bmiDisplay = document.getElementById('bmiDisplay');
+    const bmiValue = document.getElementById('bmiValue');
+    const bmiCategory = document.getElementById('bmiCategory');
     
-    if (weight > 0 && height > 0) {
-        const heightM = height / 100;
-        const bmi = (weight / (heightM * heightM)).toFixed(1);
-        const category = getBMICategory(bmi);
-        
-        document.getElementById('bmiDisplay').style.display = 'block';
-        document.getElementById('bmiValue').textContent = bmi;
-        document.getElementById('bmiCategory').textContent = category;
-    } else {
-        document.getElementById('bmiDisplay').style.display = 'none';
+    // Check if all required elements exist
+    if (!weightField || !heightField) {
+        console.warn('BMI calculation: Weight or height field not found');
+        return;
     }
+    
+    if (!bmiDisplay || !bmiValue || !bmiCategory) {
+        console.warn('BMI calculation: BMI display elements not found');
+        return;
+    }
+    
+    const weight = parseFloat(weightField.value);
+    const height = parseFloat(heightField.value);
+    
+    // Validate inputs
+    if (isNaN(weight) || isNaN(height) || weight <= 0 || height <= 0) {
+        bmiDisplay.style.display = 'none';
+        return;
+    }
+    
+    // Calculate BMI: BMI = weight (kg) / height (m)²
+    const heightM = height / 100;
+    const bmi = (weight / (heightM * heightM)).toFixed(1);
+    const category = getBMICategory(parseFloat(bmi));
+    
+    // Update display
+    bmiDisplay.style.display = 'block';
+    bmiValue.textContent = bmi;
+    bmiCategory.textContent = category;
 }
 
 function getBMICategory(bmi) {
@@ -415,6 +522,25 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
         return;
     }
     
+    // Collect lifestyle fields
+    const sleepHours = document.getElementById('sleep_hours')?.value || '';
+    const exerciseFrequency = document.getElementById('exercise_frequency')?.value || '';
+    const smokingStatus = document.getElementById('smoking_status')?.value || '';
+    const alcoholConsumption = document.getElementById('alcohol_consumption')?.value || '';
+    const stressLevel = document.getElementById('stress_level')?.value || '';
+    const dietType = document.getElementById('diet_type')?.value || '';
+    const lifestyleNotes = document.getElementById('lifestyle').value.trim();
+    
+    // Combine lifestyle information
+    let lifestyleInfo = '';
+    if (sleepHours) lifestyleInfo += `Sleep: ${sleepHours}. `;
+    if (exerciseFrequency) lifestyleInfo += `Exercise: ${exerciseFrequency}. `;
+    if (smokingStatus) lifestyleInfo += `Smoking: ${smokingStatus}. `;
+    if (alcoholConsumption) lifestyleInfo += `Alcohol: ${alcoholConsumption}. `;
+    if (stressLevel) lifestyleInfo += `Stress: ${stressLevel}. `;
+    if (dietType) lifestyleInfo += `Diet: ${dietType}. `;
+    if (lifestyleNotes) lifestyleInfo += lifestyleNotes;
+    
     const formData = {
         name: name,
         age: age,
@@ -424,7 +550,13 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
         symptoms: document.getElementById('symptoms').value.trim(),
         medical_history: document.getElementById('medical_history').value.trim(),
         family_history: document.getElementById('family_history').value.trim(),
-        lifestyle: document.getElementById('lifestyle').value.trim(),
+        lifestyle: lifestyleInfo.trim() || lifestyleNotes,
+        sleep_hours: sleepHours,
+        exercise_frequency: exerciseFrequency,
+        smoking_status: smokingStatus,
+        alcohol_consumption: alcoholConsumption,
+        stress_level: stressLevel,
+        diet_type: dietType,
         phone: phone,
         email: email,
         consent: document.getElementById('consent').checked
@@ -450,6 +582,9 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
         formData.blurred_vision = document.querySelector('input[name="blurred_vision"]')?.checked || false;
         formData.slow_healing = document.querySelector('input[name="slow_healing"]')?.checked || false;
         formData.family_diabetes = document.querySelector('input[name="family_diabetes"]')?.checked || false;
+        formData.dizziness_fainting = document.querySelector('input[name="dizziness_fainting"]')?.checked || false;
+        formData.swelling_legs = document.querySelector('input[name="swelling_legs"]')?.checked || false;
+        formData.prediabetes = document.querySelector('input[name="prediabetes"]')?.checked || false;
     }
     
     // Add pediatric fields if visible
@@ -460,6 +595,8 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
         formData.school_performance = document.getElementById('school_performance')?.value || '';
         formData.pediatric_allergies = document.getElementById('pediatric_allergies')?.value || '';
         formData.sleep_patterns_normal = document.querySelector('input[name="sleep_patterns_normal"]')?.checked || false;
+        formData.eating_habits = document.getElementById('eating_habits')?.value || '';
+        formData.activity_level = document.getElementById('activity_level')?.value || '';
     }
     
     try {
