@@ -946,6 +946,57 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
+/* ==================== SYMPTOM & CONDITION QUESTION CARDS ==================== */
+.symptoms-grid,
+.medical-conditions-grid,
+.family-history-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.symptom-question-card,
+.condition-question-card {
+    background: var(--mapims-white);
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid var(--mapims-grey);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.symptom-question-card:hover,
+.condition-question-card:hover {
+    border-color: var(--mapims-red);
+    box-shadow: 0 4px 12px rgba(227, 24, 55, 0.15);
+    transform: translateY(-2px);
+}
+
+.symptom-label,
+.condition-label {
+    display: block;
+    font-weight: 600;
+    color: var(--mapims-text);
+    margin-bottom: 12px;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.symptom-question-card .radio-group,
+.condition-question-card .radio-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.symptom-question-card .radio-label,
+.condition-question-card .radio-label {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+}
+
 /* ==================== VOICE INPUT ==================== */
 .voice-input-container {
     position: relative;
@@ -2525,6 +2576,29 @@ body {
     .tag {
         padding: 8px 16px;
         font-size: 0.85rem;
+    }
+    
+    .symptoms-grid,
+    .medical-conditions-grid,
+    .family-history-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .symptom-question-card,
+    .condition-question-card {
+        padding: 16px;
+    }
+    
+    .symptom-question-card .radio-group,
+    .condition-question-card .radio-group {
+        flex-direction: column;
+    }
+    
+    .symptom-question-card .radio-label,
+    .condition-question-card .radio-label {
+        min-width: auto;
+        text-align: left;
     }
 }
 

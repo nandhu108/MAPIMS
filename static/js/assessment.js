@@ -1,7 +1,7 @@
 // Assessment Form JavaScript
 
 let currentStep = 1;
-const totalSteps = 5;
+const totalSteps = 6;
 let recognition = null;
 let isRecording = false;
 
@@ -34,7 +34,8 @@ function initSpeechRecognition() {
             }
             
             if (finalTranscript) {
-                const symptomsField = document.getElementById('symptoms');
+                // Voice input now goes to symptoms_other field (Step 2)
+                const symptomsField = document.getElementById('symptoms_other');
                 if (symptomsField) {
                     const currentValue = symptomsField.value.trim();
                     // Add space if there's existing content
@@ -125,18 +126,15 @@ function checkDynamicFields() {
     const gender = document.getElementById('gender')?.value || '';
     
     const femaleFields = document.getElementById('femaleFields');
-    const age45Fields = document.getElementById('age45Fields');
+    const age40Fields = document.getElementById('age40Fields');
     const pediatricFields = document.getElementById('pediatricFields');
     const pregnancyQuestion = document.getElementById('pregnancyQuestion');
     const menstrualQuestion = document.getElementById('menstrualQuestion');
     const menopauseQuestion = document.getElementById('menopauseQuestion');
-    const birthControlQuestion = document.getElementById('birthControlQuestion');
-    const youngChildFields = document.getElementById('youngChildFields');
-    const adolescentFields = document.getElementById('adolescentFields');
     
     // Hide all dynamic sections first
     if (femaleFields) femaleFields.style.display = 'none';
-    if (age45Fields) age45Fields.style.display = 'none';
+    if (age40Fields) age40Fields.style.display = 'none';
     if (pediatricFields) pediatricFields.style.display = 'none';
     
     // Validate age
@@ -149,18 +147,10 @@ function checkDynamicFields() {
         // Always show pediatric fields for children
         if (pediatricFields) {
             pediatricFields.style.display = 'block';
-            
-            // Show age-appropriate fields within pediatric section
-            if (youngChildFields) {
-                youngChildFields.style.display = age < 12 ? 'block' : 'none';
-            }
-            if (adolescentFields) {
-                adolescentFields.style.display = age >= 12 ? 'block' : 'none';
-            }
         }
         
         // For female teenagers (13-17), also show limited women's health questions
-        if (gender === 'female' && age >= 13 && femaleFields) {
+        if (gender === 'female' && age >= 13 && age <= 60 && femaleFields) {
             femaleFields.style.display = 'block';
             
             // Pregnancy - only for older teenagers (16-17)
@@ -177,11 +167,6 @@ function checkDynamicFields() {
             if (menopauseQuestion) {
                 menopauseQuestion.style.display = 'none';
             }
-            
-            // Birth control - only for older teenagers (16-17)
-            if (birthControlQuestion) {
-                birthControlQuestion.style.display = (age >= 16) ? 'block' : 'none';
-            }
         }
         
         // No adult screening questions for children
@@ -190,35 +175,48 @@ function checkDynamicFields() {
     
     // ADULTS (age 18+)
     if (age >= 18) {
-        // Show female-specific fields for adult females
-        if (gender === 'female' && femaleFields) {
+        // Show female-specific fields for adult females (13-60)
+        if (gender === 'female' && age >= 13 && age <= 60 && femaleFields) {
             femaleFields.style.display = 'block';
             
-            // Pregnancy question - reproductive age (18-50)
+            // Pregnancy question - reproductive age (16-50)
             if (pregnancyQuestion) {
-                pregnancyQuestion.style.display = (age >= 18 && age <= 50) ? 'block' : 'none';
+                pregnancyQuestion.style.display = (age >= 16 && age <= 50) ? 'block' : 'none';
             }
             
-            // Menstrual cycle - for reproductive age (18-55)
+            // Menstrual cycle - for reproductive age (13-55)
             if (menstrualQuestion) {
-                menstrualQuestion.style.display = (age >= 18 && age <= 55) ? 'block' : 'none';
+                menstrualQuestion.style.display = (age >= 13 && age <= 55) ? 'block' : 'none';
             }
             
             // Menopause question - for older females (40+)
             if (menopauseQuestion) {
                 menopauseQuestion.style.display = (age >= 40) ? 'block' : 'none';
             }
-            
-            // Birth control - reproductive age (18-50)
-            if (birthControlQuestion) {
-                birthControlQuestion.style.display = (age >= 18 && age <= 50) ? 'block' : 'none';
-            }
         }
         
-        // Show age 40+ screening fields for cardiovascular and diabetes
-        if (age >= 40 && age45Fields) {
-            age45Fields.style.display = 'block';
+        // Show age 40+ screening fields
+        if (age >= 40 && age40Fields) {
+            age40Fields.style.display = 'block';
         }
+    }
+}
+
+// Toggle other conditions textarea
+function toggleOtherConditions() {
+    const checkbox = document.getElementById('has_other_conditions');
+    const textareaField = document.getElementById('other_conditions_field');
+    if (checkbox && textareaField) {
+        textareaField.style.display = checkbox.checked ? 'block' : 'none';
+    }
+}
+
+// Toggle pediatric details textarea
+function togglePediatricDetails() {
+    const yesRadio = document.querySelector('input[name="pediatric_concerns"][value="yes"]');
+    const detailsField = document.getElementById('pediatric_details_field');
+    if (yesRadio && detailsField) {
+        detailsField.style.display = yesRadio.checked ? 'block' : 'none';
     }
 }
 
@@ -486,13 +484,7 @@ function prevStep() {
     }
 }
 
-function addSymptom(symptom) {
-    const symptomsField = document.getElementById('symptoms');
-    const currentValue = symptomsField.value;
-    if (!currentValue.includes(symptom)) {
-        symptomsField.value = currentValue ? `${currentValue}, ${symptom}` : symptom;
-    }
-}
+// Helper function removed - symptoms now use radio buttons instead of textarea
 
 // Form submission
 document.getElementById('assessmentForm')?.addEventListener('submit', async function(e) {
@@ -506,97 +498,119 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
         stopVoiceInput();
     }
     
-    // Collect form data including dynamic fields
+    // Collect basic info
     const name = document.getElementById('name').value.trim();
     const age = parseInt(document.getElementById('age').value);
     const gender = document.getElementById('gender').value;
-    const weight = parseFloat(document.getElementById('weight').value);
-    const height = parseFloat(document.getElementById('height').value);
     const phone = document.getElementById('phone').value.trim();
-    const email = document.getElementById('email').value.trim();
+    const weight = parseFloat(document.getElementById('weight')?.value) || 0;
+    const height = parseFloat(document.getElementById('height')?.value) || 0;
+    const email = document.getElementById('email')?.value.trim() || '';
+    const preferredContact = document.getElementById('preferred_contact')?.value || '';
     
     // Validate required fields before submission
-    if (!name || !age || !gender || !weight || !height || !phone) {
+    if (!name || !age || !gender || !phone || !weight || !height) {
         alert('Please fill in all required fields (marked with *)');
         document.getElementById('loadingOverlay').style.display = 'none';
         return;
     }
     
-    // Collect lifestyle fields
+    // Collect symptoms (Step 2) - Yes/No radio buttons
+    const symptoms = {};
+    const symptomFields = ['headache', 'fatigue', 'chest_pain', 'shortness_breath', 'dizziness', 'joint_pain', 'fever', 'cough'];
+    symptomFields.forEach(symptom => {
+        const radio = document.querySelector(`input[name="symptom_${symptom}"]:checked`);
+        symptoms[`symptom_${symptom}`] = radio ? radio.value : 'no';
+    });
+    const symptomsOther = document.getElementById('symptoms_other')?.value.trim() || '';
+    
+    // Collect medical conditions (Step 3) - Yes/No/Not sure
+    const conditions = {};
+    const conditionFields = ['diabetes', 'hypertension', 'heart_disease', 'thyroid', 'asthma', 'kidney', 'cancer'];
+    conditionFields.forEach(condition => {
+        const radio = document.querySelector(`input[name="condition_${condition}"]:checked`);
+        conditions[`condition_${condition}`] = radio ? radio.value : 'no';
+    });
+    const hasOtherConditions = document.getElementById('has_other_conditions')?.checked || false;
+    const otherConditions = document.getElementById('other_conditions')?.value.trim() || '';
+    
+    // Collect family history (Step 3)
+    const familyHistory = {};
+    const familyFields = ['diabetes', 'heart_disease', 'cancer'];
+    familyFields.forEach(field => {
+        const radio = document.querySelector(`input[name="family_${field}"]:checked`);
+        familyHistory[`family_${field}`] = radio ? radio.value : 'no';
+    });
+    
+    // Collect lifestyle fields (Step 4)
     const sleepHours = document.getElementById('sleep_hours')?.value || '';
     const exerciseFrequency = document.getElementById('exercise_frequency')?.value || '';
     const smokingStatus = document.getElementById('smoking_status')?.value || '';
     const alcoholConsumption = document.getElementById('alcohol_consumption')?.value || '';
-    const stressLevel = document.getElementById('stress_level')?.value || '';
     const dietType = document.getElementById('diet_type')?.value || '';
-    const lifestyleNotes = document.getElementById('lifestyle').value.trim();
+    const lifestyleOther = document.getElementById('lifestyle_other')?.value.trim() || '';
     
-    // Combine lifestyle information
-    let lifestyleInfo = '';
-    if (sleepHours) lifestyleInfo += `Sleep: ${sleepHours}. `;
-    if (exerciseFrequency) lifestyleInfo += `Exercise: ${exerciseFrequency}. `;
-    if (smokingStatus) lifestyleInfo += `Smoking: ${smokingStatus}. `;
-    if (alcoholConsumption) lifestyleInfo += `Alcohol: ${alcoholConsumption}. `;
-    if (stressLevel) lifestyleInfo += `Stress: ${stressLevel}. `;
-    if (dietType) lifestyleInfo += `Diet: ${dietType}. `;
-    if (lifestyleNotes) lifestyleInfo += lifestyleNotes;
-    
+    // Build form data
     const formData = {
         name: name,
         age: age,
         gender: gender,
+        phone: phone,
+        email: email,
+        preferred_contact: preferredContact,
         weight: weight,
         height: height,
-        symptoms: document.getElementById('symptoms').value.trim(),
-        medical_history: document.getElementById('medical_history').value.trim(),
-        family_history: document.getElementById('family_history').value.trim(),
-        lifestyle: lifestyleInfo.trim() || lifestyleNotes,
+        // Symptoms
+        ...symptoms,
+        symptoms_other: symptomsOther,
+        // Medical conditions
+        ...conditions,
+        has_other_conditions: hasOtherConditions,
+        other_conditions: otherConditions,
+        // Family history
+        ...familyHistory,
+        // Lifestyle
         sleep_hours: sleepHours,
         exercise_frequency: exerciseFrequency,
         smoking_status: smokingStatus,
         alcohol_consumption: alcoholConsumption,
-        stress_level: stressLevel,
         diet_type: dietType,
-        phone: phone,
-        email: email,
+        lifestyle_other: lifestyleOther,
         consent: document.getElementById('consent').checked
     };
     
-    // Add female-specific fields if visible
+    // Add female-specific fields if visible (Step 5)
     const femaleFields = document.getElementById('femaleFields');
     if (femaleFields && femaleFields.style.display !== 'none') {
         const pregnant = document.querySelector('input[name="pregnant"]:checked');
+        const menstrualRegular = document.querySelector('input[name="menstrual_regular"]:checked');
+        const menopauseStatus = document.querySelector('input[name="menopause_status"]:checked');
         formData.pregnant = pregnant ? pregnant.value : null;
-        formData.menstrual_cycle = document.getElementById('menstrual_cycle')?.value || '';
-        formData.menopause_status = document.getElementById('menopause_status')?.value || '';
-        formData.birth_control = document.querySelector('input[name="birth_control"]')?.checked || false;
+        formData.menstrual_regular = menstrualRegular ? menstrualRegular.value : null;
+        formData.menopause_status = menopauseStatus ? menopauseStatus.value : null;
     }
     
-    // Add age > 45 fields if visible
-    const age45Fields = document.getElementById('age45Fields');
-    if (age45Fields && age45Fields.style.display !== 'none') {
-        formData.chest_pain = document.querySelector('input[name="chest_pain"]')?.checked || false;
-        formData.shortness_breath = document.querySelector('input[name="shortness_breath"]')?.checked || false;
-        formData.heart_palpitations = document.querySelector('input[name="heart_palpitations"]')?.checked || false;
-        formData.frequent_thirst = document.querySelector('input[name="frequent_thirst"]')?.checked || false;
-        formData.blurred_vision = document.querySelector('input[name="blurred_vision"]')?.checked || false;
-        formData.slow_healing = document.querySelector('input[name="slow_healing"]')?.checked || false;
-        formData.family_diabetes = document.querySelector('input[name="family_diabetes"]')?.checked || false;
-        formData.dizziness_fainting = document.querySelector('input[name="dizziness_fainting"]')?.checked || false;
-        formData.swelling_legs = document.querySelector('input[name="swelling_legs"]')?.checked || false;
-        formData.prediabetes = document.querySelector('input[name="prediabetes"]')?.checked || false;
+    // Add age 40+ fields if visible (Step 5)
+    const age40Fields = document.getElementById('age40Fields');
+    if (age40Fields && age40Fields.style.display !== 'none') {
+        const age40ChestPain = document.querySelector('input[name="age40_chest_pain"]:checked');
+        const age40Breathless = document.querySelector('input[name="age40_breathless"]:checked');
+        const age40HighBpSugar = document.querySelector('input[name="age40_high_bp_sugar"]:checked');
+        const age40Swelling = document.querySelector('input[name="age40_swelling"]:checked');
+        formData.age40_chest_pain = age40ChestPain ? age40ChestPain.value : 'no';
+        formData.age40_breathless = age40Breathless ? age40Breathless.value : 'no';
+        formData.age40_high_bp_sugar = age40HighBpSugar ? age40HighBpSugar.value : 'no';
+        formData.age40_swelling = age40Swelling ? age40Swelling.value : 'no';
     }
     
-    // Add pediatric fields if visible
+    // Add pediatric fields if visible (Step 5)
     const pediatricFields = document.getElementById('pediatricFields');
     if (pediatricFields && pediatricFields.style.display !== 'none') {
-        formData.vaccination_up_to_date = document.querySelector('input[name="vaccination_up_to_date"]')?.checked || false;
-        formData.growth_concerns = document.getElementById('growth_concerns')?.value || '';
-        formData.school_performance = document.getElementById('school_performance')?.value || '';
-        formData.pediatric_allergies = document.getElementById('pediatric_allergies')?.value || '';
-        formData.sleep_patterns_normal = document.querySelector('input[name="sleep_patterns_normal"]')?.checked || false;
-        formData.eating_habits = document.getElementById('eating_habits')?.value || '';
-        formData.activity_level = document.getElementById('activity_level')?.value || '';
+        const pediatricVaccinations = document.querySelector('input[name="pediatric_vaccinations"]:checked');
+        const pediatricConcerns = document.querySelector('input[name="pediatric_concerns"]:checked');
+        formData.pediatric_vaccinations = pediatricVaccinations ? pediatricVaccinations.value : 'not_sure';
+        formData.pediatric_concerns = pediatricConcerns ? pediatricConcerns.value : 'no';
+        formData.pediatric_details = document.getElementById('pediatric_details')?.value.trim() || '';
     }
     
     try {
