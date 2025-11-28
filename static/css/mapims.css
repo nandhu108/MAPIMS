@@ -314,12 +314,14 @@ body {
 .btn-next, .btn-back, .btn-submit {
     padding: 14px 32px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     letter-spacing: 0.3px;
+    min-width: 140px;
+    text-align: center;
 }
 
 .btn-next, .btn-submit {
@@ -331,6 +333,7 @@ body {
 .btn-next:hover, .btn-submit:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
+    background: var(--mapims-red-dark);
 }
 
 .btn-back {
@@ -341,6 +344,7 @@ body {
 .btn-back:hover {
     background: var(--mapims-dark-grey);
     color: var(--mapims-white);
+    transform: translateY(-2px);
 }
 
 /* ==================== SECTIONS ==================== */
@@ -661,47 +665,68 @@ body {
 
 /* ==================== ASSESSMENT FORM ==================== */
 .assessment-main {
-    padding: 50px 0;
+    padding: 30px 0 50px;
     background: linear-gradient(180deg, var(--mapims-light-grey) 0%, var(--mapims-white) 100%);
     min-height: calc(100vh - 200px);
 }
 
 .assessment-container {
     background: var(--mapims-white);
-    border-radius: 16px;
-    padding: 48px;
+    border-radius: 20px;
+    padding: 40px;
     box-shadow: var(--shadow-lg);
-    max-width: 850px;
+    max-width: 900px;
     margin: 0 auto;
-    border: 1px solid var(--mapims-grey);
+    border: 1px solid rgba(227, 24, 55, 0.1);
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    position: relative;
+    overflow: hidden;
+}
+
+.assessment-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--mapims-red-gradient);
+    z-index: 1;
 }
 
 .progress-bar {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 48px;
+    align-items: flex-start;
+    margin-bottom: 40px;
     position: relative;
-    padding: 0 20px;
+    padding: 0 10px;
     width: 100%;
-    gap: 8px;
+    gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.progress-bar::-webkit-scrollbar {
+    display: none;
 }
 
 .progress-bar::before {
     content: '';
     position: absolute;
-    top: 32px;
-    left: 60px;
-    right: 60px;
+    top: 30px;
+    left: 50px;
+    right: 50px;
     height: 3px;
     background: var(--mapims-grey);
     z-index: 0;
     border-radius: 2px;
     pointer-events: none;
+    transition: all 0.3s ease;
 }
 
 .progress-step {
@@ -715,8 +740,8 @@ body {
 }
 
 .step-circle {
-    width: 64px;
-    height: 64px;
+    width: 60px;
+    height: 60px;
     background: var(--mapims-grey);
     color: var(--mapims-white);
     border-radius: 50%;
@@ -724,19 +749,21 @@ body {
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 1.3rem;
-    margin-bottom: 12px;
-    transition: var(--transition);
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 4px solid var(--mapims-white);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     position: relative;
     z-index: 3;
+    flex-shrink: 0;
 }
 
 .progress-step.active .step-circle {
     background: var(--mapims-red-gradient);
-    box-shadow: var(--shadow-md);
-    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(227, 24, 55, 0.3);
+    transform: scale(1.08);
+    border-color: rgba(227, 24, 55, 0.2);
 }
 
 .progress-step.completed .step-circle {
@@ -744,7 +771,7 @@ body {
 }
 
 .progress-step p {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     color: var(--mapims-text-light);
     font-weight: 500;
     text-align: center;
@@ -752,12 +779,15 @@ body {
     position: relative;
     z-index: 1;
     margin: 0;
-    padding-top: 4px;
+    padding-top: 6px;
+    white-space: nowrap;
+    line-height: 1.2;
 }
 
 .progress-step.active p {
     color: var(--mapims-red);
     font-weight: 600;
+    font-size: 0.8rem;
 }
 
 .form-step {
@@ -775,18 +805,28 @@ body {
 }
 
 .step-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
     color: var(--mapims-text);
-    margin: 0 auto 36px;
+    margin: 0 auto 32px;
     text-align: center;
     font-weight: 700;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.3px;
     width: 100%;
     max-width: 100%;
+    line-height: 1.3;
+}
+
+.step-description {
+    color: var(--mapims-text-light);
+    font-size: 0.95rem;
+    text-align: center;
+    margin: -24px auto 32px;
+    max-width: 600px;
+    line-height: 1.6;
 }
 
 .form-group {
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -801,6 +841,7 @@ body {
     font-size: 0.95rem;
     width: 100%;
     text-align: left;
+    line-height: 1.5;
 }
 
 .form-group input,
@@ -809,11 +850,20 @@ body {
     width: 100%;
     padding: 14px 18px;
     border: 2px solid var(--mapims-grey);
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 1rem;
     font-family: inherit;
-    transition: var(--transition);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background: var(--mapims-white);
+    color: var(--mapims-text);
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+    border-color: rgba(227, 24, 55, 0.3);
 }
 
 .form-group input:focus,
@@ -822,12 +872,21 @@ body {
     outline: none;
     border-color: var(--mapims-red);
     box-shadow: 0 0 0 4px rgba(227, 24, 55, 0.1);
+    transform: translateY(-1px);
+}
+
+.form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23212529' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    cursor: pointer;
 }
 
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    gap: 20px;
     width: 100%;
     align-items: start;
 }
@@ -837,12 +896,24 @@ body {
 }
 
 .bmi-display {
-    background: linear-gradient(135deg, var(--mapims-light-grey) 0%, var(--mapims-white) 100%);
-    padding: 20px;
-    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(248, 249, 250, 0.8) 0%, rgba(255, 255, 255, 1) 100%);
+    padding: 20px 24px;
+    border-radius: 12px;
     border-left: 4px solid var(--mapims-red);
     margin-bottom: 24px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 8px rgba(227, 24, 55, 0.1);
+    animation: fadeIn 0.4s ease;
+}
+
+.bmi-display p {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--mapims-text);
+}
+
+.bmi-display strong {
+    color: var(--mapims-red);
+    font-size: 1.2rem;
 }
 
 .symptom-categories {
@@ -965,13 +1036,17 @@ body {
     margin-top: 32px;
     padding-top: 32px;
     border-top: 2px solid var(--mapims-grey);
-    animation: slideDown 0.3s ease;
+    animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, rgba(248, 249, 250, 0.5) 0%, rgba(255, 255, 255, 1) 100%);
+    padding: 28px;
+    border-radius: 12px;
+    border: 1px solid rgba(227, 24, 55, 0.1);
 }
 
 @keyframes slideDown {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-15px);
     }
     to {
         opacity: 1;
@@ -979,44 +1054,122 @@ body {
     }
 }
 
+#youngChildFields,
+#adolescentFields {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 .section-subtitle {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     color: var(--mapims-red);
     margin-bottom: 20px;
     font-weight: 600;
-    padding-bottom: 8px;
+    padding-bottom: 10px;
     border-bottom: 2px solid var(--mapims-grey);
+    line-height: 1.4;
+}
+
+.section-description {
+    color: var(--mapims-text-light);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
 }
 
 .form-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 40px;
+    margin-top: 36px;
     gap: 16px;
     width: 100%;
     flex-wrap: wrap;
 }
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 12px 20px;
+    background: var(--mapims-light-grey);
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.radio-label:hover {
+    background: var(--mapims-grey);
+    border-color: rgba(227, 24, 55, 0.2);
+}
+
+.radio-label input[type="radio"]:checked + span {
+    color: var(--mapims-red);
+    font-weight: 600;
+}
+
+.radio-label input[type="radio"]:checked ~ span {
+    color: var(--mapims-red);
+    font-weight: 600;
+}
+
+.radio-label:has(input[type="radio"]:checked) {
+    background: rgba(227, 24, 55, 0.1);
+    border-color: var(--mapims-red);
+}
+
+/* Button styles consolidated - see general button styles above */
 
 .checkbox-label {
     display: flex;
     align-items: flex-start;
     gap: 12px;
     cursor: pointer;
-    padding: 16px;
+    padding: 16px 18px;
     background: var(--mapims-light-grey);
-    border-radius: 8px;
-    transition: var(--transition);
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+    width: 100%;
 }
 
 .checkbox-label:hover {
     background: var(--mapims-grey);
+    border-color: rgba(227, 24, 55, 0.2);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
 }
 
-.checkbox-label input[type="checkbox"] {
-    width: auto;
-    margin-top: 4px;
+.checkbox-label input[type="checkbox"],
+.checkbox-label input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
     cursor: pointer;
+    flex-shrink: 0;
+    accent-color: var(--mapims-red);
+    cursor: pointer;
+}
+
+.checkbox-label span {
+    flex: 1;
+    line-height: 1.5;
+    font-size: 0.95rem;
 }
 
 .loading-overlay {
@@ -2208,6 +2361,259 @@ body {
 }
 
 /* ==================== RESPONSIVE ==================== */
+
+/* Mobile First - Extra Small Devices (phones, 480px and down) */
+@media (max-width: 480px) {
+    .assessment-main {
+        padding: 20px 0 40px;
+    }
+    
+    .assessment-container {
+        padding: 24px 20px;
+        border-radius: 16px;
+        margin: 0 12px;
+        max-width: calc(100% - 24px);
+    }
+    
+    .step-title {
+        font-size: 1.5rem;
+        margin-bottom: 24px;
+    }
+    
+    .step-description {
+        font-size: 0.9rem;
+        margin-bottom: 24px;
+        padding: 0 8px;
+    }
+    
+    .progress-bar {
+        margin-bottom: 32px;
+        padding: 0 5px;
+        gap: 2px;
+    }
+    
+    .progress-bar::before {
+        top: 28px;
+        left: 35px;
+        right: 35px;
+        height: 2px;
+    }
+    
+    .step-circle {
+        width: 48px;
+        height: 48px;
+        font-size: 1rem;
+        margin-bottom: 8px;
+        border-width: 3px;
+    }
+    
+    .progress-step p {
+        font-size: 0.7rem;
+        padding-top: 4px;
+        line-height: 1.2;
+    }
+    
+    .progress-step.active .step-circle {
+        transform: scale(1.05);
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        border-radius: 8px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .radio-group {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .radio-label {
+        min-width: 100%;
+        justify-content: flex-start;
+        padding: 14px 16px;
+    }
+    
+    .checkbox-label {
+        padding: 14px 16px;
+    }
+    
+    .checkbox-label input[type="checkbox"],
+    .checkbox-label input[type="radio"] {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: 12px;
+        margin-top: 32px;
+    }
+    
+    .btn-next,
+    .btn-back,
+    .btn-submit {
+        width: 100%;
+        padding: 16px 24px;
+        font-size: 1rem;
+        min-width: auto;
+    }
+    
+    .btn-back {
+        order: 2;
+    }
+    
+    .btn-next,
+    .btn-submit {
+        order: 1;
+    }
+    
+    .dynamic-section {
+        margin-top: 28px;
+        padding-top: 24px;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .section-description {
+        font-size: 0.85rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    .bmi-display {
+        padding: 16px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .voice-input-btn {
+        position: static;
+        width: 100%;
+        margin-top: 12px;
+        justify-content: center;
+        padding: 12px 16px;
+    }
+    
+    .voice-input-container textarea {
+        padding-right: 16px;
+        padding-bottom: 60px;
+    }
+    
+    .category-tags {
+        gap: 8px;
+    }
+    
+    .tag {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Small Devices (landscape phones, 481px to 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+    .assessment-main {
+        padding: 30px 0 50px;
+    }
+    
+    .assessment-container {
+        padding: 32px 28px;
+        border-radius: 18px;
+        margin: 0 16px;
+    }
+    
+    .step-title {
+        font-size: 1.65rem;
+        margin-bottom: 28px;
+    }
+    
+    .progress-bar {
+        margin-bottom: 36px;
+        padding: 0 8px;
+    }
+    
+    .progress-bar::before {
+        top: 30px;
+        left: 45px;
+        right: 45px;
+    }
+    
+    .step-circle {
+        width: 54px;
+        height: 54px;
+        font-size: 1.15rem;
+    }
+    
+    .progress-step p {
+        font-size: 0.72rem;
+    }
+    
+    .form-group {
+        margin-bottom: 22px;
+    }
+    
+    .form-row {
+        gap: 18px;
+    }
+    
+    .form-actions {
+        gap: 14px;
+    }
+    
+    .btn-next,
+    .btn-back,
+    .btn-submit {
+        padding: 14px 28px;
+        min-width: 130px;
+    }
+    
+    .radio-group {
+        gap: 16px;
+    }
+    
+    .radio-label {
+        min-width: 140px;
+        flex: 0 1 calc(50% - 8px);
+    }
+}
+
+/* Medium Devices (tablets, 769px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .assessment-container {
+        padding: 36px;
+        max-width: 800px;
+    }
+    
+    .progress-bar::before {
+        left: 55px;
+        right: 55px;
+    }
+    
+    .step-circle {
+        width: 58px;
+        height: 58px;
+    }
+}
+
+/* General Mobile Styles (768px and down) */
 @media (max-width: 768px) {
     .hero-title {
         font-size: 2.2rem;
@@ -2215,10 +2621,6 @@ body {
     
     .hero-subtitle {
         font-size: 1.5rem;
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
     }
     
     .header-nav {
@@ -2245,33 +2647,46 @@ body {
         font-size: 2rem;
     }
     
-    .assessment-container, .analysis-container, .booking-form {
+    .analysis-container, .booking-form {
         padding: 32px 24px;
-    }
-    
-    .progress-bar {
-        padding: 0 10px;
-    }
-    
-    .step-circle {
-        width: 50px;
-        height: 50px;
-        font-size: 1.1rem;
-    }
-    
-    .voice-input-btn {
-        position: static;
-        width: 100%;
-        margin-top: 12px;
-        justify-content: center;
-    }
-    
-    .voice-input-container textarea {
-        padding-right: 18px;
     }
     
     .language-toggle {
         padding: 8px 12px;
         font-size: 0.95rem;
+    }
+    
+    .container {
+        padding: 0 16px;
+    }
+    
+    .header-content {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .mapims-header {
+        padding: 14px 0;
+    }
+    
+    /* Smooth scrolling for mobile */
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Touch-friendly targets */
+    input, select, textarea, button, a {
+        -webkit-tap-highlight-color: rgba(227, 24, 55, 0.1);
+    }
+    
+    /* Prevent zoom on input focus (iOS) */
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="tel"],
+    select,
+    textarea {
+        font-size: 16px !important;
     }
 }
