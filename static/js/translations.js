@@ -671,6 +671,17 @@ function setLanguage(lang) {
     }
 }
 
+// Language toggle function - available globally
+function toggleLanguage() {
+    const newLang = (typeof currentLanguage !== 'undefined' && currentLanguage === 'en') ? 'ta' : 'en';
+    if (typeof setLanguage === 'function') {
+        setLanguage(newLang);
+    }
+}
+
+// Make toggleLanguage available globally
+window.toggleLanguage = toggleLanguage;
+
 // Mapping functions for package and test names
 function getPackageTranslationKey(packageId) {
     const mapping = {

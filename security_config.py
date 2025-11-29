@@ -31,7 +31,7 @@ class SecurityConfig:
             "frame-src https://www.facebook.com;"
         ),
         'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Permissions-Policy': 'geolocation=(), microphone=(), camera=()'
+        'Permissions-Policy': 'geolocation=(), microphone=(self), camera=()'
     }
     
     # Rate Limiting Configuration

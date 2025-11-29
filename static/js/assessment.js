@@ -253,9 +253,15 @@ function startVoiceInput() {
         }
     }
     
+    // Check if mediaDevices is available
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Microphone access is not available in this browser. Please use a modern browser like Chrome, Edge, or Safari.');
+        return;
+    }
+    
     // Request microphone permission
     navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(() => {
+        .then((stream) => {
             // Permission granted, start recognition
             try {
                 // Update language if needed
@@ -282,10 +288,18 @@ function startVoiceInput() {
                     voiceIcon.textContent = '🔴';
                 }
                 if (voiceText) {
-                    voiceText.textContent = 'Recording...';
+                    voiceText.textContent = 'Recording... Speak now';
                 }
+                
+                // Store stream to stop it later
+                window.voiceStream = stream;
             } catch (error) {
                 console.error('Error starting voice input:', error);
+                // Stop the stream if recognition fails
+                if (window.voiceStream) {
+                    window.voiceStream.getTracks().forEach(track => track.stop());
+                    window.voiceStream = null;
+                }
                 if (error.name === 'InvalidStateError') {
                     alert('Voice input is already running. Please stop it first.');
                 } else {
@@ -294,30 +308,68 @@ function startVoiceInput() {
             }
         })
         .catch((error) => {
-            console.error('Microphone permission denied:', error);
-            alert('Microphone permission is required for voice input. Please allow microphone access in your browser settings.');
+            console.error('Microphone permission error:', error);
+            let errorMessage = 'Microphone permission is required for voice input.';
+            
+            if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                errorMessage = 'Microphone permission denied. Please:\n1. Click the lock icon in your browser address bar\n2. Allow microphone access\n3. Refresh the page and try again';
+            } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+                errorMessage = 'No microphone found. Please:\n1. Connect a microphone to your device\n2. Check your system settings\n3. Refresh the page and try again';
+            } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+                errorMessage = 'Microphone is being used by another application. Please close other apps using the microphone and try again.';
+            } else {
+                errorMessage = 'Microphone access error: ' + error.message + '\n\nPlease check your browser settings and try again.';
+            }
+            
+            // Show error in UI
+            const voiceStatus = document.getElementById('voiceStatus');
+            if (voiceStatus) {
+                const statusText = document.getElementById('voiceStatusText');
+                if (statusText) {
+                    statusText.textContent = errorMessage.split('\n')[0];
+                    statusText.style.color = '#E31837';
+                }
+                voiceStatus.style.display = 'flex';
+            }
+            
+            alert(errorMessage);
         });
 }
 
 function stopVoiceInput() {
     if (recognition && isRecording) {
-        recognition.stop();
+        try {
+            recognition.stop();
+        } catch (e) {
+            console.error('Error stopping recognition:', e);
+        }
         isRecording = false;
-        
-        const voiceBtn = document.getElementById('voiceInputBtn');
-        const voiceStatus = document.getElementById('voiceStatus');
-        const voiceIcon = document.getElementById('voiceIcon');
-        
-        if (voiceBtn) {
-            voiceBtn.classList.remove('recording');
-            voiceBtn.style.background = '';
-        }
-        if (voiceStatus) {
-            voiceStatus.style.display = 'none';
-        }
-        if (voiceIcon) {
-            voiceIcon.textContent = '🎤';
-        }
+    }
+    
+    // Stop the audio stream
+    if (window.voiceStream) {
+        window.voiceStream.getTracks().forEach(track => track.stop());
+        window.voiceStream = null;
+    }
+    
+    const voiceBtn = document.getElementById('voiceInputBtn');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const voiceIcon = document.getElementById('voiceIcon');
+    const voiceText = document.getElementById('voiceText');
+    
+    if (voiceBtn) {
+        voiceBtn.classList.remove('recording');
+        voiceBtn.style.background = '';
+        voiceBtn.style.color = '';
+    }
+    if (voiceStatus) {
+        voiceStatus.style.display = 'none';
+    }
+    if (voiceIcon) {
+        voiceIcon.textContent = '🎤';
+    }
+    if (voiceText) {
+        voiceText.textContent = 'Voice Input';
     }
 }
 
