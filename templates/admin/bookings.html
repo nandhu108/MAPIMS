@@ -37,10 +37,32 @@
     <main class="admin-main">
         <div class="container">
             <h1 class="admin-page-title">All Bookings</h1>
+            
+            <!-- Date Filter -->
+            <div class="filter-controls" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              <label for="start_date" style="font-weight: 600;">From:</label>
+              <input type="date" id="start_date" name="start_date" value="{{ start_date }}" style="padding: 8px; border: 2px solid #ddd; border-radius: 4px;">
+              <label for="end_date" style="font-weight: 600;">To:</label>
+              <input type="date" id="end_date" name="end_date" value="{{ end_date }}" style="padding: 8px; border: 2px solid #ddd; border-radius: 4px;">
+              <button onclick="applyFilters()" style="padding: 8px 16px; background: #E31837; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Filter</button>
+              <button onclick="clearFilters()" style="padding: 8px 16px; background: #666; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Clear</button>
+              <button onclick="exportToExcel()" style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M10 9H9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Export Excel
+              </button>
+            </div>
+            
             <div class="table-container">
                 <table class="admin-table">
                     <thead>
                         <tr>
+                            <th>S.No</th>
                             <th>Reference</th>
                             <th>Patient</th>
                             <th>Package</th>
@@ -55,6 +77,7 @@
                     <tbody>
                         {% for booking in bookings %}
                         <tr>
+                            <td>{{ ((page - 1) * per_page) + loop.index }}</td>
                             <td>{{ booking.booking_reference }}</td>
                             <td>{{ booking.patient_name }}<br>{{ booking.patient_phone }}</td>
                             <td>{{ booking.package_name }}</td>
@@ -69,8 +92,99 @@
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Pagination -->
+            <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span>Showing {{ ((page - 1) * per_page) + 1 }} to {{ ((page - 1) * per_page) + bookings|length }} of {{ total_bookings_count }} entries</span>
+                <select id="per_page" onchange="changePerPage()" style="padding: 6px; border: 2px solid #ddd; border-radius: 4px;">
+                  <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                  <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                  <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                  <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+                </select>
+              </div>
+              <div style="display: flex; gap: 5px;">
+                {% if page > 1 %}
+                <button onclick="goToPage({{ page - 1 }})" style="padding: 8px 12px; background: #E31837; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous</button>
+                {% endif %}
+                {% for p in range(1, total_pages + 1) %}
+                  {% if p == page %}
+                  <button style="padding: 8px 12px; background: #B8142C; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">{{ p }}</button>
+                  {% elif p <= 3 or p > total_pages - 3 or (p >= page - 1 and p <= page + 1) %}
+                  <button onclick="goToPage({{ p }})" style="padding: 8px 12px; background: #E31837; color: white; border: none; border-radius: 4px; cursor: pointer;">{{ p }}</button>
+                  {% elif p == 4 or p == total_pages - 3 %}
+                  <span style="padding: 8px;">...</span>
+                  {% endif %}
+                {% endfor %}
+                {% if page < total_pages %}
+                <button onclick="goToPage({{ page + 1 }})" style="padding: 8px 12px; background: #E31837; color: white; border: none; border-radius: 4px; cursor: pointer;">Next</button>
+                {% endif %}
+              </div>
+            </div>
         </div>
     </main>
+    
+    <script>
+      function applyFilters() {
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+        const perPage = document.getElementById('per_page') ? document.getElementById('per_page').value : '{{ per_page }}';
+        const url = new URL(window.location.href);
+        url.searchParams.set('start_date', startDate);
+        url.searchParams.set('end_date', endDate);
+        url.searchParams.set('page', '1');
+        url.searchParams.set('per_page', perPage);
+        window.location.href = url.toString();
+      }
+      
+      function clearFilters() {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('start_date');
+        url.searchParams.delete('end_date');
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
+      }
+      
+      function goToPage(page) {
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+        const perPage = document.getElementById('per_page') ? document.getElementById('per_page').value : '{{ per_page }}';
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', page);
+        url.searchParams.set('start_date', startDate);
+        url.searchParams.set('end_date', endDate);
+        url.searchParams.set('per_page', perPage);
+        window.location.href = url.toString();
+      }
+      
+      function changePerPage() {
+        const perPage = document.getElementById('per_page').value;
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('per_page', perPage);
+        url.searchParams.set('page', '1');
+        url.searchParams.set('start_date', startDate);
+        url.searchParams.set('end_date', endDate);
+        window.location.href = url.toString();
+      }
+      
+      function exportToExcel() {
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+        let exportUrl = '/admin/export/bookings?';
+        if (startDate) {
+          exportUrl += 'start_date=' + encodeURIComponent(startDate) + '&';
+        }
+        if (endDate) {
+          exportUrl += 'end_date=' + encodeURIComponent(endDate) + '&';
+        }
+        // Remove trailing & if present
+        exportUrl = exportUrl.replace(/[&]$/, '');
+        window.location.href = exportUrl;
+      }
+    </script>
 </body>
 </html>
 

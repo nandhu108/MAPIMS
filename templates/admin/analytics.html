@@ -175,6 +175,16 @@
             <div class="analytics-header">
                 <h1 class="admin-page-title">Analytics & Insights</h1>
                 <p style="color: var(--mapims-text-light); margin-top: 8px;">Comprehensive analytics and data insights</p>
+                
+                <!-- Global Date Filter -->
+                <div class="filter-controls" style="margin-top: 20px; justify-content: center;">
+                  <label for="global_start_date" style="font-weight: 600; margin-right: 10px;">From:</label>
+                  <input type="date" id="global_start_date" name="global_start_date" value="{{ start_date }}" style="padding: 8px; border: 2px solid #ddd; border-radius: 4px; margin-right: 10px;">
+                  <label for="global_end_date" style="font-weight: 600; margin-right: 10px;">To:</label>
+                  <input type="date" id="global_end_date" name="global_end_date" value="{{ end_date }}" style="padding: 8px; border: 2px solid #ddd; border-radius: 4px; margin-right: 10px;">
+                  <button onclick="applyGlobalFilters()" style="padding: 8px 16px; background: #E31837; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; margin-right: 10px;">Apply Filter</button>
+                  <button onclick="clearGlobalFilters()" style="padding: 8px 16px; background: #666; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Clear</button>
+                </div>
             </div>
 
             <!-- Key Metrics -->
@@ -240,10 +250,12 @@
             <!-- Top Risk Factors -->
             <div class="analytics-section">
                 <h2>Top Health Risk Factors</h2>
+                
                 <div class="data-table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th>S.No</th>
                                 <th>Risk Factor</th>
                                 <th>Count</th>
                                 <th>Percentage</th>
@@ -252,6 +264,7 @@
                         <tbody>
                             {% for factor in top_risk_factors %}
                             <tr>
+                                <td>{{ ((risk_page - 1) * per_page) + loop.index }}</td>
                                 <td>{{ factor.name }}</td>
                                 <td>{{ factor.count }}</td>
                                 <td>{{ factor.percentage }}%</td>
@@ -260,15 +273,47 @@
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- Pagination for Risk Factors -->
+                <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span>Showing {{ ((risk_page - 1) * per_page) + 1 }} to {{ ((risk_page - 1) * per_page) + top_risk_factors|length }} of {{ total_risk_factors }} entries</span>
+                    <select id="risk_per_page" onchange="changeRiskPerPage()" style="padding: 6px; border: 2px solid #ddd; border-radius: 4px;">
+                      <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                      <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                      <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                      <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+                    </select>
+                  </div>
+                  <div style="display: flex; gap: 5px;">
+                    {% if risk_page > 1 %}
+                    <button onclick="goToRiskPage({{ risk_page - 1 }})" style="padding: 8px 12px; background: #E31837; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous</button>
+                    {% endif %}
+                    {% for p in range(1, total_risk_pages + 1) %}
+                      {% if p == risk_page %}
+                      <button style="padding: 8px 12px; background: #B8142C; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">{{ p }}</button>
+                      {% elif p <= 3 or p > total_risk_pages - 3 or (p >= risk_page - 1 and p <= risk_page + 1) %}
+                      <button onclick="goToRiskPage({{ p }})" style="padding: 8px 12px; background: #E31837; color: white; border: none; border-radius: 4px; cursor: pointer;">{{ p }}</button>
+                      {% elif p == 4 or p == total_risk_pages - 3 %}
+                      <span style="padding: 8px;">...</span>
+                      {% endif %}
+                    {% endfor %}
+                    {% if risk_page < total_risk_pages %}
+                    <button onclick="goToRiskPage({{ risk_page + 1 }})" style="padding: 8px 12px; background: #E31837; color: white; border: none; border-radius: 4px; cursor: pointer;">Next</button>
+                    {% endif %}
+                  </div>
+                </div>
             </div>
 
             <!-- Package Performance -->
             <div class="analytics-section">
                 <h2>Package Performance</h2>
+                
                 <div class="data-table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th>S.No</th>
                                 <th>Package</th>
                                 <th>Bookings</th>
                                 <th>Revenue</th>
@@ -278,6 +323,7 @@
                         <tbody>
                             {% for package in package_performance %}
                             <tr>
+                                <td>{{ ((package_page - 1) * per_page) + loop.index }}</td>
                                 <td>{{ package.name }}</td>
                                 <td>{{ package.bookings }}</td>
                                 <td>₹{{ package.revenue }}</td>
@@ -286,6 +332,36 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                </div>
+                
+                <!-- Pagination for Package Performance -->
+                <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span>Showing {{ ((package_page - 1) * per_page) + 1 }} to {{ ((package_page - 1) * per_page) + package_performance|length }} of {{ total_packages }} entries</span>
+                    <select id="package_per_page" onchange="changePackagePerPage()" style="padding: 6px; border: 2px solid #ddd; border-radius: 4px;">
+                      <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                      <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                      <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                      <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+                    </select>
+                  </div>
+                  <div style="display: flex; gap: 5px;">
+                    {% if package_page > 1 %}
+                    <button onclick="goToPackagePage({{ package_page - 1 }})" style="padding: 8px 12px; background: #E31837; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous</button>
+                    {% endif %}
+                    {% for p in range(1, total_package_pages + 1) %}
+                      {% if p == package_page %}
+                      <button style="padding: 8px 12px; background: #B8142C; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">{{ p }}</button>
+                      {% elif p <= 3 or p > total_package_pages - 3 or (p >= package_page - 1 and p <= package_page + 1) %}
+                      <button onclick="goToPackagePage({{ p }})" style="padding: 8px 12px; background: #E31837; color: white; border: none; border-radius: 4px; cursor: pointer;">{{ p }}</button>
+                      {% elif p == 4 or p == total_package_pages - 3 %}
+                      <span style="padding: 8px;">...</span>
+                      {% endif %}
+                    {% endfor %}
+                    {% if package_page < total_package_pages %}
+                    <button onclick="goToPackagePage({{ package_page + 1 }})" style="padding: 8px 12px; background: #E31837; color: white; border: none; border-radius: 4px; cursor: pointer;">Next</button>
+                    {% endif %}
+                  </div>
                 </div>
             </div>
 
@@ -433,6 +509,77 @@
                 }
             }
         });
+        
+        // Global Filter Functions
+        function applyGlobalFilters() {
+            const startDate = document.getElementById('global_start_date').value;
+            const endDate = document.getElementById('global_end_date').value;
+            const url = new URL(window.location.href);
+            url.searchParams.set('start_date', startDate);
+            url.searchParams.set('end_date', endDate);
+            url.searchParams.set('risk_page', '1');
+            url.searchParams.set('package_page', '1');
+            window.location.href = url.toString();
+        }
+        
+        function clearGlobalFilters() {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('start_date');
+            url.searchParams.delete('end_date');
+            url.searchParams.set('risk_page', '1');
+            url.searchParams.set('package_page', '1');
+            window.location.href = url.toString();
+        }
+        
+        // Risk Factors Pagination Functions
+        function goToRiskPage(page) {
+            const startDate = document.getElementById('global_start_date').value;
+            const endDate = document.getElementById('global_end_date').value;
+            const perPage = document.getElementById('risk_per_page') ? document.getElementById('risk_per_page').value : '{{ per_page }}';
+            const url = new URL(window.location.href);
+            url.searchParams.set('risk_page', page);
+            url.searchParams.set('start_date', startDate);
+            url.searchParams.set('end_date', endDate);
+            url.searchParams.set('per_page', perPage);
+            window.location.href = url.toString();
+        }
+        
+        function changeRiskPerPage() {
+            const perPage = document.getElementById('risk_per_page').value;
+            const startDate = document.getElementById('global_start_date').value;
+            const endDate = document.getElementById('global_end_date').value;
+            const url = new URL(window.location.href);
+            url.searchParams.set('per_page', perPage);
+            url.searchParams.set('risk_page', '1');
+            url.searchParams.set('start_date', startDate);
+            url.searchParams.set('end_date', endDate);
+            window.location.href = url.toString();
+        }
+        
+        // Package Performance Pagination Functions
+        function goToPackagePage(page) {
+            const startDate = document.getElementById('global_start_date').value;
+            const endDate = document.getElementById('global_end_date').value;
+            const perPage = document.getElementById('package_per_page') ? document.getElementById('package_per_page').value : '{{ per_page }}';
+            const url = new URL(window.location.href);
+            url.searchParams.set('package_page', page);
+            url.searchParams.set('start_date', startDate);
+            url.searchParams.set('end_date', endDate);
+            url.searchParams.set('per_page', perPage);
+            window.location.href = url.toString();
+        }
+        
+        function changePackagePerPage() {
+            const perPage = document.getElementById('package_per_page').value;
+            const startDate = document.getElementById('global_start_date').value;
+            const endDate = document.getElementById('global_end_date').value;
+            const url = new URL(window.location.href);
+            url.searchParams.set('per_page', perPage);
+            url.searchParams.set('package_page', '1');
+            url.searchParams.set('start_date', startDate);
+            url.searchParams.set('end_date', endDate);
+            window.location.href = url.toString();
+        }
     </script>
 </body>
 </html>

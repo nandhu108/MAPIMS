@@ -70,7 +70,7 @@
                         <div class="success-icon-small">✓</div>
                         <h3>Your booking has been confirmed successfully!</h3>
                         <div class="transaction-details">
-                            <p><strong>Transaction ID:</strong> <span id="transactionId" style="color: var(--mapims-red); font-weight: 600; font-size: 1.1rem;"></span></p>
+                            <p><strong>Reference ID:</strong> <span id="transactionId" style="color: var(--mapims-red); font-weight: 600; font-size: 1.1rem;"></span></p>
                             <p style="margin-top: 12px; color: #666;">We have sent a confirmation message to your registered phone number and email.</p>
                         </div>
                         <div class="success-message">
@@ -394,11 +394,11 @@
                     if (typeof fbq !== 'undefined') {
                         fbq('track', 'Purchase', {value: totalPrice, currency: 'INR'});
                     }
-                    // Show success modal with transaction ID
+                    // Show success modal with reference ID
                     const successModal = document.getElementById('successModal');
                     const transactionIdElement = document.getElementById('transactionId');
                     if (successModal && transactionIdElement) {
-                        // Set transaction ID
+                        // Set reference ID
                         transactionIdElement.textContent = data.booking_reference || 'N/A';
                         // Show modal
                         successModal.style.display = 'flex';
@@ -418,7 +418,7 @@
                         }, 5000);
                     } else {
                         // Fallback to alert if modal not found
-                        alert('Booking confirmed successfully! Transaction ID: ' + (data.booking_reference || 'N/A') + '\nRedirecting to home page...');
+                        alert('Booking confirmed successfully! Reference ID: ' + (data.booking_reference || 'N/A') + '\nRedirecting to home page...');
                         window.location.href = "{{ url_for('landing') }}";
                     }
                 } else {
