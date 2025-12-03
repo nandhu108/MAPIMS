@@ -1135,10 +1135,14 @@ def admin_dashboard():
         except ValueError:
             pass
     
-    # Get statistics
+    # Get statistics (use date_filter for consistency with the table)
+    # Note: total_patients remains unfiltered as it represents all-time patient count
+    # Bookings metrics use date_filter to match the filtered table below
     total_patients = patients_collection.count_documents({})
-    total_bookings = bookings_collection.count_documents({})
-    confirmed_bookings = bookings_collection.count_documents({'booking_status': 'confirmed'})
+    total_bookings = bookings_collection.count_documents(date_filter if date_filter else {})
+    confirmed_filter = date_filter.copy() if date_filter else {}
+    confirmed_filter['booking_status'] = 'confirmed'
+    confirmed_bookings = bookings_collection.count_documents(confirmed_filter)
     
     # Get recent bookings with pagination
     query = bookings_collection.find(date_filter).sort('created_at', -1)
@@ -1323,13 +1327,18 @@ def admin_analytics():
         except ValueError:
             pass
     
-    # Get basic stats
-    total_patients = patients_collection.count_documents({})
-    total_bookings = bookings_collection.count_documents({})
-    confirmed_bookings = bookings_collection.count_documents({'booking_status': 'confirmed'})
+    # Get basic stats (use date filters for consistency - all metrics must use the same filters)
+    # When date filters are applied, all metrics should reflect the filtered time period
+    total_patients = patients_collection.count_documents(patient_date_filter if patient_date_filter else {})
+    total_bookings = bookings_collection.count_documents(booking_date_filter if booking_date_filter else {})
+    confirmed_filter = booking_date_filter.copy() if booking_date_filter else {}
+    confirmed_filter['booking_status'] = 'confirmed'
+    confirmed_bookings = bookings_collection.count_documents(confirmed_filter)
     
-    # Calculate revenue
-    bookings_with_price = list(bookings_collection.find({'total_price': {'$exists': True}}))
+    # Calculate revenue (with date filter - must match booking_date_filter for consistency)
+    revenue_filter = booking_date_filter.copy() if booking_date_filter else {}
+    revenue_filter['total_price'] = {'$exists': True}
+    bookings_with_price = list(bookings_collection.find(revenue_filter))
     total_revenue = sum(booking.get('total_price', 0) for booking in bookings_with_price)
     
     # Calculate average risk score (with date filter)
@@ -1352,9 +1361,11 @@ def admin_analytics():
     # Calculate conversion rate
     conversion_rate = round((confirmed_bookings / total_patients * 100), 1) if total_patients > 0 else 0
     
-    # Package distribution
+    # Package distribution (with date filter)
+    package_filter = booking_date_filter.copy()
+    package_filter['package_id'] = {'$exists': True}
     package_counts = {}
-    for booking in bookings_collection.find({'package_id': {'$exists': True}}):
+    for booking in bookings_collection.find(package_filter):
         pkg_id = booking.get('package_id', 'unknown')
         package_counts[pkg_id] = package_counts.get(pkg_id, 0) + 1
     
@@ -1374,9 +1385,11 @@ def admin_analytics():
     risk_labels = ['Low', 'Moderate', 'High', 'Critical']
     risk_data = [risk_distribution.get(r, 0) for r in risk_labels]
     
-    # Age distribution
+    # Age distribution (with date filter)
+    age_filter = patient_date_filter.copy()
+    age_filter['age'] = {'$exists': True}
     age_groups = {'0-20': 0, '21-30': 0, '31-40': 0, '41-50': 0, '51-60': 0, '60+': 0}
-    for patient in patients_collection.find({'age': {'$exists': True}}):
+    for patient in patients_collection.find(age_filter):
         age = patient.get('age', 0)
         if age <= 20:
             age_groups['0-20'] += 1

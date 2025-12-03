@@ -70,14 +70,23 @@
           <div class="stat-card">
             <h3>Total Patients</h3>
             <p class="stat-number">{{ total_patients }}</p>
+            {% if start_date or end_date %}
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px;">(All-time)</p>
+            {% endif %}
           </div>
           <div class="stat-card">
             <h3>Total Bookings</h3>
             <p class="stat-number">{{ total_bookings }}</p>
+            {% if start_date or end_date %}
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px;">(Filtered)</p>
+            {% endif %}
           </div>
           <div class="stat-card">
             <h3>Confirmed Bookings</h3>
             <p class="stat-number">{{ confirmed_bookings }}</p>
+            {% if start_date or end_date %}
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px;">(Filtered)</p>
+            {% endif %}
           </div>
           <div class="stat-card">
             <h3>Conversion Rate</h3>
@@ -85,6 +94,9 @@
               {{ "%.1f"|format((confirmed_bookings / total_patients * 100) if
               total_patients > 0 else 0) }}%
             </p>
+            {% if start_date or end_date %}
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px;">(Based on filtered bookings)</p>
+            {% endif %}
           </div>
         </div>
 
