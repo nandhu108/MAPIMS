@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, g
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, g, send_file
 import os
 from pymongo import MongoClient
 from datetime import datetime, timedelta
@@ -12,6 +12,9 @@ from security_config import (
     SecurityConfig, rate_limit, require_admin, validate_assessment_input,
     rate_limiter
 )
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, PatternFill
+import io
 
 # Load environment variables
 load_dotenv()
@@ -1108,16 +1111,45 @@ def admin_authenticate():
 @admin_required
 def admin_dashboard():
     """Admin Dashboard"""
+    # Get date filter parameters
+    start_date = request.args.get('start_date', '')
+    end_date = request.args.get('end_date', '')
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 10))
+    
+    # Build date filter
+    date_filter = {}
+    if start_date:
+        try:
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            date_filter['created_at'] = {'$gte': start_dt}
+        except ValueError:
+            pass
+    if end_date:
+        try:
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+            if 'created_at' in date_filter:
+                date_filter['created_at']['$lt'] = end_dt
+            else:
+                date_filter['created_at'] = {'$lt': end_dt}
+        except ValueError:
+            pass
+    
     # Get statistics
     total_patients = patients_collection.count_documents({})
     total_bookings = bookings_collection.count_documents({})
     confirmed_bookings = bookings_collection.count_documents({'booking_status': 'confirmed'})
     
-    # Get recent bookings
-    recent_bookings = list(bookings_collection.find().sort('created_at', -1).limit(10))
+    # Get recent bookings with pagination
+    query = bookings_collection.find(date_filter).sort('created_at', -1)
+    total_bookings_count = bookings_collection.count_documents(date_filter)
+    skip = (page - 1) * per_page
+    recent_bookings = list(query.skip(skip).limit(per_page))
+    total_pages = (total_bookings_count + per_page - 1) // per_page
     
     # Get top packages
     pipeline = [
+        {'$match': {'package_id': {'$ne': None, '$exists': True}}},
         {'$group': {'_id': '$package_id', 'count': {'$sum': 1}}},
         {'$sort': {'count': -1}},
         {'$limit': 5}
@@ -1126,7 +1158,11 @@ def admin_dashboard():
     
     # Get top symptoms
     pipeline = [
-        {'$match': {'symptoms': {'$ne': ''}}},
+        {'$match': {'$and': [
+            {'symptoms': {'$ne': None}},
+            {'symptoms': {'$ne': ''}},
+            {'symptoms': {'$exists': True}}
+        ]}},
         {'$group': {'_id': '$symptoms', 'count': {'$sum': 1}}},
         {'$sort': {'count': -1}},
         {'$limit': 5}
@@ -1140,21 +1176,102 @@ def admin_dashboard():
                          recent_bookings=recent_bookings,
                          top_packages=top_packages,
                          top_symptoms=top_symptoms,
-                         packages=PACKAGES)
+                         packages=PACKAGES,
+                         start_date=start_date,
+                         end_date=end_date,
+                         page=page,
+                         per_page=per_page,
+                         total_pages=total_pages,
+                         total_bookings_count=total_bookings_count)
 
 @app.route('/admin/leads')
 @admin_required
 def admin_leads():
     """View all leads/patients"""
-    patients = list(patients_collection.find().sort('submitted_at', -1))
-    return render_template('admin/leads.html', patients=patients)
+    # Get date filter parameters
+    start_date = request.args.get('start_date', '')
+    end_date = request.args.get('end_date', '')
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 10))
+    
+    # Build date filter
+    date_filter = {}
+    if start_date:
+        try:
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            date_filter['submitted_at'] = {'$gte': start_dt}
+        except ValueError:
+            pass
+    if end_date:
+        try:
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+            if 'submitted_at' in date_filter:
+                date_filter['submitted_at']['$lt'] = end_dt
+            else:
+                date_filter['submitted_at'] = {'$lt': end_dt}
+        except ValueError:
+            pass
+    
+    # Get patients with pagination
+    query = patients_collection.find(date_filter).sort('submitted_at', -1)
+    total_patients_count = patients_collection.count_documents(date_filter)
+    skip = (page - 1) * per_page
+    patients = list(query.skip(skip).limit(per_page))
+    total_pages = (total_patients_count + per_page - 1) // per_page
+    
+    return render_template('admin/leads.html', 
+                         patients=patients,
+                         start_date=start_date,
+                         end_date=end_date,
+                         page=page,
+                         per_page=per_page,
+                         total_pages=total_pages,
+                         total_patients_count=total_patients_count)
 
 @app.route('/admin/bookings')
 @admin_required
 def admin_bookings():
     """View all bookings"""
-    bookings = list(bookings_collection.find().sort('created_at', -1))
-    return render_template('admin/bookings.html', bookings=bookings, packages=PACKAGES)
+    # Get date filter parameters
+    start_date = request.args.get('start_date', '')
+    end_date = request.args.get('end_date', '')
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 10))
+    
+    # Build date filter
+    date_filter = {}
+    if start_date:
+        try:
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            date_filter['created_at'] = {'$gte': start_dt}
+        except ValueError:
+            pass
+    if end_date:
+        try:
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+            if 'created_at' in date_filter:
+                date_filter['created_at']['$lt'] = end_dt
+            else:
+                date_filter['created_at'] = {'$lt': end_dt}
+        except ValueError:
+            pass
+    
+    # Get bookings with pagination
+    query = bookings_collection.find(date_filter).sort('created_at', -1)
+    total_bookings_count = bookings_collection.count_documents(date_filter)
+    skip = (page - 1) * per_page
+    bookings = list(query.skip(skip).limit(per_page))
+    total_pages = (total_bookings_count + per_page - 1) // per_page
+    
+    return render_template('admin/bookings.html', 
+                         bookings=bookings, 
+                         packages=PACKAGES,
+                         start_date=start_date,
+                         end_date=end_date,
+                         page=page,
+                         per_page=per_page,
+                         total_pages=total_pages,
+                         total_bookings_count=total_bookings_count)
 
 @app.route('/admin/analytics')
 @admin_required
@@ -1162,6 +1279,49 @@ def admin_analytics():
     """Analytics Dashboard"""
     from collections import Counter
     from datetime import datetime, timedelta
+    
+    # Get date filter and pagination parameters
+    start_date = request.args.get('start_date', '')
+    end_date = request.args.get('end_date', '')
+    risk_page = int(request.args.get('risk_page', 1))
+    package_page = int(request.args.get('package_page', 1))
+    per_page = int(request.args.get('per_page', 10))
+    
+    # Build date filter for patients
+    patient_date_filter = {}
+    if start_date:
+        try:
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            patient_date_filter['submitted_at'] = {'$gte': start_dt}
+        except ValueError:
+            pass
+    if end_date:
+        try:
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+            if 'submitted_at' in patient_date_filter:
+                patient_date_filter['submitted_at']['$lt'] = end_dt
+            else:
+                patient_date_filter['submitted_at'] = {'$lt': end_dt}
+        except ValueError:
+            pass
+    
+    # Build date filter for bookings
+    booking_date_filter = {}
+    if start_date:
+        try:
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            booking_date_filter['created_at'] = {'$gte': start_dt}
+        except ValueError:
+            pass
+    if end_date:
+        try:
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+            if 'created_at' in booking_date_filter:
+                booking_date_filter['created_at']['$lt'] = end_dt
+            else:
+                booking_date_filter['created_at'] = {'$lt': end_dt}
+        except ValueError:
+            pass
     
     # Get basic stats
     total_patients = patients_collection.count_documents({})
@@ -1172,8 +1332,10 @@ def admin_analytics():
     bookings_with_price = list(bookings_collection.find({'total_price': {'$exists': True}}))
     total_revenue = sum(booking.get('total_price', 0) for booking in bookings_with_price)
     
-    # Calculate average risk score
-    patients_with_analysis = list(patients_collection.find({'ai_analysis.risk_score': {'$exists': True}}))
+    # Calculate average risk score (with date filter)
+    patients_with_analysis_query = {'ai_analysis.risk_score': {'$exists': True}}
+    patients_with_analysis_query.update(patient_date_filter)
+    patients_with_analysis = list(patients_collection.find(patients_with_analysis_query))
     risk_scores = []
     for patient in patients_with_analysis:
         risk = patient.get('ai_analysis', {}).get('risk_score', 'Moderate')
@@ -1248,35 +1410,49 @@ def admin_analytics():
         )
         revenue_data.append(day_revenue)
     
-    # Top risk factors
+    # Top risk factors (with pagination)
     all_priority_factors = []
     for patient in patients_with_analysis:
         factors = patient.get('ai_analysis', {}).get('priority_factors', [])
         all_priority_factors.extend(factors)
     
     factor_counts = Counter(all_priority_factors)
-    top_risk_factors = []
-    for factor, count in factor_counts.most_common(10):
+    all_risk_factors = []
+    for factor, count in factor_counts.most_common():
         percentage = round((count / len(patients_with_analysis) * 100), 1) if patients_with_analysis else 0
-        top_risk_factors.append({
+        all_risk_factors.append({
             'name': factor,
             'count': count,
             'percentage': percentage
         })
     
-    # Package performance
-    package_performance = []
+    # Paginate risk factors
+    total_risk_factors = len(all_risk_factors)
+    risk_skip = (risk_page - 1) * per_page
+    top_risk_factors = all_risk_factors[risk_skip:risk_skip + per_page]
+    total_risk_pages = (total_risk_factors + per_page - 1) // per_page
+    
+    # Package performance (with date filter and pagination)
+    all_package_performance = []
     for pkg_id, pkg_info in PACKAGES.items():
-        pkg_bookings = list(bookings_collection.find({'package_id': pkg_id}))
+        pkg_query = {'package_id': pkg_id}
+        pkg_query.update(booking_date_filter)
+        pkg_bookings = list(bookings_collection.find(pkg_query))
         pkg_revenue = sum(b.get('total_price', pkg_info['price']) for b in pkg_bookings)
         avg_price = pkg_info['price']
-        package_performance.append({
+        all_package_performance.append({
             'name': pkg_info['name'],
             'bookings': len(pkg_bookings),
             'revenue': pkg_revenue,
             'avg_price': avg_price
         })
-    package_performance.sort(key=lambda x: x['revenue'], reverse=True)
+    all_package_performance.sort(key=lambda x: x['revenue'], reverse=True)
+    
+    # Paginate package performance
+    total_packages = len(all_package_performance)
+    package_skip = (package_page - 1) * per_page
+    package_performance = all_package_performance[package_skip:package_skip + per_page]
+    total_package_pages = (total_packages + per_page - 1) // per_page
     
     # Monthly trends (last 6 months)
     monthly_labels = []
@@ -1316,13 +1492,214 @@ def admin_analytics():
                          package_performance=package_performance,
                          monthly_labels=monthly_labels,
                          monthly_patients=monthly_patients,
-                         monthly_bookings=monthly_bookings)
+                         monthly_bookings=monthly_bookings,
+                         start_date=start_date,
+                         end_date=end_date,
+                         risk_page=risk_page,
+                         package_page=package_page,
+                         per_page=per_page,
+                         total_risk_pages=total_risk_pages,
+                         total_package_pages=total_package_pages,
+                         total_risk_factors=total_risk_factors,
+                         total_packages=total_packages)
 
 @app.route('/admin/logout')
 def admin_logout():
     """Admin logout - securely clears all session data"""
     session.clear()  # Clear all session data for security
     return redirect(url_for('admin_login'))
+
+@app.route('/admin/export/leads')
+@admin_required
+def export_leads():
+    """Export leads/patients to Excel"""
+    # Get date filter parameters
+    start_date = request.args.get('start_date', '')
+    end_date = request.args.get('end_date', '')
+    
+    # Build date filter (same logic as admin_leads)
+    date_filter = {}
+    if start_date:
+        try:
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            date_filter['submitted_at'] = {'$gte': start_dt}
+        except ValueError:
+            pass
+    if end_date:
+        try:
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+            if 'submitted_at' in date_filter:
+                date_filter['submitted_at']['$lt'] = end_dt
+            else:
+                date_filter['submitted_at'] = {'$lt': end_dt}
+        except ValueError:
+            pass
+    
+    # Get all patients matching the filter (no pagination for export)
+    patients = list(patients_collection.find(date_filter).sort('submitted_at', -1))
+    
+    # Create Excel workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Leads"
+    
+    # Define header style
+    header_fill = PatternFill(start_color="E31837", end_color="E31837", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF", size=12)
+    
+    # Write headers
+    headers = ['S.No', 'Name', 'Age', 'Gender', 'Phone', 'Email', 'BMI', 'BMI Category', 
+               'Risk Score', 'Submitted Date', 'Status']
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.value = header
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+    
+    # Write data
+    for row_num, patient in enumerate(patients, 2):
+        ws.cell(row=row_num, column=1, value=row_num - 1)
+        ws.cell(row=row_num, column=2, value=patient.get('name', 'N/A'))
+        ws.cell(row=row_num, column=3, value=patient.get('age', 'N/A'))
+        ws.cell(row=row_num, column=4, value=patient.get('gender', 'N/A'))
+        ws.cell(row=row_num, column=5, value=patient.get('phone', 'N/A'))
+        ws.cell(row=row_num, column=6, value=patient.get('email', 'N/A'))
+        ws.cell(row=row_num, column=7, value=patient.get('bmi', 'N/A'))
+        ws.cell(row=row_num, column=8, value=patient.get('bmi_category', 'N/A'))
+        risk_score = patient.get('ai_analysis', {}).get('risk_score', 'N/A') if patient.get('ai_analysis') else 'N/A'
+        ws.cell(row=row_num, column=9, value=risk_score)
+        submitted_at = patient.get('submitted_at')
+        ws.cell(row=row_num, column=10, value=submitted_at.strftime('%Y-%m-%d %H:%M') if submitted_at else 'N/A')
+        ws.cell(row=row_num, column=11, value=patient.get('status', 'N/A'))
+    
+    # Auto-adjust column widths
+    for column in ws.columns:
+        max_length = 0
+        column_letter = column[0].column_letter
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = min(max_length + 2, 50)
+        ws.column_dimensions[column_letter].width = adjusted_width
+    
+    # Save to BytesIO buffer
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    
+    # Generate filename with date range
+    filename = 'leads'
+    if start_date and end_date:
+        filename += f'_{start_date}_to_{end_date}'
+    elif start_date:
+        filename += f'_from_{start_date}'
+    elif end_date:
+        filename += f'_until_{end_date}'
+    filename += '.xlsx'
+    
+    return send_file(buffer, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     as_attachment=True, download_name=filename)
+
+@app.route('/admin/export/bookings')
+@admin_required
+def export_bookings():
+    """Export bookings to Excel"""
+    # Get date filter parameters
+    start_date = request.args.get('start_date', '')
+    end_date = request.args.get('end_date', '')
+    
+    # Build date filter (same logic as admin_bookings)
+    date_filter = {}
+    if start_date:
+        try:
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            date_filter['created_at'] = {'$gte': start_dt}
+        except ValueError:
+            pass
+    if end_date:
+        try:
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+            if 'created_at' in date_filter:
+                date_filter['created_at']['$lt'] = end_dt
+            else:
+                date_filter['created_at'] = {'$lt': end_dt}
+        except ValueError:
+            pass
+    
+    # Get all bookings matching the filter (no pagination for export)
+    bookings = list(bookings_collection.find(date_filter).sort('created_at', -1))
+    
+    # Create Excel workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Bookings"
+    
+    # Define header style
+    header_fill = PatternFill(start_color="E31837", end_color="E31837", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF", size=12)
+    
+    # Write headers
+    headers = ['S.No', 'Reference', 'Patient Name', 'Patient Phone', 'Package', 
+               'Total Amount (₹)', 'Booking Date', 'Time', 'Sample Type', 
+               'Payment Status', 'Booking Status', 'Created Date']
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.value = header
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+    
+    # Write data
+    for row_num, booking in enumerate(bookings, 2):
+        ws.cell(row=row_num, column=1, value=row_num - 1)
+        ws.cell(row=row_num, column=2, value=booking.get('booking_reference', 'N/A'))
+        ws.cell(row=row_num, column=3, value=booking.get('patient_name', 'N/A'))
+        ws.cell(row=row_num, column=4, value=booking.get('patient_phone', 'N/A'))
+        ws.cell(row=row_num, column=5, value=booking.get('package_name', 'N/A'))
+        ws.cell(row=row_num, column=6, value=booking.get('total_price', 0))
+        booking_date = booking.get('booking_date')
+        ws.cell(row=row_num, column=7, value=booking_date.strftime('%Y-%m-%d') if booking_date else 'N/A')
+        ws.cell(row=row_num, column=8, value=booking.get('booking_time', 'N/A'))
+        ws.cell(row=row_num, column=9, value=booking.get('sample_type', 'N/A'))
+        ws.cell(row=row_num, column=10, value=booking.get('payment_status', 'N/A'))
+        ws.cell(row=row_num, column=11, value=booking.get('booking_status', 'N/A'))
+        created_at = booking.get('created_at')
+        ws.cell(row=row_num, column=12, value=created_at.strftime('%Y-%m-%d %H:%M') if created_at else 'N/A')
+    
+    # Auto-adjust column widths
+    for column in ws.columns:
+        max_length = 0
+        column_letter = column[0].column_letter
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = min(max_length + 2, 50)
+        ws.column_dimensions[column_letter].width = adjusted_width
+    
+    # Save to BytesIO buffer
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    
+    # Generate filename with date range
+    filename = 'bookings'
+    if start_date and end_date:
+        filename += f'_{start_date}_to_{end_date}'
+    elif start_date:
+        filename += f'_from_{start_date}'
+    elif end_date:
+        filename += f'_until_{end_date}'
+    filename += '.xlsx'
+    
+    return send_file(buffer, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     as_attachment=True, download_name=filename)
 
 # ==================== API ENDPOINTS ====================
 
