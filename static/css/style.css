@@ -192,10 +192,6 @@ textarea {
     letter-spacing: 0.5px;
 }
 
-.submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-xl);
-}
 
 .submit-btn:active {
     transform: translateY(0);
@@ -342,11 +338,6 @@ textarea {
     transition: all 0.3s ease;
 }
 
-.btn-secondary:hover {
-    background: var(--primary-color);
-    color: white;
-    box-shadow: var(--shadow-md);
-}
 
 .error-message {
     background: #fee2e2;
@@ -371,9 +362,6 @@ textarea {
     text-decoration: underline;
 }
 
-.footer a:hover {
-    opacity: 0.8;
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {

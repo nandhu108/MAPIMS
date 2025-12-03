@@ -63,18 +63,204 @@
         // Store analysisData globally for re-translation
         let analysisData = null;
         
+        // Global translation helper functions
+        function getCurrentLang() {
+            return (typeof currentLanguage !== 'undefined' && currentLanguage === 'ta') ? 'ta' : 'en';
+        }
+        
+        function getTranslation(key) {
+            const lang = getCurrentLang();
+            if (typeof translations !== 'undefined' && translations[lang] && translations[lang][key]) {
+                return translations[lang][key];
+            }
+            return key;
+        }
+        
+        // Translate risk levels in ML analysis
+        function translateRiskLevel(level) {
+            const lang = getCurrentLang();
+            if (lang === 'en') return level;
+            
+            if (level === 'Low' || level === 'LOW' || level === 'Low-Moderate') {
+                return getTranslation('analysis.riskLow');
+            } else if (level === 'Moderate' || level === 'MODERATE' || level === 'Moderate-High') {
+                return getTranslation('analysis.riskModerate');
+            } else if (level === 'High' || level === 'HIGH') {
+                return getTranslation('analysis.riskHigh');
+            } else if (level === 'Critical' || level === 'CRITICAL') {
+                return getTranslation('analysis.riskHigh'); // Use High for Critical in Tamil
+            }
+            return level;
+        }
+            
+        // Translate health risk description strings
+        function translateHealthRisk(riskString) {
+            const lang = getCurrentLang();
+            if (!riskString || lang === 'en') return riskString;
+                
+                // Parse format: "Level - Explanation"
+                const parts = riskString.split(' - ');
+                if (parts.length < 2) return riskString;
+                
+                const level = parts[0].trim();
+                const explanation = parts.slice(1).join(' - ').trim();
+                
+                // Translate level
+                let translatedLevel = level;
+                if (level === 'Low' || level === 'LOW') {
+                    translatedLevel = getTranslation('analysis.riskLow');
+                } else if (level === 'Moderate' || level === 'MODERATE' || level === 'Moderate-High') {
+                    translatedLevel = getTranslation('analysis.riskModerate');
+                } else if (level === 'High' || level === 'HIGH') {
+                    translatedLevel = getTranslation('analysis.riskHigh');
+                }
+                
+                // Translate explanation based on keywords
+                let translatedExplanation = explanation;
+                
+                // Cardiovascular explanations
+                if (explanation.includes('Low cardiovascular risk') || explanation.includes('routine screening sufficient')) {
+                    translatedExplanation = getTranslation('risk.lowCardiovascular');
+                } else if (explanation.includes('Moderate cardiovascular') || explanation.includes('standard screening advised')) {
+                    translatedExplanation = getTranslation('risk.moderateCardiovascular');
+                } else if (explanation.includes('High risk factors') || explanation.includes('comprehensive cardiac screening')) {
+                    translatedExplanation = getTranslation('risk.highCardiovascular');
+                }
+                // Metabolic explanations
+                else if (explanation.includes('Low metabolic risk') || explanation.includes('basic screening adequate')) {
+                    translatedExplanation = getTranslation('risk.lowMetabolic');
+                } else if (explanation.includes('Moderate metabolic risk') || explanation.includes('standard metabolic screening')) {
+                    translatedExplanation = getTranslation('risk.moderateMetabolic');
+                } else if (explanation.includes('High metabolic risk') || explanation.includes('comprehensive diabetes')) {
+                    translatedExplanation = getTranslation('risk.highMetabolic');
+                }
+                // Respiratory explanations
+                else if (explanation.includes('No significant respiratory') || explanation.includes('respiratory risks identified')) {
+                    translatedExplanation = getTranslation('risk.lowRespiratory');
+                } else if (explanation.includes('Some respiratory risk') || explanation.includes('consider respiratory screening')) {
+                    translatedExplanation = getTranslation('risk.moderateRespiratory');
+                } else if (explanation.includes('Respiratory risk factors detected') || explanation.includes('specialized screening')) {
+                    translatedExplanation = getTranslation('risk.highRespiratory');
+                }
+                // Other explanations
+                else if (explanation.includes('Routine health monitoring') || explanation.includes('monitoring advised')) {
+                    translatedExplanation = getTranslation('risk.lowOther');
+                } else if (explanation.includes('Additional health factors') || explanation.includes('require attention')) {
+                    translatedExplanation = getTranslation('risk.moderateOther');
+                }
+                // ML Analysis explanations
+                else if (explanation.includes('ML Analysis')) {
+                    // Try to translate ML analysis explanations
+                    if (explanation.includes('High cardiovascular risk') || explanation.includes('High diabetes risk') || explanation.includes('High thyroid risk')) {
+                        // Keep the ML analysis part but translate the recommendation
+                        const mlMatch = explanation.match(/ML Analysis: (.+)/);
+                        if (mlMatch) {
+                            const mlText = mlMatch[1];
+                            // Try to match common ML recommendation patterns
+                            if (mlText.includes('Routine screening')) {
+                                translatedExplanation = 'ML பகுப்பாய்வு: ' + getTranslation('ml.recommendation.low');
+                            } else if (mlText.includes('Standard screening')) {
+                                translatedExplanation = 'ML பகுப்பாய்வு: ' + getTranslation('ml.recommendation.moderate');
+                            } else if (mlText.includes('Comprehensive screening')) {
+                                translatedExplanation = 'ML பகுப்பாய்வு: ' + getTranslation('ml.recommendation.high');
+                            } else if (mlText.includes('Immediate') || mlText.includes('required')) {
+                                translatedExplanation = 'ML பகுப்பாய்வு: ' + getTranslation('ml.recommendation.critical');
+                            } else {
+                                translatedExplanation = 'ML பகுப்பாய்வு: ' + mlText; // Keep original if no match
+                            }
+                        }
+                    }
+                }
+                
+                return `${translatedLevel} - ${translatedExplanation}`;
+            }
+            
+        // Translate reasoning text
+        function translateReasoning(reasoningText) {
+            const lang = getCurrentLang();
+            if (!reasoningText || lang === 'en') return reasoningText;
+            
+            let translated = reasoningText;
+            
+            // Translate common patterns
+            translated = translated.replace(/At (\d+) years, comprehensive health screening is essential for early detection/g, (match, age) => {
+                return getTranslation('reasoning.age50').replace('{age}', age);
+            });
+            
+            translated = translated.replace(/At (\d+) years, preventive health screening is recommended/g, (match, age) => {
+                return getTranslation('reasoning.age40').replace('{age}', age);
+            });
+            
+            translated = translated.replace(/Your BMI indicates obesity, requiring detailed metabolic and cardiovascular assessment/g, getTranslation('reasoning.bmiObesity'));
+            translated = translated.replace(/Your BMI suggests being overweight, warranting thorough health screening/g, getTranslation('reasoning.bmiOverweight'));
+            translated = translated.replace(/Your BMI indicates being underweight, requiring comprehensive evaluation/g, getTranslation('reasoning.bmiUnderweight'));
+            translated = translated.replace(/Based on your reported symptoms, detailed health assessment is advisable/g, getTranslation('reasoning.symptoms'));
+            translated = translated.replace(/Given your medical history, comprehensive monitoring is essential/g, getTranslation('reasoning.medicalHistory'));
+            translated = translated.replace(/Family history indicates need for preventive screening/g, getTranslation('reasoning.familyHistory'));
+            translated = translated.replace(/A comprehensive health checkup is recommended for maintaining optimal health/g, getTranslation('reasoning.default'));
+            
+            // Translate ML insights
+            translated = translated.replace(/ML Analysis detected high cardiovascular risk \((\d+)\/100\) with (\d+)% confidence\./g, (match, score, confidence) => {
+                return getTranslation('reasoning.mlHighCardio').replace('{score}', score).replace('{confidence}', confidence);
+            });
+            
+            translated = translated.replace(/ML Analysis detected high diabetes risk \((\d+)\/100\) with (\d+)% confidence\./g, (match, score, confidence) => {
+                return getTranslation('reasoning.mlHighMetabolic').replace('{score}', score).replace('{confidence}', confidence);
+            });
+            
+            translated = translated.replace(/ML Analysis detected high thyroid risk \((\d+)\/100\) with (\d+)% confidence\./g, (match, score, confidence) => {
+                return getTranslation('reasoning.mlHighThyroid').replace('{score}', score).replace('{confidence}', confidence);
+            });
+            
+            // Translate recommendation sentence
+            if (translated.includes('MAPIMS recommends the appropriate health checkup package based on your individual risk profile and ML-powered analysis')) {
+                translated = translated.replace(/MAPIMS recommends the appropriate health checkup package based on your individual risk profile and ML-powered analysis\./g, getTranslation('reasoning.recommendation'));
+            } else if (translated.includes('MAPIMS recommends the appropriate health checkup package based on your individual risk profile')) {
+                translated = translated.replace(/MAPIMS recommends the appropriate health checkup package based on your individual risk profile\./g, getTranslation('reasoning.recommendationSimple'));
+            }
+            
+            return translated;
+        }
+        
+        // Translate priority factors
+        function translatePriorityFactor(factor) {
+            const lang = getCurrentLang();
+            if (!factor || lang === 'en') return factor;
+            
+            // Common patterns
+            if (factor.includes('Age')) {
+                const ageMatch = factor.match(/Age (\d+)-(\d+)/);
+                if (ageMatch) {
+                    return getTranslation('factor.age').replace('{age}', ageMatch[1]).replace('{age2}', ageMatch[2]);
+                }
+                const ageSingleMatch = factor.match(/Age (\d+)/);
+                if (ageSingleMatch) {
+                    return getTranslation('factor.age').replace('{age}', ageSingleMatch[1]).replace('{age2}', ageSingleMatch[1]);
+                }
+            }
+            
+            if (factor.includes('Overweight')) return getTranslation('factor.overweight');
+            if (factor.includes('Obesity')) return getTranslation('factor.obesity');
+            if (factor.includes('Underweight')) return getTranslation('factor.underweight');
+            if (factor.includes('Diabetes')) return getTranslation('factor.diabetes') + (factor.includes(':') ? factor.substring(factor.indexOf(':')) : '');
+            if (factor.includes('Heart') || factor.includes('Cardiac')) return getTranslation('factor.heartDisease');
+            if (factor.includes('Thyroid')) return getTranslation('factor.thyroid');
+            if (factor.includes('Hypertension') || factor.includes('High blood pressure')) return getTranslation('factor.hypertension');
+            if (factor.includes('Family history')) return getTranslation('factor.familyHistory');
+            if (factor.includes('Symptoms')) return getTranslation('factor.symptoms');
+            if (factor.includes('Sedentary')) return getTranslation('factor.sedentary');
+            if (factor.includes('Smoking') || factor.includes('Tobacco')) return getTranslation('factor.smoking');
+            
+            return factor; // Return original if no match
+        }
+        
         function displayAnalysis(analysis) {
             const content = document.getElementById('analysisContent');
             const riskScore = analysis.risk_score || 'Moderate';
             const riskClass = riskScore.toLowerCase();
             
-            const lang = (typeof currentLanguage !== 'undefined' && currentLanguage === 'ta') ? 'ta' : 'en';
-            const t = (key) => {
-                if (typeof translations !== 'undefined' && translations[lang] && translations[lang][key]) {
-                    return translations[lang][key];
-                }
-                return key;
-            };
+            const lang = getCurrentLang();
+            const t = getTranslation;
             
             // Translate risk score
             let translatedRiskScore = riskScore;
@@ -84,18 +270,6 @@
                 translatedRiskScore = t('analysis.riskModerate');
             } else if (riskScore === 'High' || riskScore === 'High Risk' || riskScore === 'அதிக') {
                 translatedRiskScore = t('analysis.riskHigh');
-            }
-            
-            // Translate risk levels in ML analysis
-            function translateRiskLevel(level) {
-                if (level === 'Low' || level === 'LOW') {
-                    return t('analysis.riskLow');
-                } else if (level === 'Moderate' || level === 'MODERATE') {
-                    return t('analysis.riskModerate');
-                } else if (level === 'High' || level === 'HIGH') {
-                    return t('analysis.riskHigh');
-                }
-                return level;
             }
             
             content.innerHTML = `
@@ -108,33 +282,33 @@
                     <div class="risks-grid">
                         <div class="risk-item">
                             <h4 data-translate="analysis.categoryCardiovascular">Cardiovascular</h4>
-                            <p>${analysis.health_risks?.cardiovascular || 'Standard screening recommended'}</p>
+                            <p data-original-risk="${analysis.health_risks?.cardiovascular || 'Standard screening recommended'}">${translateHealthRisk(analysis.health_risks?.cardiovascular || 'Standard screening recommended')}</p>
                         </div>
                         <div class="risk-item">
                             <h4 data-translate="analysis.categoryMetabolic">Metabolic</h4>
-                            <p>${analysis.health_risks?.metabolic || 'Standard screening recommended'}</p>
+                            <p data-original-risk="${analysis.health_risks?.metabolic || 'Standard screening recommended'}">${translateHealthRisk(analysis.health_risks?.metabolic || 'Standard screening recommended')}</p>
                         </div>
                         <div class="risk-item">
                             <h4 data-translate="analysis.categoryRespiratory">Respiratory</h4>
-                            <p>${analysis.health_risks?.respiratory || 'No significant risks identified'}</p>
+                            <p data-original-risk="${analysis.health_risks?.respiratory || 'No significant risks identified'}">${translateHealthRisk(analysis.health_risks?.respiratory || 'No significant risks identified')}</p>
                         </div>
                         <div class="risk-item">
                             <h4 data-translate="analysis.categoryOther">Other</h4>
-                            <p>${analysis.health_risks?.other || 'Routine monitoring advised'}</p>
+                            <p data-original-risk="${analysis.health_risks?.other || 'Routine monitoring advised'}">${translateHealthRisk(analysis.health_risks?.other || 'Routine monitoring advised')}</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="reasoning-box">
                     <h3 data-translate="analysis.recommendation">AI Recommendation</h3>
-                    <p>${analysis.reasoning || 'Based on your health profile, MAPIMS recommends comprehensive health screening.'}</p>
+                    <p data-original-reasoning="${analysis.reasoning || 'Based on your health profile, MAPIMS recommends comprehensive health screening.'}">${translateReasoning(analysis.reasoning || 'Based on your health profile, MAPIMS recommends comprehensive health screening.')}</p>
                 </div>
 
                 ${analysis.priority_factors ? `
                 <div class="priority-factors">
                     <h3 data-translate="analysis.priorityFactors">Key Factors Considered</h3>
                     <ul>
-                        ${analysis.priority_factors.map(f => `<li>${f}</li>`).join('')}
+                        ${analysis.priority_factors.map(f => `<li data-original-factor="${f}">${translatePriorityFactor(f)}</li>`).join('')}
                     </ul>
                 </div>
                 ` : ''}
@@ -211,6 +385,31 @@
             // Translate the dynamically inserted content
             setTimeout(() => {
                 translatePage();
+                
+                // Translate health risk descriptions
+                document.querySelectorAll('[data-original-risk]').forEach(element => {
+                    const originalRisk = element.getAttribute('data-original-risk');
+                    if (originalRisk) {
+                        element.textContent = translateHealthRisk(originalRisk);
+                    }
+                });
+                
+                // Translate reasoning
+                document.querySelectorAll('[data-original-reasoning]').forEach(element => {
+                    const originalReasoning = element.getAttribute('data-original-reasoning');
+                    if (originalReasoning) {
+                        element.textContent = translateReasoning(originalReasoning);
+                    }
+                });
+                
+                // Translate priority factors
+                document.querySelectorAll('[data-original-factor]').forEach(element => {
+                    const originalFactor = element.getAttribute('data-original-factor');
+                    if (originalFactor) {
+                        element.textContent = translatePriorityFactor(originalFactor);
+                    }
+                });
+                
                 // Also translate priority test items
                 document.querySelectorAll('.ml-tests li').forEach(element => {
                     const originalTest = element.getAttribute('data-original-test');
@@ -226,19 +425,18 @@
                 document.querySelectorAll('.score-level').forEach(element => {
                     const originalLevel = element.getAttribute('data-original-level');
                     if (originalLevel) {
-                        let translated = originalLevel;
-                        if (originalLevel === 'Low' || originalLevel === 'LOW') {
-                            translated = t('analysis.riskLow');
-                        } else if (originalLevel === 'Moderate' || originalLevel === 'MODERATE') {
-                            translated = t('analysis.riskModerate');
-                        } else if (originalLevel === 'High' || originalLevel === 'HIGH') {
-                            translated = t('analysis.riskHigh');
-                        }
-                        element.textContent = translated;
+                        element.textContent = translateRiskLevel(originalLevel);
                     }
                 });
             }, 100);
         }
+        
+        // Make functions globally accessible
+        window.translateHealthRisk = translateHealthRisk;
+        window.translateReasoning = translateReasoning;
+        window.translatePriorityFactor = translatePriorityFactor;
+        window.translateRiskLevel = translateRiskLevel;
+        window.displayAnalysis = displayAnalysis;
         
         // Load analysis data from template or API
         {% if ai_analysis %}

@@ -60,6 +60,29 @@
                 {% endif %}
             </div>
 
+            <!-- Booking Success Modal -->
+            <div id="successModal" class="success-modal">
+                <div class="success-modal-content">
+                    <div class="success-modal-header">
+                        <h2>Booking Confirmed!</h2>
+                    </div>
+                    <div class="success-modal-body">
+                        <div class="success-icon-small">✓</div>
+                        <h3>Your booking has been confirmed successfully!</h3>
+                        <div class="transaction-details">
+                            <p><strong>Transaction ID:</strong> <span id="transactionId" style="color: var(--mapims-red); font-weight: 600; font-size: 1.1rem;"></span></p>
+                            <p style="margin-top: 12px; color: #666;">We have sent a confirmation message to your registered phone number and email.</p>
+                        </div>
+                        <div class="success-message">
+                            <p>Thank you for choosing MAPIMS for your healthcare needs. Our team will contact you soon to confirm your appointment details.</p>
+                        </div>
+                    </div>
+                    <div class="success-modal-footer">
+                        <button type="button" class="cta-button" id="successModalButton">Return to Home</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Fasting Consent Modal -->
             <div id="fastingModal" class="fasting-modal">
                 <div class="fasting-modal-content">
@@ -371,10 +394,33 @@
                     if (typeof fbq !== 'undefined') {
                         fbq('track', 'Purchase', {value: totalPrice, currency: 'INR'});
                     }
-                    // Show success message
-                    alert('Booking confirmed successfully! Redirecting to home page...');
-                    // Redirect to landing page (first page)
-                    window.location.href = "{{ url_for('landing') }}";
+                    // Show success modal with transaction ID
+                    const successModal = document.getElementById('successModal');
+                    const transactionIdElement = document.getElementById('transactionId');
+                    if (successModal && transactionIdElement) {
+                        // Set transaction ID
+                        transactionIdElement.textContent = data.booking_reference || 'N/A';
+                        // Show modal
+                        successModal.style.display = 'flex';
+                        document.body.style.overflow = 'hidden';
+                        
+                        // Handle button click to redirect
+                        const successButton = document.getElementById('successModalButton');
+                        if (successButton) {
+                            successButton.onclick = function() {
+                                window.location.href = "{{ url_for('landing') }}";
+                            };
+                        }
+                        
+                        // Auto-redirect after 5 seconds
+                        setTimeout(function() {
+                            window.location.href = "{{ url_for('landing') }}";
+                        }, 5000);
+                    } else {
+                        // Fallback to alert if modal not found
+                        alert('Booking confirmed successfully! Transaction ID: ' + (data.booking_reference || 'N/A') + '\nRedirecting to home page...');
+                        window.location.href = "{{ url_for('landing') }}";
+                    }
                 } else {
                     submitButton.disabled = false;
                     const submitButtonSpan = submitButton.querySelector('span');

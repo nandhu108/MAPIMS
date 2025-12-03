@@ -82,22 +82,18 @@
             </div>
             <div class="progress-step" data-step="2">
               <div class="step-circle">2</div>
-              <p data-translate="step.symptoms">Symptoms</p>
+              <p data-translate="step.medicalHistory">Medical History</p>
             </div>
             <div class="progress-step" data-step="3">
               <div class="step-circle">3</div>
-              <p data-translate="step.medicalHistory">Medical History</p>
+              <p data-translate="step.lifestyle">Lifestyle</p>
             </div>
             <div class="progress-step" data-step="4">
               <div class="step-circle">4</div>
-              <p data-translate="step.lifestyle">Lifestyle</p>
+              <p data-translate="step.specialInfo">Special Info</p>
             </div>
             <div class="progress-step" data-step="5">
               <div class="step-circle">5</div>
-              <p data-translate="step.specialInfo">Special Info</p>
-            </div>
-            <div class="progress-step" data-step="6">
-              <div class="step-circle">6</div>
               <p data-translate="step.contact">Contact</p>
             </div>
           </div>
@@ -195,282 +191,12 @@
                 onclick="nextStep()"
                 data-translate="form.next"
               >
-                Next: Symptoms
+                Next: Medical History
               </button>
             </div>
 
-            <!-- Step 2: Symptoms (Yes/No style) -->
+            <!-- Step 2: Medical History (structured) -->
             <div class="form-step" data-step="2">
-              <h2 class="step-title" data-translate="form.symptoms">
-                Current Symptoms
-              </h2>
-              <p
-                class="step-description"
-                style="
-                  color: #6c757d;
-                  margin-bottom: 1.5rem;
-                  text-align: center;
-                "
-                data-translate="form.symptomsDescription"
-              >
-                In the last 1 month, have you experienced any of these?
-              </p>
-
-              <!-- Symptom Questions as Yes/No Radio Groups -->
-              <div class="symptoms-grid">
-                <div class="symptom-question-card">
-                  <label class="symptom-label" data-translate="symptom.headache">Headache</label>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input type="radio" name="symptom_headache" value="yes" />
-                      <span data-translate="form.yes">Yes</span>
-                    </label>
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="symptom_headache"
-                        value="no"
-                        checked
-                      />
-                      <span data-translate="form.no">No</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="symptom-question-card">
-                  <label class="symptom-label" data-translate="symptom.fatigue">Fatigue</label>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input type="radio" name="symptom_fatigue" value="yes" />
-                      <span data-translate="form.yes">Yes</span>
-                    </label>
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="symptom_fatigue"
-                        value="no"
-                        checked
-                      />
-                      <span data-translate="form.no">No</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="symptom-question-card">
-                  <label class="symptom-label" data-translate="symptom.chestPain">Chest pain or tightness</label>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="symptom_chest_pain"
-                        value="yes"
-                      />
-                      <span data-translate="form.yes">Yes</span>
-                    </label>
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="symptom_chest_pain"
-                        value="no"
-                        checked
-                      />
-                      <span data-translate="form.no">No</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="symptom-question-card">
-                  <label class="symptom-label" data-translate="symptom.shortnessBreath">Shortness of breath</label>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="symptom_shortness_breath"
-                        value="yes"
-                      />
-                      <span data-translate="form.yes">Yes</span>
-                    </label>
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="symptom_shortness_breath"
-                        value="no"
-                        checked
-                      />
-                      <span data-translate="form.no">No</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="symptom-question-card">
-                  <label class="symptom-label" data-translate="symptom.dizziness">Dizziness or fainting</label>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="symptom_dizziness"
-                        value="yes"
-                      />
-                      <span data-translate="form.yes">Yes</span>
-                    </label>
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="symptom_dizziness"
-                        value="no"
-                        checked
-                      />
-                      <span data-translate="form.no">No</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="symptom-question-card">
-                  <label class="symptom-label" data-translate="symptom.jointPain">Joint or body pain</label>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="symptom_joint_pain"
-                        value="yes"
-                      />
-                      <span data-translate="form.yes">Yes</span>
-                    </label>
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="symptom_joint_pain"
-                        value="no"
-                        checked
-                      />
-                      <span data-translate="form.no">No</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="symptom-question-card">
-                  <label class="symptom-label" data-translate="symptom.fever">Fever</label>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input type="radio" name="symptom_fever" value="yes" />
-                      <span data-translate="form.yes">Yes</span>
-                    </label>
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="symptom_fever"
-                        value="no"
-                        checked
-                      />
-                      <span data-translate="form.no">No</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="symptom-question-card">
-                  <label class="symptom-label" data-translate="symptom.cough">Cough</label>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input type="radio" name="symptom_cough" value="yes" />
-                      <span data-translate="form.yes">Yes</span>
-                    </label>
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="symptom_cough"
-                        value="no"
-                        checked
-                      />
-                      <span data-translate="form.no">No</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Optional textarea for additional symptoms -->
-              <div class="form-group" style="margin-top: 32px">
-                <label for="symptoms_other" data-translate="form.symptomsOther"
-                  >Anything else you wish to mention? (optional)</label
-                >
-                <div class="voice-input-container">
-                  <textarea
-                    id="symptoms_other"
-                    name="symptoms_other"
-                    rows="3"
-                    data-translate-placeholder="form.symptomsOtherPlaceholder"
-                    placeholder="Any other symptoms or concerns..."
-                  ></textarea>
-                  <button
-                    type="button"
-                    id="voiceInputBtn"
-                    class="voice-input-btn"
-                    onclick="toggleVoiceInput()"
-                    title="Click to start voice input (Chrome/Edge/Safari)"
-                  >
-                    <span id="voiceIcon">🎤</span>
-                    <span id="voiceText" data-translate="form.voiceInput"
-                      >Voice Input</span
-                    >
-                  </button>
-                </div>
-                <div
-                  id="voiceStatus"
-                  class="voice-status"
-                  style="display: none"
-                >
-                  <span id="voiceStatusText" data-translate="form.recording"
-                    >Recording... Speak now</span
-                  >
-                  <button
-                    type="button"
-                    class="btn-stop-recording"
-                    onclick="stopVoiceInput()"
-                    data-translate="form.stopRecording"
-                  >
-                    Stop Recording
-                  </button>
-                </div>
-                <div
-                  id="voiceBrowserWarning"
-                  style="
-                    display: none;
-                    margin-top: 10px;
-                    padding: 10px;
-                    background: #fff3cd;
-                    border-left: 4px solid #ffc107;
-                    border-radius: 4px;
-                    color: #856404;
-                    font-size: 0.9rem;
-                  "
-                >
-                  <strong>Note:</strong> Voice input works best in Chrome, Edge,
-                  or Safari browsers. Make sure your microphone is connected and
-                  permissions are granted.
-                </div>
-              </div>
-
-              <div class="form-actions">
-                <button
-                  type="button"
-                  class="btn-back"
-                  onclick="prevStep()"
-                  data-translate="form.back"
-                >
-                  Back
-                </button>
-                <button
-                  type="button"
-                  class="btn-next"
-                  onclick="nextStep()"
-                  data-translate="form.next"
-                >
-                  Next: Medical History
-                </button>
-              </div>
-            </div>
-
-            <!-- Step 3: Medical History (structured) -->
-            <div class="form-step" data-step="3">
               <h2 class="step-title" data-translate="form.medicalHistory">
                 Medical History
               </h2>
@@ -583,6 +309,34 @@
                   </div>
                 </div>
 
+
+                <div class="condition-question-card">
+                  <label class="condition-label" data-translate="condition.kidney">Kidney disease</label>
+                  <div class="radio-group">
+                    <label class="radio-label">
+                      <input type="radio" name="condition_kidney" value="yes" />
+                      <span data-translate="form.yes">Yes</span>
+                    </label>
+                    <label class="radio-label">
+                      <input
+                        type="radio"
+                        name="condition_kidney"
+                        value="no"
+                        checked
+                      />
+                      <span data-translate="form.no">No</span>
+                    </label>
+                    <label class="radio-label">
+                      <input
+                        type="radio"
+                        name="condition_kidney"
+                        value="not_sure"
+                      />
+                      <span data-translate="form.notSure">Not sure</span>
+                    </label>
+                  </div>
+                </div>
+
                 <div class="condition-question-card">
                   <label class="condition-label" data-translate="condition.thyroid">Thyroid problem</label>
                   <div class="radio-group">
@@ -643,32 +397,7 @@
                   </div>
                 </div>
 
-                <div class="condition-question-card">
-                  <label class="condition-label" data-translate="condition.kidney">Kidney disease</label>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input type="radio" name="condition_kidney" value="yes" />
-                      <span data-translate="form.yes">Yes</span>
-                    </label>
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="condition_kidney"
-                        value="no"
-                        checked
-                      />
-                      <span data-translate="form.no">No</span>
-                    </label>
-                    <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="condition_kidney"
-                        value="not_sure"
-                      />
-                      <span data-translate="form.notSure">Not sure</span>
-                    </label>
-                  </div>
-                </div>
+               
 
                 <div class="condition-question-card">
                   <label class="condition-label" data-translate="condition.cancer">Cancer</label>
@@ -699,26 +428,10 @@
               </div>
 
               <!-- Other health problems -->
-              <div class="form-group" style="margin-top: 32px">
-                <label class="checkbox-label">
-                  <input
-                    type="checkbox"
-                    id="has_other_conditions"
-                    name="has_other_conditions"
-                    onchange="toggleOtherConditions()"
-                  />
-                  <span data-translate="form.otherConditions">Any other health problems?</span>
-                </label>
-              </div>
-              <div
-                class="form-group"
-                id="other_conditions_field"
-                style="display: none"
-              >
+              <div class="form-group" style="margin-top: 48px" id="other_conditions_field">
                 <label
                   for="other_conditions"
-                  data-translate="form.otherConditionsPlaceholder"
-                  >Please mention (optional)</label
+                >Any other health problems? (optional)</label
                 >
                 <textarea
                   id="other_conditions"
@@ -732,14 +445,14 @@
               <!-- Family History -->
               <h3
                 class="section-subtitle"
-                style="margin-top: 40px; margin-bottom: 20px"
+                style="margin-top: 56px; margin-bottom: 24px"
                 data-translate="form.familyHistory"
               >
                 Family Medical History
               </h3>
               <p
                 class="section-description"
-                style="color: #6c757d; font-size: 0.9rem; margin-bottom: 1.5rem"
+                style="color: #6c757d; font-size: 0.95rem; margin-bottom: 2rem"
                 data-translate="form.familyHistoryDescription"
               >
                 Does anyone in your close family (parents, siblings,
@@ -857,8 +570,8 @@
               </div>
             </div>
 
-            <!-- Step 4: Lifestyle & Habits (simple options) -->
-            <div class="form-step" data-step="4">
+            <!-- Step 3: Lifestyle & Habits (simple options) -->
+            <div class="form-step" data-step="3">
               <h2 class="step-title" data-translate="form.lifestyle">
                 Lifestyle & Health Habits
               </h2>
@@ -874,75 +587,77 @@
                 Help us understand your daily habits.
               </p>
 
-              <div class="form-group">
-                <label for="sleep_hours" data-translate="form.sleepHours"
-                  >Sleep hours</label
-                >
-                <select id="sleep_hours" name="sleep_hours">
-                  <option value="" data-translate="form.select">Select</option>
-                  <option value="less_than_5" data-translate="option.lessThan5">Less than 5 hours</option>
-                  <option value="5_to_7" data-translate="option.5to7">5–7 hours</option>
-                  <option value="7_to_9" data-translate="option.7to9">7–9 hours</option>
-                  <option value="more_than_9" data-translate="option.moreThan9">More than 9 hours</option>
-                </select>
-              </div>
+              <div class="lifestyle-fields-grid">
+                <div class="form-group">
+                  <label for="sleep_hours" data-translate="form.sleepHours"
+                    >Sleep hours</label
+                  >
+                  <select id="sleep_hours" name="sleep_hours">
+                    <option value="" data-translate="form.select">Select</option>
+                    <option value="less_than_5" data-translate="option.lessThan5">Less than 5 hours</option>
+                    <option value="5_to_7" data-translate="option.5to7">5–7 hours</option>
+                    <option value="7_to_9" data-translate="option.7to9">7–9 hours</option>
+                    <option value="more_than_9" data-translate="option.moreThan9">More than 9 hours</option>
+                  </select>
+                </div>
 
-              <div class="form-group">
-                <label
-                  for="exercise_frequency"
-                  data-translate="form.exerciseFrequency"
-                  >Exercise / physical activity</label
-                >
-                <select id="exercise_frequency" name="exercise_frequency">
-                  <option value="" data-translate="form.select">Select</option>
-                  <option value="almost_never" data-translate="option.almostNever">Almost never</option>
-                  <option value="1_to_2_days" data-translate="option.1to2Days">1–2 days/week</option>
-                  <option value="3_to_5_days" data-translate="option.3to5Days">3–5 days/week</option>
-                  <option value="daily" data-translate="option.daily">Daily</option>
-                </select>
-              </div>
+                <div class="form-group">
+                  <label
+                    for="exercise_frequency"
+                    data-translate="form.exerciseFrequency"
+                    >Exercise / physical activity</label
+                  >
+                  <select id="exercise_frequency" name="exercise_frequency">
+                    <option value="" data-translate="form.select">Select</option>
+                    <option value="almost_never" data-translate="option.almostNever">Almost never</option>
+                    <option value="1_to_2_days" data-translate="option.1to2Days">1–2 days/week</option>
+                    <option value="3_to_5_days" data-translate="option.3to5Days">3–5 days/week</option>
+                    <option value="daily" data-translate="option.daily">Daily</option>
+                  </select>
+                </div>
 
-              <div class="form-group">
-                <label for="smoking_status" data-translate="form.smokingStatus"
-                  >Smoking / Tobacco</label
-                >
-                <select id="smoking_status" name="smoking_status">
-                  <option value="" data-translate="form.select">Select</option>
-                  <option value="never" data-translate="option.never">Never</option>
-                  <option value="stopped" data-translate="option.stopped">Stopped</option>
-                  <option value="sometimes" data-translate="option.sometimes">Sometimes</option>
-                  <option value="daily" data-translate="option.daily">Daily</option>
-                </select>
-              </div>
+                <div class="form-group">
+                  <label for="smoking_status" data-translate="form.smokingStatus"
+                    >Smoking / Tobacco</label
+                  >
+                  <select id="smoking_status" name="smoking_status">
+                    <option value="" data-translate="form.select">Select</option>
+                    <option value="never" data-translate="option.never">Never</option>
+                    <option value="stopped" data-translate="option.stopped">Stopped</option>
+                    <option value="sometimes" data-translate="option.sometimes">Sometimes</option>
+                    <option value="daily" data-translate="option.daily">Daily</option>
+                  </select>
+                </div>
 
-              <div class="form-group">
-                <label
-                  for="alcohol_consumption"
-                  data-translate="form.alcoholConsumption"
-                  >Alcohol</label
-                >
-                <select id="alcohol_consumption" name="alcohol_consumption">
-                  <option value="" data-translate="form.select">Select</option>
-                  <option value="never" data-translate="option.never">Never</option>
-                  <option value="occasional" data-translate="option.occasional">Occasionally</option>
-                  <option value="regular" data-translate="option.regular">Regularly</option>
-                </select>
-              </div>
+                <div class="form-group">
+                  <label
+                    for="alcohol_consumption"
+                    data-translate="form.alcoholConsumption"
+                    >Alcohol</label
+                  >
+                  <select id="alcohol_consumption" name="alcohol_consumption">
+                    <option value="" data-translate="form.select">Select</option>
+                    <option value="never" data-translate="option.never">Never</option>
+                    <option value="occasional" data-translate="option.occasional">Occasionally</option>
+                    <option value="regular" data-translate="option.regular">Regularly</option>
+                  </select>
+                </div>
 
-              <div class="form-group">
-                <label for="diet_type" data-translate="form.dietType"
-                  >Diet</label
-                >
-                <select id="diet_type" name="diet_type">
-                  <option value="" data-translate="form.select">Select</option>
-                  <option value="normal_mixed" data-translate="option.normalMixed">Normal mixed diet</option>
-                  <option value="vegetarian" data-translate="option.vegetarian">Vegetarian</option>
-                  <option value="vegan" data-translate="option.vegan">Vegan</option>
-                  <option value="diabetic_low_sugar" data-translate="option.diabeticLowSugar">
-                    Diabetic / low sugar
-                  </option>
-                  <option value="low_salt_fat" data-translate="option.lowSaltFat">Low salt / low fat</option>
-                </select>
+                <div class="form-group">
+                  <label for="diet_type" data-translate="form.dietType"
+                    >Diet</label
+                  >
+                  <select id="diet_type" name="diet_type">
+                    <option value="" data-translate="form.select">Select</option>
+                    <option value="normal_mixed" data-translate="option.normalMixed">Normal mixed diet</option>
+                    <option value="vegetarian" data-translate="option.vegetarian">Vegetarian</option>
+                    <option value="vegan" data-translate="option.vegan">Vegan</option>
+                    <option value="diabetic_low_sugar" data-translate="option.diabeticLowSugar">
+                      Diabetic / low sugar
+                    </option>
+                    <option value="low_salt_fat" data-translate="option.lowSaltFat">Low salt / low fat</option>
+                  </select>
+                </div>
               </div>
 
               <div class="form-group">
@@ -976,13 +691,13 @@
                   onclick="nextStep()"
                   data-translate="form.next"
                 >
-                  Next: Special Info
+                  Next: Additional Info
                 </button>
               </div>
             </div>
 
-            <!-- Step 5: Special Logic (Weight/Height/BMI + conditional fields) -->
-            <div class="form-step" data-step="5">
+            <!-- Step 4: Special Logic (Weight/Height/BMI + conditional fields) -->
+            <div class="form-step" data-step="4">
               <h2 class="step-title" data-translate="form.specialInfo">
                 Additional Health Information
               </h2>
@@ -1335,8 +1050,8 @@
               </div>
             </div>
 
-            <!-- Step 6: Contact & Consent (final step) -->
-            <div class="form-step" data-step="6">
+            <!-- Step 5: Contact (final step) -->
+            <div class="form-step" data-step="5">
               <h2 class="step-title" data-translate="form.contact">
                 Contact Details
               </h2>
@@ -1376,16 +1091,6 @@
                   <option value="whatsapp" data-translate="form.whatsapp">WhatsApp</option>
                   <option value="sms" data-translate="form.sms">SMS</option>
                 </select>
-              </div>
-
-              <div class="form-group">
-                <label class="checkbox-label">
-                  <input type="checkbox" id="consent" name="consent" required />
-                  <span data-translate="form.consent"
-                    >I agree that MAPIMS can use my details to assess my health
-                    and contact me with advice or appointments.</span
-                  >
-                </label>
               </div>
 
               <div class="form-actions">

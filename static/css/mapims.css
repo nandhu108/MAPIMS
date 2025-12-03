@@ -101,12 +101,13 @@ body {
     box-shadow: 
         0 4px 12px rgba(227, 24, 55, 0.25),
         0 2px 6px rgba(227, 24, 55, 0.15);
-    min-width: 50px;
+    min-width: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .language-toggle::before {
@@ -122,18 +123,6 @@ body {
     transition: width 0.4s, height 0.4s;
 }
 
-.language-toggle:hover::before {
-    width: 200px;
-    height: 200px;
-}
-
-.language-toggle:hover {
-    transform: translateY(-3px);
-    box-shadow: 
-        0 6px 20px rgba(227, 24, 55, 0.35),
-        0 4px 12px rgba(227, 24, 55, 0.25);
-    background: linear-gradient(135deg, #ff4757 0%, var(--mapims-red-dark) 100%);
-}
 
 .mapims-logo {
     font-family: 'Inter', sans-serif;
@@ -185,13 +174,6 @@ body {
     transition: var(--transition);
 }
 
-.header-nav a:hover {
-    color: var(--mapims-red);
-}
-
-.header-nav a:hover::after {
-    width: 100%;
-}
 
 /* ==================== HERO SECTION ==================== */
 .hero-section {
@@ -299,11 +281,6 @@ body {
     font-weight: 500;
 }
 
-.hero-trust span:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
 
 @keyframes fadeInUp {
     from {
@@ -359,11 +336,6 @@ body {
     z-index: 1;
 }
 
-.cta-button:hover::before, .cta-button-large:hover::before {
-    width: 300px;
-    height: 300px;
-}
-
 .cta-button span, .cta-button-large span {
     position: relative;
     z-index: 10;
@@ -375,23 +347,6 @@ body {
     font-weight: 600;
     letter-spacing: 0.5px;
     white-space: nowrap;
-}
-
-/* Ensure button text is visible even without span wrapper - text color is already set above */
-
-.cta-button:hover, .cta-button-large:hover {
-    color: var(--mapims-white);
-    border-color: var(--mapims-white);
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 
-        0 12px 35px rgba(227, 24, 55, 0.4),
-        0 6px 20px rgba(227, 24, 55, 0.3);
-    border-width: 3px;
-}
-
-.cta-button:hover span, .cta-button-large:hover span {
-    color: var(--mapims-white) !important;
-    z-index: 10;
 }
 
 .cta-button-large {
@@ -437,20 +392,6 @@ body {
     transition: width 0.6s, height 0.6s;
 }
 
-.btn-next:hover::before, .btn-submit:hover::before {
-    width: 300px;
-    height: 300px;
-}
-
-.btn-next:hover, .btn-submit:hover {
-    transform: translateY(-5px) scale(1.03);
-    box-shadow: 
-        0 14px 40px rgba(227, 24, 55, 0.45),
-        0 6px 18px rgba(227, 24, 55, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    background: linear-gradient(135deg, #ff4757 0%, var(--mapims-red-dark) 100%);
-    border-color: rgba(255, 255, 255, 0.3);
-}
 
 .btn-next:active, .btn-submit:active {
     transform: translateY(-1px);
@@ -464,11 +405,6 @@ body {
     color: var(--mapims-text);
 }
 
-.btn-back:hover {
-    background: var(--mapims-dark-grey);
-    color: var(--mapims-white);
-    transform: translateY(-2px);
-}
 
 /* ==================== SECTIONS ==================== */
 .section-title {
@@ -562,20 +498,6 @@ body {
     pointer-events: none;
 }
 
-.benefit-card:hover::before, .risk-card:hover::before, .step-card:hover::before {
-    left: 100%;
-}
-
-.benefit-card:hover, .risk-card:hover, .step-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 
-        0 12px 40px rgba(227, 24, 55, 0.2),
-        0 6px 20px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    border-top-color: var(--mapims-red-dark);
-    border-color: rgba(227, 24, 55, 0.3);
-    background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
-}
 
 .benefit-icon {
     font-size: 3.5rem;
@@ -591,10 +513,6 @@ body {
     50% { transform: translateY(-8px); }
 }
 
-.benefit-card:hover .benefit-icon {
-    transform: scale(1.15) rotate(8deg) translateY(-5px);
-    filter: drop-shadow(0 6px 12px rgba(227, 24, 55, 0.3));
-}
 
 .benefit-card h3, .risk-card h3 {
     color: var(--mapims-red);
@@ -653,17 +571,6 @@ body {
     transition: opacity 0.3s ease;
 }
 
-.step-card:hover .step-number {
-    transform: scale(1.15) rotate(360deg);
-    box-shadow: 
-        0 12px 35px rgba(227, 24, 55, 0.4),
-        0 6px 18px rgba(227, 24, 55, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.step-card:hover .step-number::before {
-    opacity: 1;
-}
 
 .step-card h3 {
     color: var(--mapims-text);
@@ -765,15 +672,6 @@ body {
     pointer-events: none;
 }
 
-.testimonial-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 
-        0 12px 35px rgba(227, 24, 55, 0.2),
-        0 6px 20px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    border-left-width: 6px;
-    background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
-}
 
 .testimonial-text {
     font-style: normal;
@@ -827,15 +725,6 @@ body {
     border: 1px solid rgba(227, 24, 55, 0.1);
 }
 
-.faq-item:hover {
-    box-shadow: 
-        0 8px 25px rgba(227, 24, 55, 0.15),
-        0 4px 12px rgba(0, 0, 0, 0.06);
-    border-left-color: var(--mapims-red-dark);
-    border-left-width: 6px;
-    transform: translateX(6px) translateY(-2px);
-    background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
-}
 
 .faq-item h3 {
     color: var(--mapims-red);
@@ -988,8 +877,8 @@ body {
 }
 
 .step-circle {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
     color: var(--mapims-text-light);
     border-radius: 50%;
@@ -997,10 +886,10 @@ body {
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 1.3rem;
+    font-size: 1rem;
     margin-bottom: 12px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 4px solid var(--mapims-white);
+    border: 3px solid var(--mapims-white);
     box-shadow: 
         0 4px 12px rgba(0, 0, 0, 0.08),
         inset 0 1px 0 rgba(255, 255, 255, 0.5);
@@ -1031,9 +920,9 @@ body {
         0 5px 15px rgba(227, 24, 55, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.4),
         0 0 0 4px rgba(227, 24, 55, 0.1);
-    transform: scale(1.15);
+    transform: scale(1.1);
     border-color: rgba(255, 255, 255, 0.9);
-    border-width: 4px;
+    border-width: 3px;
     animation: pulse-active 2s ease-in-out infinite;
 }
 
@@ -1048,7 +937,7 @@ body {
             0 5px 15px rgba(227, 24, 55, 0.3),
             inset 0 1px 0 rgba(255, 255, 255, 0.4),
             0 0 0 4px rgba(227, 24, 55, 0.1);
-        transform: scale(1.15);
+        transform: scale(1.1);
     }
     50% { 
         box-shadow: 
@@ -1056,7 +945,7 @@ body {
             0 7px 20px rgba(227, 24, 55, 0.4),
             inset 0 1px 0 rgba(255, 255, 255, 0.4),
             0 0 0 6px rgba(227, 24, 55, 0.15);
-        transform: scale(1.18);
+        transform: scale(1.13);
     }
 }
 
@@ -1112,7 +1001,7 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin: 0 auto 32px;
+    margin: 0 auto 40px;
     text-align: center;
     font-weight: 800;
     letter-spacing: -0.5px;
@@ -1120,7 +1009,7 @@ body {
     max-width: 100%;
     line-height: 1.3;
     position: relative;
-    padding-bottom: 16px;
+    padding-bottom: 20px;
 }
 
 .step-title::after {
@@ -1137,15 +1026,15 @@ body {
 
 .step-description {
     color: var(--mapims-text-light);
-    font-size: 0.95rem;
+    font-size: 1rem;
     text-align: center;
-    margin: -24px auto 32px;
+    margin: -20px auto 40px;
     max-width: 600px;
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
 .form-group {
-    margin-bottom: 24px;
+    margin-bottom: 28px;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -1183,15 +1072,6 @@ body {
     position: relative;
 }
 
-.form-group input:hover,
-.form-group select:hover,
-.form-group textarea:hover {
-    border-color: rgba(227, 24, 55, 0.4);
-    box-shadow: 
-        0 4px 8px rgba(227, 24, 55, 0.08),
-        inset 0 1px 2px rgba(0, 0, 0, 0.02);
-    transform: translateY(-1px);
-}
 
 .form-group input:focus,
 .form-group select:focus,
@@ -1228,9 +1108,6 @@ body {
     z-index: 1;
 }
 
-.form-group input[type="date"]:hover {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23B8142C' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
-}
 
 .form-group input[type="date"]:focus {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23E31837' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
@@ -1276,6 +1153,24 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     gap: 20px;
     width: 100%;
     align-items: start;
+}
+
+/* Lifestyle fields 3-column grid */
+.lifestyle-fields-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.lifestyle-fields-grid .form-group {
+    margin-bottom: 0;
+}
+
+.lifestyle-fields-grid .form-group select {
+    width: 100%;
+    max-width: 100%;
 }
 
 .required {
@@ -1331,29 +1226,22 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     font-weight: 500;
 }
 
-.tag:hover {
-    background: var(--mapims-red);
-    color: var(--mapims-white);
-    border-color: var(--mapims-red);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-}
 
 /* ==================== SYMPTOM & CONDITION QUESTION CARDS ==================== */
 .symptoms-grid,
 .medical-conditions-grid,
 .family-history-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
-    margin-top: 24px;
+    margin-top: 32px;
 }
 
 .symptom-question-card,
 .condition-question-card {
     background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
-    padding: 28px;
-    border-radius: 16px;
+    padding: 18px 16px;
+    border-radius: 12px;
     border: 2px solid var(--mapims-grey);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 
@@ -1362,6 +1250,16 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
     position: relative;
     overflow: hidden;
+}
+
+.symptom-question-card:hover,
+.condition-question-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 8px 20px rgba(227, 24, 55, 0.12),
+        0 4px 10px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-color: rgba(227, 24, 55, 0.3);
 }
 
 .symptom-question-card::before,
@@ -1376,22 +1274,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     transition: left 0.5s ease;
 }
 
-.symptom-question-card:hover::before,
-.condition-question-card:hover::before {
-    left: 100%;
-}
-
-.symptom-question-card:hover,
-.condition-question-card:hover {
-    border-color: var(--mapims-red);
-    box-shadow: 
-        0 10px 30px rgba(227, 24, 55, 0.22),
-        0 6px 18px rgba(227, 24, 55, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    transform: translateY(-5px) scale(1.01);
-    background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
-    border-width: 3px;
-}
 
 .symptom-label,
 .condition-label {
@@ -1399,26 +1281,28 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     font-weight: 600;
     color: var(--mapims-text);
     margin-bottom: 12px;
-    font-size: 1rem;
+    font-size: 0.9rem;
     line-height: 1.4;
 }
 
 .symptom-question-card .radio-group,
 .condition-question-card .radio-group {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     flex-wrap: wrap;
+    margin-top: 4px;
 }
 
 .symptom-question-card .radio-label,
 .condition-question-card .radio-label {
     flex: 1;
-    min-width: 80px;
+    min-width: 60px;
     text-align: center;
+    font-size: 0.85rem;
 }
 
 .condition-question-card .radio-label {
-    min-width: 140px;
+    min-width: 70px;
     overflow: visible;
     white-space: normal;
 }
@@ -1451,11 +1335,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     color: var(--mapims-text);
 }
 
-.voice-input-btn:hover {
-    background: var(--mapims-grey);
-    border-color: var(--mapims-red);
-    color: var(--mapims-red);
-}
 
 .voice-input-btn.recording {
     background: var(--mapims-red);
@@ -1503,10 +1382,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     transition: var(--transition);
 }
 
-.btn-stop-recording:hover {
-    background: var(--mapims-red-dark);
-    transform: translateY(-1px);
-}
 
 /* ==================== DYNAMIC SECTIONS ==================== */
 .dynamic-section {
@@ -1542,20 +1417,20 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 }
 
 .section-subtitle {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     color: var(--mapims-red);
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     font-weight: 600;
-    padding-bottom: 10px;
+    padding-bottom: 12px;
     border-bottom: 2px solid var(--mapims-grey);
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 .section-description {
     color: var(--mapims-text-light);
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 2rem;
 }
 
 .form-actions {
@@ -1570,9 +1445,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 
 .radio-group {
     display: flex;
-    gap: 20px;
+    gap: 16px;
     flex-wrap: wrap;
-    margin-top: 8px;
+    margin-top: 12px;
 }
 
 .radio-label {
@@ -1580,13 +1455,13 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    padding: 16px 26px;
+    padding: 14px 20px;
     background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border-radius: 14px;
+    border-radius: 12px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: 2px solid var(--mapims-grey);
     flex: 1;
-    min-width: 120px;
+    min-width: 100px;
     justify-content: center;
     box-shadow: 
         0 3px 8px rgba(0, 0, 0, 0.04),
@@ -1597,6 +1472,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     pointer-events: auto;
     white-space: normal;
     word-wrap: break-word;
+    font-size: 0.95rem;
+    line-height: 1.5;
 }
 
 .radio-label span {
@@ -1624,52 +1501,33 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     z-index: 0;
 }
 
-.radio-label:hover {
-    background: linear-gradient(135deg, #f0f0f0 0%, #f8f9fa 100%);
-    border-color: rgba(40, 167, 69, 0.4);
-    box-shadow: 
-        0 6px 15px rgba(40, 167, 69, 0.15),
-        0 3px 8px rgba(40, 167, 69, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    transform: translateY(-3px) scale(1.02);
-    border-width: 2.5px;
-}
-
-.radio-label:hover::before {
-    width: 200px;
-    height: 200px;
-}
 
 .radio-label input[type="radio"]:checked + span {
-    color: #28a745;
-    font-weight: 700;
+    color: var(--mapims-text);
+    font-weight: 600;
 }
 
 .radio-label input[type="radio"]:checked ~ span {
-    color: #28a745;
-    font-weight: 700;
+    color: var(--mapims-text);
+    font-weight: 600;
 }
 
 .radio-label:has(input[type="radio"]:checked) span {
-    color: #28a745;
-    font-weight: 700;
+    color: var(--mapims-text);
+    font-weight: 600;
 }
 
 .radio-label:has(input[type="radio"]:checked) {
-    background: linear-gradient(135deg, rgba(40, 167, 69, 0.12) 0%, rgba(40, 167, 69, 0.18) 100%);
-    border-color: #28a745;
-    border-width: 3px;
+    background: linear-gradient(135deg, rgba(227, 24, 55, 0.05) 0%, rgba(227, 24, 55, 0.08) 100%);
+    border-color: var(--mapims-red);
+    border-width: 2px;
     box-shadow: 
-        0 6px 20px rgba(40, 167, 69, 0.3),
-        0 3px 10px rgba(40, 167, 69, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.7);
-    transform: translateY(-3px) scale(1.03);
+        0 2px 8px rgba(227, 24, 55, 0.1),
+        0 1px 4px rgba(227, 24, 55, 0.05);
 }
 
 .radio-label:has(input[type="radio"]:checked)::before {
-    width: 200px;
-    height: 200px;
-    background: rgba(40, 167, 69, 0.15);
+    display: none;
 }
 
 /* Button styles consolidated - see general button styles above */
@@ -1684,7 +1542,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 2px solid var(--mapims-grey);
-    width: 100%;
+    width: 50%;
     position: relative;
     user-select: none;
     -webkit-user-select: none;
@@ -1693,14 +1551,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
         inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
-.checkbox-label:hover {
-    background: linear-gradient(135deg, #f0f0f0 0%, #f8f9fa 100%);
-    border-color: rgba(227, 24, 55, 0.3);
-    transform: translateY(-1px);
-    box-shadow: 
-        0 4px 8px rgba(227, 24, 55, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
 
 .checkbox-label:has(input[type="checkbox"]:checked),
 .checkbox-label:has(input[type="radio"]:checked) {
@@ -1713,8 +1563,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 
 .checkbox-label input[type="checkbox"],
 .checkbox-label input[type="radio"] {
-    width: 22px;
-    height: 22px;
+    width: 10px;
+    height: 10px;
     margin-top: 2px;
     cursor: pointer;
     flex-shrink: 0;
@@ -1732,12 +1582,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.checkbox-label input[type="checkbox"]:hover,
-.checkbox-label input[type="radio"]:hover {
-    border-color: var(--mapims-red);
-    box-shadow: 0 2px 6px rgba(227, 24, 55, 0.2);
-    transform: scale(1.05);
-}
 
 .checkbox-label input[type="checkbox"]:checked,
 .checkbox-label input[type="radio"]:checked {
@@ -1956,10 +1800,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     box-shadow: var(--shadow-sm);
 }
 
-.risk-item:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-}
 
 .risk-item h4 {
     color: var(--mapims-red);
@@ -2060,11 +1900,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     background: var(--mapims-success);
 }
 
-.ml-module-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--mapims-red);
-}
 
 .ml-module-card h4 {
     color: var(--mapims-red);
@@ -2195,10 +2030,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     font-weight: 500;
 }
 
-.priority-factors li:hover {
-    background: var(--mapims-grey);
-    transform: translateX(4px);
-}
 
 /* ==================== PACKAGES PAGE ==================== */
 .packages-main {
@@ -2281,15 +2112,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     border-radius: 16px 16px 0 0;
 }
 
-.package-card:hover::before {
-    transform: scaleX(1);
-}
-
-.package-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--mapims-red);
-}
 
 .package-card.recommended {
     border-color: var(--mapims-red);
@@ -2497,10 +2319,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     z-index: 1;
 }
 
-.package-includes li:hover {
-    color: var(--mapims-red);
-    padding-left: 36px;
-}
 
 .package-includes li:before {
     content: "✓";
@@ -2529,10 +2347,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     z-index: 1;
 }
 
-.btn-select-package:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-xl);
-}
 
 .addons-grid {
     display: grid;
@@ -2549,10 +2363,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     transition: var(--transition);
 }
 
-.addon-card:hover {
-    border-color: var(--mapims-red);
-    box-shadow: var(--shadow-sm);
-}
 
 .addon-checkbox {
     display: flex;
@@ -2637,18 +2447,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     z-index: 1;
 }
 
-.btn-proceed-booking:hover::before {
-    width: 400px;
-    height: 400px;
-}
-
-.btn-proceed-booking:hover {
-    transform: translateY(-4px);
-    box-shadow: 
-        0 12px 32px rgba(227, 24, 55, 0.45),
-        0 6px 16px rgba(227, 24, 55, 0.35);
-    background: linear-gradient(135deg, #ff4757 0%, var(--mapims-red-dark) 100%);
-}
 
 .btn-proceed-booking:active {
     transform: translateY(-2px);
@@ -2734,9 +2532,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     letter-spacing: 0.5px;
 }
 
-.booking-form .cta-button:hover span {
-    color: var(--mapims-white) !important;
-}
 
 .form-section {
     margin-bottom: 48px;
@@ -2776,24 +2571,21 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     min-width: 200px;
 }
 
-.radio-label:hover {
-    background: var(--mapims-grey);
-}
 
 .radio-label input[type="radio"]:checked + span {
-    color: #28a745;
+    color: var(--mapims-text);
     font-weight: 600;
 }
 
 .radio-label input[type="radio"]:checked ~ span {
-    color: #28a745;
+    color: var(--mapims-text);
     font-weight: 600;
 }
 
 .radio-label input[type="radio"] {
-    width: 20px;
-    height: 20px;
-    accent-color: #28a745;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--mapims-red);
     cursor: pointer;
     pointer-events: auto;
     position: relative;
@@ -2808,15 +2600,11 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     transition: all 0.2s ease;
 }
 
-.radio-label input[type="radio"]:hover {
-    border-color: #28a745;
-    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.1);
-}
 
 .radio-label input[type="radio"]:checked {
-    border-color: #28a745;
+    border-color: var(--mapims-red);
     background: var(--mapims-white);
-    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.15);
+    box-shadow: 0 0 0 2px rgba(227, 24, 55, 0.1);
 }
 
 .radio-label input[type="radio"]:checked::after {
@@ -2825,27 +2613,27 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: #28a745;
-    box-shadow: 0 1px 3px rgba(40, 167, 69, 0.3);
+    background: var(--mapims-red);
+    box-shadow: 0 1px 2px rgba(227, 24, 55, 0.2);
 }
 
 /* Booking page specific radio button styling */
 .booking-form .radio-label:has(input[type="radio"]:checked) {
-    border-color: #28a745;
-    border-width: 3px;
-    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.15) 100%);
+    border-color: var(--mapims-red);
+    border-width: 2px;
+    background: linear-gradient(135deg, rgba(227, 24, 55, 0.05) 0%, rgba(227, 24, 55, 0.08) 100%);
     box-shadow: 
-        0 6px 16px rgba(40, 167, 69, 0.25),
-        0 3px 8px rgba(40, 167, 69, 0.15);
+        0 2px 8px rgba(227, 24, 55, 0.1),
+        0 1px 4px rgba(227, 24, 55, 0.05);
 }
 
 .booking-form .radio-label input[type="radio"] {
-    width: 22px;
-    height: 22px;
-    accent-color: #28a745;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--mapims-red);
     -webkit-appearance: none;
     appearance: none;
     border: 2px solid var(--mapims-grey);
@@ -2858,15 +2646,11 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     transition: all 0.2s ease;
 }
 
-.booking-form .radio-label input[type="radio"]:hover {
-    border-color: #28a745;
-    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
-}
 
 .booking-form .radio-label input[type="radio"]:checked {
-    border-color: #28a745;
+    border-color: var(--mapims-red);
     background: var(--mapims-white);
-    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.15);
+    box-shadow: 0 0 0 2px rgba(227, 24, 55, 0.1);
 }
 
 .booking-form .radio-label input[type="radio"]:checked::after {
@@ -2875,11 +2659,11 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 12px;
-    height: 12px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: #28a745;
-    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+    background: var(--mapims-red);
+    box-shadow: 0 1px 2px rgba(227, 24, 55, 0.2);
 }
 
 .payment-summary {
@@ -3065,9 +2849,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     transition: var(--transition);
 }
 
-.admin-nav a:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
 
 .admin-main {
     padding: 40px 0;
@@ -3106,10 +2887,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     justify-content: center;
 }
 
-.stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-}
 
 .stat-card h3 {
     color: var(--mapims-text-light);
@@ -3174,9 +2951,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     font-size: 0.95rem;
 }
 
-.admin-table tr:hover {
-    background: var(--mapims-light-grey);
-}
 
 .status-badge {
     display: inline-block;
@@ -3225,10 +2999,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     transition: var(--transition);
 }
 
-.top-item:hover {
-    background: var(--mapims-grey);
-    transform: translateX(4px);
-}
 
 .top-item .count {
     color: var(--mapims-red);
@@ -3305,10 +3075,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     transition: var(--transition);
 }
 
-.footer-section a:hover {
-    color: var(--mapims-red-light);
-    padding-left: 4px;
-}
 
 .footer-bottom {
     text-align: center;
@@ -3427,6 +3193,11 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
         gap: 16px;
     }
     
+    .lifestyle-fields-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
     .radio-group {
         flex-direction: column;
         gap: 12px;
@@ -3435,7 +3206,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     .radio-label {
         min-width: 100%;
         justify-content: flex-start;
-        padding: 14px 16px;
+        padding: 10px 14px;
     }
     
     .checkbox-label {
@@ -3519,12 +3290,12 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     .medical-conditions-grid,
     .family-history-grid {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 14px;
     }
     
     .symptom-question-card,
     .condition-question-card {
-        padding: 16px;
+        padding: 16px 14px;
     }
     
     .symptom-question-card .radio-group,
@@ -3578,9 +3349,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     }
     
     .step-circle {
-        width: 50px;
-        height: 50px;
-        font-size: 1.05rem;
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
         margin-bottom: 6px;
     }
     
@@ -3609,6 +3380,11 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
         gap: 18px;
     }
     
+    .lifestyle-fields-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+    }
+    
     .form-actions {
         gap: 14px;
     }
@@ -3625,7 +3401,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     }
     
     .radio-label {
-        min-width: 140px;
+        min-width: 110px;
         flex: 0 1 calc(50% - 8px);
     }
 }
@@ -3643,8 +3419,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     }
     
     .step-circle {
-        width: 58px;
-        height: 58px;
+        width: 44px;
+        height: 44px;
     }
 }
 
@@ -3715,7 +3491,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     .language-toggle {
         padding: 10px 14px;
         font-size: 0.9rem;
-        min-width: 45px;
+        min-width: 90px;
     }
     
     .header-content {
@@ -3772,7 +3548,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     
     .language-toggle {
         padding: 8px 12px;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
+        min-width: 80px;
     }
     
     .container {
@@ -3905,10 +3682,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     line-height: 1;
 }
 
-.fasting-modal-close:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    transform: rotate(90deg);
-}
 
 .fasting-modal-body {
     padding: 32px 28px;
@@ -4151,19 +3924,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     color: var(--mapims-white) !important;
 }
 
-.fasting-modal-footer .cta-button:hover {
-    background: linear-gradient(135deg, #ff4757 0%, var(--mapims-red-dark) 100%) !important;
-    color: var(--mapims-white) !important;
-}
-
-.fasting-modal-footer .cta-button:hover,
-.fasting-modal-footer .cta-button:hover * {
-    color: var(--mapims-white) !important;
-}
-
-.fasting-modal-footer .cta-button:hover span {
-    color: var(--mapims-white) !important;
-}
 
 .time-help-text {
     animation: shake 0.5s ease-in-out;
@@ -4179,6 +3939,128 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     75% {
         transform: translateX(5px);
     }
+}
+
+/* ==================== SUCCESS MODAL ==================== */
+.success-modal {
+    display: none;
+    position: fixed;
+    z-index: 10001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.success-modal-content {
+    background-color: var(--mapims-white);
+    border-radius: 16px;
+    max-width: 550px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+    position: relative;
+}
+
+.success-modal-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: var(--mapims-white);
+    padding: 24px 28px;
+    border-radius: 16px 16px 0 0;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.success-modal-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--mapims-white);
+}
+
+.success-modal-body {
+    padding: 32px 28px;
+    text-align: center;
+}
+
+.success-icon-small {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: var(--mapims-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin: 0 auto 24px;
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+    animation: scaleIn 0.5s ease;
+}
+
+.success-modal-body h3 {
+    color: var(--mapims-text);
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0 0 24px 0;
+}
+
+.transaction-details {
+    background: var(--mapims-light-grey);
+    padding: 20px;
+    border-radius: 12px;
+    margin: 24px 0;
+    border-left: 4px solid #28a745;
+    text-align: left;
+}
+
+.transaction-details p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.transaction-details strong {
+    color: var(--mapims-text);
+    font-weight: 600;
+}
+
+.success-message {
+    margin: 24px 0;
+    color: var(--mapims-text);
+    line-height: 1.7;
+    font-size: 1rem;
+    text-align: left;
+}
+
+.success-message p {
+    margin: 0;
+}
+
+.success-modal-footer {
+    padding: 20px 28px 28px;
+    text-align: center;
+    border-top: 1px solid #e9ecef;
+}
+
+.success-modal-footer .cta-button {
+    min-width: 200px;
+    background: var(--mapims-red-gradient) !important;
+    color: var(--mapims-white) !important;
+    border-color: var(--mapims-red) !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    padding: 14px 32px;
 }
 
 /* Responsive styles for fasting modal */
@@ -4242,5 +4124,84 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     
     .fasting-checkbox-label span {
         font-size: 0.95rem;
+    }
+}
+
+/* Responsive styles for success modal */
+@media (max-width: 768px) {
+    .success-modal {
+        padding: 10px;
+    }
+    
+    .success-modal-content {
+        max-height: 95vh;
+    }
+    
+    .success-modal-header {
+        padding: 20px 24px;
+    }
+    
+    .success-modal-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    .success-modal-body {
+        padding: 24px 20px;
+    }
+    
+    .success-icon-small {
+        width: 70px;
+        height: 70px;
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+    
+    .success-modal-body h3 {
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+    }
+    
+    .transaction-details {
+        padding: 16px;
+        margin: 20px 0;
+    }
+    
+    .success-message {
+        margin: 20px 0;
+        font-size: 0.95rem;
+    }
+    
+    .success-modal-footer {
+        padding: 16px 20px 20px;
+    }
+    
+    .success-modal-footer .cta-button {
+        min-width: 100%;
+        padding: 12px 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .success-modal-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .success-modal-body h3 {
+        font-size: 1.1rem;
+    }
+    
+    .success-icon-small {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+    
+    .transaction-details {
+        padding: 14px;
+        font-size: 0.9rem;
+    }
+    
+    .success-message {
+        font-size: 0.9rem;
     }
 }

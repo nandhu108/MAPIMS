@@ -288,6 +288,69 @@ const translations = {
         'analysis.priorityTests': 'Priority Tests',
         'analysis.overallConfidence': 'Overall ML Analysis Confidence',
         
+        // Health Risk Explanations
+        'risk.lowCardiovascular': 'Low cardiovascular risk - routine screening sufficient',
+        'risk.moderateCardiovascular': 'Moderate cardiovascular risk factors present - standard screening advised',
+        'risk.highCardiovascular': 'High risk factors detected - comprehensive cardiac screening recommended',
+        'risk.lowMetabolic': 'Low metabolic risk - basic screening adequate',
+        'risk.moderateMetabolic': 'Moderate metabolic risk - standard metabolic screening recommended',
+        'risk.highMetabolic': 'High metabolic risk - comprehensive diabetes and metabolic screening essential',
+        'risk.lowRespiratory': 'No significant respiratory risks identified',
+        'risk.moderateRespiratory': 'Some respiratory risk factors present - consider respiratory screening',
+        'risk.highRespiratory': 'Respiratory risk factors detected - specialized screening recommended',
+        'risk.lowOther': 'Routine health monitoring advised',
+        'risk.moderateOther': 'Additional health factors require attention',
+        'risk.highOther': 'Additional health factors require attention',
+        
+        // Common Reasoning Phrases
+        'reasoning.age50': 'At {age} years, comprehensive health screening is essential for early detection',
+        'reasoning.age40': 'At {age} years, preventive health screening is recommended',
+        'reasoning.bmiObesity': 'Your BMI indicates obesity, requiring detailed metabolic and cardiovascular assessment',
+        'reasoning.bmiOverweight': 'Your BMI suggests being overweight, warranting thorough health screening',
+        'reasoning.bmiUnderweight': 'Your BMI indicates being underweight, requiring comprehensive evaluation',
+        'reasoning.symptoms': 'Based on your reported symptoms, detailed health assessment is advisable',
+        'reasoning.medicalHistory': 'Given your medical history, comprehensive monitoring is essential',
+        'reasoning.familyHistory': 'Family history indicates need for preventive screening',
+        'reasoning.default': 'A comprehensive health checkup is recommended for maintaining optimal health',
+        'reasoning.mlHighCardio': 'ML Analysis detected high cardiovascular risk ({score}/100) with {confidence}% confidence.',
+        'reasoning.mlHighMetabolic': 'ML Analysis detected high diabetes risk ({score}/100) with {confidence}% confidence.',
+        'reasoning.mlHighThyroid': 'ML Analysis detected high thyroid risk ({score}/100) with {confidence}% confidence.',
+        'reasoning.recommendation': 'MAPIMS recommends the appropriate health checkup package based on your individual risk profile and ML-powered analysis.',
+        'reasoning.recommendationSimple': 'MAPIMS recommends the appropriate health checkup package based on your individual risk profile.',
+        
+        // Priority Factor Translations
+        'factor.age': 'Age {age}-{age2}',
+        'factor.overweight': 'Overweight',
+        'factor.obesity': 'Obesity',
+        'factor.underweight': 'Underweight',
+        'factor.diabetes': 'Diabetes',
+        'factor.heartDisease': 'Heart disease',
+        'factor.thyroid': 'Thyroid',
+        'factor.hypertension': 'Hypertension',
+        'factor.familyHistory': 'Family history',
+        'factor.symptoms': 'Symptoms',
+        'factor.sedentary': 'Sedentary lifestyle',
+        'factor.smoking': 'Smoking',
+        
+        // ML Recommendation Translations
+        'ml.recommendation.low': 'Routine screening sufficient',
+        'ml.recommendation.lowModerate': 'Basic screening advised',
+        'ml.recommendation.moderate': 'Standard screening recommended',
+        'ml.recommendation.high': 'Comprehensive screening strongly recommended',
+        'ml.recommendation.critical': 'Immediate comprehensive evaluation required',
+        'ml.recommendation.diabetesLow': 'Routine screening sufficient',
+        'ml.recommendation.diabetesModerate': 'Standard diabetes screening recommended (Fasting Glucose, HbA1c)',
+        'ml.recommendation.diabetesHigh': 'Comprehensive diabetes screening strongly recommended (HbA1c, Fasting Glucose)',
+        'ml.recommendation.diabetesCritical': 'Immediate comprehensive diabetes screening (HbA1c, Fasting Glucose, OGTT) required',
+        'ml.recommendation.heartLow': 'Routine screening sufficient',
+        'ml.recommendation.heartModerate': 'Standard cardiac screening recommended (ECG, Lipid Profile, Cardiac Risk Markers)',
+        'ml.recommendation.heartHigh': 'Comprehensive cardiac screening strongly recommended (ECG, Stress Test, Cardiac Markers)',
+        'ml.recommendation.heartCritical': 'Immediate comprehensive cardiac evaluation required (ECG, Stress Test, Echocardiography, Cardiac Markers)',
+        'ml.recommendation.thyroidLow': 'Routine screening sufficient',
+        'ml.recommendation.thyroidModerate': 'Standard thyroid screening recommended (TSH, T3, T4)',
+        'ml.recommendation.thyroidHigh': 'Comprehensive thyroid screening strongly recommended (TSH, T3, T4, Thyroid Antibodies)',
+        'ml.recommendation.thyroidCritical': 'Immediate comprehensive thyroid evaluation required (TSH, T3, T4, Thyroid Antibodies, Thyroid Ultrasound)',
+        
         // Booking Page
         'booking.title': 'Complete Your Booking',
         'booking.selectedPackage': 'Selected Package',
@@ -609,6 +672,69 @@ const translations = {
         'analysis.priorityTests': 'முன்னுரிமை சோதனைகள்',
         'analysis.overallConfidence': 'மொத்த ML பகுப்பாய்வு நம்பிக்கை',
         
+        // Health Risk Explanations
+        'risk.lowCardiovascular': 'குறைந்த இதயநாள ஆபத்து - வழக்கமான திரையிடல் போதுமானது',
+        'risk.moderateCardiovascular': 'மிதமான இதயநாள ஆபத்து காரணிகள் உள்ளன - தரமான திரையிடல் பரிந்துரைக்கப்படுகிறது',
+        'risk.highCardiovascular': 'அதிக ஆபத்து காரணிகள் கண்டறியப்பட்டன - விரிவான இதய திரையிடல் பரிந்துரைக்கப்படுகிறது',
+        'risk.lowMetabolic': 'குறைந்த வளர்சிதைமாற்ற ஆபத்து - அடிப்படை திரையிடல் போதுமானது',
+        'risk.moderateMetabolic': 'மிதமான வளர்சிதைமாற்ற ஆபத்து - தரமான வளர்சிதைமாற்ற திரையிடல் பரிந்துரைக்கப்படுகிறது',
+        'risk.highMetabolic': 'அதிக வளர்சிதைமாற்ற ஆபத்து - விரிவான நீரிழிவு மற்றும் வளர்சிதைமாற்ற திரையிடல் அவசியம்',
+        'risk.lowRespiratory': 'குறிப்பிடத்தக்க சுவாச ஆபத்துகள் கண்டறியப்படவில்லை',
+        'risk.moderateRespiratory': 'சில சுவாச ஆபத்து காரணிகள் உள்ளன - சுவாச திரையிடலைக் கருத்தில் கொள்ளுங்கள்',
+        'risk.highRespiratory': 'சுவாச ஆபத்து காரணிகள் கண்டறியப்பட்டன - சிறப்பு திரையிடல் பரிந்துரைக்கப்படுகிறது',
+        'risk.lowOther': 'வழக்கமான சுகாதார கண்காணிப்பு பரிந்துரைக்கப்படுகிறது',
+        'risk.moderateOther': 'கூடுதல் சுகாதார காரணிகள் கவனம் தேவை',
+        'risk.highOther': 'கூடுதல் சுகாதார காரணிகள் கவனம் தேவை',
+        
+        // Common Reasoning Phrases
+        'reasoning.age50': '{age} வயதில், ஆரம்பகால கண்டறிதலுக்கு விரிவான சுகாதார திரையிடல் அவசியம்',
+        'reasoning.age40': '{age} வயதில், தடுப்பு சுகாதார திரையிடல் பரிந்துரைக்கப்படுகிறது',
+        'reasoning.bmiObesity': 'உங்கள் BMI பருமனைக் குறிக்கிறது, விரிவான வளர்சிதைமாற்ற மற்றும் இதயநாள மதிப்பீடு தேவை',
+        'reasoning.bmiOverweight': 'உங்கள் BMI அதிக எடையைக் குறிக்கிறது, விரிவான சுகாதார திரையிடல் தேவை',
+        'reasoning.bmiUnderweight': 'உங்கள் BMI குறைந்த எடையைக் குறிக்கிறது, விரிவான மதிப்பீடு தேவை',
+        'reasoning.symptoms': 'உங்கள் அறிக்கையிடப்பட்ட அறிகுறிகளின் அடிப்படையில், விரிவான சுகாதார மதிப்பீடு பரிந்துரைக்கப்படுகிறது',
+        'reasoning.medicalHistory': 'உங்கள் மருத்துவ வரலாற்றைக் கருத்தில் கொண்டு, விரிவான கண்காணிப்பு அவசியம்',
+        'reasoning.familyHistory': 'குடும்ப வரலாறு தடுப்பு திரையிடலின் தேவையைக் குறிக்கிறது',
+        'reasoning.default': 'உகந்த சுகாதாரத்தை பராமரிக்க விரிவான சுகாதார சோதனை பரிந்துரைக்கப்படுகிறது',
+        'reasoning.mlHighCardio': 'ML பகுப்பாய்வு அதிக இதயநாள ஆபத்தை ({score}/100) {confidence}% நம்பிக்கையுடன் கண்டறிந்தது.',
+        'reasoning.mlHighMetabolic': 'ML பகுப்பாய்வு அதிக நீரிழிவு ஆபத்தை ({score}/100) {confidence}% நம்பிக்கையுடன் கண்டறிந்தது.',
+        'reasoning.mlHighThyroid': 'ML பகுப்பாய்வு அதிக தைராய்டு ஆபத்தை ({score}/100) {confidence}% நம்பிக்கையுடன் கண்டறிந்தது.',
+        'reasoning.recommendation': 'உங்கள் தனிப்பட்ட ஆபத்து சுயவிவரம் மற்றும் ML-சக்தியுள்ள பகுப்பாய்வின் அடிப்படையில் MAPIMS பொருத்தமான சுகாதார சோதனை தொகுப்பை பரிந்துரைக்கிறது.',
+        'reasoning.recommendationSimple': 'உங்கள் தனிப்பட்ட ஆபத்து சுயவிவரத்தின் அடிப்படையில் MAPIMS பொருத்தமான சுகாதார சோதனை தொகுப்பை பரிந்துரைக்கிறது.',
+        
+        // Priority Factor Translations
+        'factor.age': 'வயது {age}-{age2}',
+        'factor.overweight': 'அதிக எடை',
+        'factor.obesity': 'பருமன்',
+        'factor.underweight': 'குறைந்த எடை',
+        'factor.diabetes': 'நீரிழிவு',
+        'factor.heartDisease': 'இதய நோய்',
+        'factor.thyroid': 'தைராய்டு',
+        'factor.hypertension': 'உயர் இரத்த அழுத்தம்',
+        'factor.familyHistory': 'குடும்ப வரலாறு',
+        'factor.symptoms': 'அறிகுறிகள்',
+        'factor.sedentary': 'உட்கார்ந்த வாழ்க்கை முறை',
+        'factor.smoking': 'புகைப்பிடித்தல்',
+        
+        // ML Recommendation Translations
+        'ml.recommendation.low': 'வழக்கமான திரையிடல் போதுமானது',
+        'ml.recommendation.lowModerate': 'அடிப்படை திரையிடல் பரிந்துரைக்கப்படுகிறது',
+        'ml.recommendation.moderate': 'தரமான திரையிடல் பரிந்துரைக்கப்படுகிறது',
+        'ml.recommendation.high': 'விரிவான திரையிடல் வலுவாக பரிந்துரைக்கப்படுகிறது',
+        'ml.recommendation.critical': 'உடனடி விரிவான மதிப்பீடு தேவை',
+        'ml.recommendation.diabetesLow': 'வழக்கமான திரையிடல் போதுமானது',
+        'ml.recommendation.diabetesModerate': 'தரமான நீரிழிவு திரையிடல் பரிந்துரைக்கப்படுகிறது (விரதம் குளுக்கோஸ், HbA1c)',
+        'ml.recommendation.diabetesHigh': 'விரிவான நீரிழிவு திரையிடல் வலுவாக பரிந்துரைக்கப்படுகிறது (HbA1c, விரதம் குளுக்கோஸ்)',
+        'ml.recommendation.diabetesCritical': 'உடனடி விரிவான நீரிழிவு திரையிடல் தேவை (HbA1c, விரதம் குளுக்கோஸ், OGTT)',
+        'ml.recommendation.heartLow': 'வழக்கமான திரையிடல் போதுமானது',
+        'ml.recommendation.heartModerate': 'தரமான இதய திரையிடல் பரிந்துரைக்கப்படுகிறது (ECG, கொழுப்பு சுயவிவரம், இதய ஆபத்து குறிப்பான்கள்)',
+        'ml.recommendation.heartHigh': 'விரிவான இதய திரையிடல் வலுவாக பரிந்துரைக்கப்படுகிறது (ECG, மன அழுத்த சோதனை, இதய குறிப்பான்கள்)',
+        'ml.recommendation.heartCritical': 'உடனடி விரிவான இதய மதிப்பீடு தேவை (ECG, மன அழுத்த சோதனை, எக்கோகார்டியோகிராபி, இதய குறிப்பான்கள்)',
+        'ml.recommendation.thyroidLow': 'வழக்கமான திரையிடல் போதுமானது',
+        'ml.recommendation.thyroidModerate': 'தரமான தைராய்டு திரையிடல் பரிந்துரைக்கப்படுகிறது (TSH, T3, T4)',
+        'ml.recommendation.thyroidHigh': 'விரிவான தைராய்டு திரையிடல் வலுவாக பரிந்துரைக்கப்படுகிறது (TSH, T3, T4, தைராய்டு எதிர்ப்பான்கள்)',
+        'ml.recommendation.thyroidCritical': 'உடனடி விரிவான தைராய்டு மதிப்பீடு தேவை (TSH, T3, T4, தைராய்டு எதிர்ப்பான்கள், தைராய்டு அல்ட்ராசவுண்ட்)',
+        
         // Booking Page
         'booking.title': 'உங்கள் முன்பதிவை முடிக்கவும்',
         'booking.selectedPackage': 'தேர்ந்தெடுக்கப்பட்ட தொகுப்பு',
@@ -894,7 +1020,8 @@ function updateLanguageIcon() {
     const langIcon = document.getElementById('languageIcon');
     if (langIcon) {
         // Show the opposite language as the button text (so user knows what they'll switch to)
-        langIcon.textContent = currentLanguage === 'en' ? 'த' : 'EN';
+        // Show full language names instead of abbreviations
+        langIcon.textContent = currentLanguage === 'en' ? 'தமிழ்' : 'English';
         langIcon.title = currentLanguage === 'en' ? 'Switch to Tamil' : 'Switch to English';
     }
 }

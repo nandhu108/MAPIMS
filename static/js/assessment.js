@@ -1,7 +1,7 @@
 // Assessment Form JavaScript
 
 let currentStep = 1;
-const totalSteps = 6;
+const totalSteps = 5;
 let recognition = null;
 let isRecording = false;
 
@@ -33,16 +33,7 @@ function initSpeechRecognition() {
                 }
             }
             
-            if (finalTranscript) {
-                // Voice input now goes to symptoms_other field (Step 2)
-                const symptomsField = document.getElementById('symptoms_other');
-                if (symptomsField) {
-                    const currentValue = symptomsField.value.trim();
-                    // Add space if there's existing content
-                    const separator = currentValue ? ' ' : '';
-                    symptomsField.value = currentValue + separator + finalTranscript.trim();
-                }
-            }
+            // Voice input feature removed with symptoms step
         };
         
         recognition.onerror = function(event) {
@@ -202,14 +193,6 @@ function checkDynamicFields() {
     }
 }
 
-// Toggle other conditions textarea
-function toggleOtherConditions() {
-    const checkbox = document.getElementById('has_other_conditions');
-    const textareaField = document.getElementById('other_conditions_field');
-    if (checkbox && textareaField) {
-        textareaField.style.display = checkbox.checked ? 'block' : 'none';
-    }
-}
 
 // Toggle pediatric details textarea
 function togglePediatricDetails() {
@@ -439,46 +422,6 @@ document.addEventListener('DOMContentLoaded', function() {
             calculateBMI();
         }
     }
-    
-    // Ensure consent checkbox is clickable and works properly
-    const consentCheckbox = document.getElementById('consent');
-    const consentLabel = consentCheckbox?.closest('.checkbox-label');
-    
-    if (consentCheckbox && consentLabel) {
-        // Ensure checkbox is clickable
-        consentCheckbox.style.pointerEvents = 'auto';
-        consentCheckbox.style.cursor = 'pointer';
-        consentCheckbox.style.position = 'relative';
-        consentCheckbox.style.zIndex = '10';
-        
-        // Make sure label is clickable
-        consentLabel.style.cursor = 'pointer';
-        consentLabel.style.pointerEvents = 'auto';
-        
-        // Ensure span doesn't block clicks
-        const consentSpan = consentLabel.querySelector('span');
-        if (consentSpan) {
-            consentSpan.style.pointerEvents = 'auto';
-            consentSpan.style.cursor = 'pointer';
-        }
-        
-        // Add click handler to label as fallback (native behavior should work, but this ensures it)
-        consentLabel.addEventListener('click', function(e) {
-            // If clicking on label or span (not the checkbox itself), toggle checkbox
-            if (e.target === consentLabel || e.target === consentSpan) {
-                e.preventDefault();
-                consentCheckbox.checked = !consentCheckbox.checked;
-                // Trigger change event for form validation
-                const changeEvent = new Event('change', { bubbles: true, cancelable: true });
-                consentCheckbox.dispatchEvent(changeEvent);
-            }
-        });
-        
-        // Ensure checkbox click works
-        consentCheckbox.addEventListener('click', function(e) {
-            e.stopPropagation(); // Prevent label handler from firing
-        });
-    }
 });
 
 // Calculate BMI on weight/height change
@@ -560,10 +503,8 @@ function nextStep() {
         document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('active');
         document.querySelector(`.progress-step[data-step="${currentStep}"]`).classList.add('active');
         
-        // Track progress
-        if (currentStep === 2) {
-            fbq('track', 'ViewContent');
-        }
+        // Scroll to top of the page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
@@ -576,10 +517,11 @@ function prevStep() {
         
         document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('active');
         document.querySelector(`.progress-step[data-step="${currentStep}"]`).classList.add('active');
+        
+        // Scroll to top of the page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
-
-// Helper function removed - symptoms now use radio buttons instead of textarea
 
 // Form submission
 document.getElementById('assessmentForm')?.addEventListener('submit', async function(e) {
@@ -627,23 +569,13 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
         return;
     }
     
-    // Collect symptoms (Step 2) - Yes/No radio buttons
-    const symptoms = {};
-    const symptomFields = ['headache', 'fatigue', 'chest_pain', 'shortness_breath', 'dizziness', 'joint_pain', 'fever', 'cough'];
-    symptomFields.forEach(symptom => {
-        const radio = document.querySelector(`input[name="symptom_${symptom}"]:checked`);
-        symptoms[`symptom_${symptom}`] = radio ? radio.value : 'no';
-    });
-    const symptomsOther = document.getElementById('symptoms_other')?.value.trim() || '';
-    
-    // Collect medical conditions (Step 3) - Yes/No/Not sure
+    // Collect medical conditions (Step 2) - Yes/No/Not sure
     const conditions = {};
     const conditionFields = ['diabetes', 'hypertension', 'heart_disease', 'thyroid', 'asthma', 'kidney', 'cancer'];
     conditionFields.forEach(condition => {
         const radio = document.querySelector(`input[name="condition_${condition}"]:checked`);
         conditions[`condition_${condition}`] = radio ? radio.value : 'no';
     });
-    const hasOtherConditions = document.getElementById('has_other_conditions')?.checked || false;
     const otherConditions = document.getElementById('other_conditions')?.value.trim() || '';
     
     // Collect family history (Step 3)
@@ -672,12 +604,8 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
         preferred_contact: preferredContact,
         weight: weight,
         height: height,
-        // Symptoms
-        ...symptoms,
-        symptoms_other: symptomsOther,
         // Medical conditions
         ...conditions,
-        has_other_conditions: hasOtherConditions,
         other_conditions: otherConditions,
         // Family history
         ...familyHistory,
@@ -688,7 +616,7 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
         alcohol_consumption: alcoholConsumption,
         diet_type: dietType,
         lifestyle_other: lifestyleOther,
-        consent: document.getElementById('consent').checked
+        consent: false
     };
     
     // Add female-specific fields if visible (Step 5)
