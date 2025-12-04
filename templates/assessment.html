@@ -725,7 +725,7 @@
                 </p>
               </div>
 
-              <!-- Women's health (only if gender = female and age between 13 and 60) -->
+              <!-- Women's Health section (only if gender = female) -->
               <div
                 id="femaleFields"
                 class="dynamic-section"
@@ -735,8 +735,8 @@
                   Women's Health
                 </h3>
 
-                <div id="pregnancyQuestion" class="form-group">
-                  <label class="symptom-label" data-translate="form.pregnantNow">Are you pregnant now?</label>
+                <div class="condition-question-card">
+                  <label class="condition-label" data-translate="form.pregnantNow">Are you pregnant now?</label>
                   <div class="radio-group">
                     <label class="radio-label">
                       <input type="radio" name="pregnant" value="yes" />
@@ -753,8 +753,8 @@
                   </div>
                 </div>
 
-                <div id="menstrualQuestion" class="form-group">
-                  <label class="symptom-label" data-translate="form.periodsRegular">Are your periods regular?</label>
+                <div class="condition-question-card">
+                  <label class="condition-label" data-translate="form.periodsRegular">Are your periods regular?</label>
                   <div class="radio-group">
                     <label class="radio-label">
                       <input
@@ -772,15 +772,15 @@
                       <input
                         type="radio"
                         name="menstrual_regular"
-                        value="not_applicable"
+                        value="not_sure"
                       />
-                      <span data-translate="form.notApplicable">Not applicable</span>
+                      <span data-translate="form.notSure">Not sure</span>
                     </label>
                   </div>
                 </div>
 
-                <div id="menopauseQuestion" class="form-group">
-                  <label class="symptom-label" data-translate="form.menopauseQuestion"
+                <div class="condition-question-card">
+                  <label class="condition-label" data-translate="form.menopauseQuestion"
                     >Have your periods stopped completely (menopause)?</label
                   >
                   <div class="radio-group">

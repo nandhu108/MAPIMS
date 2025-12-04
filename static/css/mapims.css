@@ -36,6 +36,9 @@ body {
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
 }
 
 .container {
@@ -281,6 +284,23 @@ body {
     font-weight: 500;
 }
 
+/* Hero section button - original white background with red styling */
+.hero-section .cta-button {
+    background: var(--mapims-white) !important;
+    color: var(--mapims-red) !important;
+    border: 3px solid var(--mapims-red) !important;
+    box-shadow: 
+        0 6px 20px rgba(227, 24, 55, 0.25),
+        0 3px 10px rgba(227, 24, 55, 0.15) !important;
+}
+
+.hero-section .cta-button span {
+    color: var(--mapims-red) !important;
+}
+
+.hero-section .cta-button::before {
+    background: var(--mapims-red) !important;
+}
 
 @keyframes fadeInUp {
     from {
@@ -298,10 +318,10 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: var(--mapims-white) !important;
-    color: var(--mapims-red) !important;
+    background: #085C2E !important;
+    color: var(--mapims-white) !important;
     padding: 18px 44px;
-    border: 3px solid var(--mapims-red);
+    border: 3px solid #085C2E;
     border-radius: 12px;
     font-size: 1.1rem;
     font-weight: 700;
@@ -310,8 +330,8 @@ body {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     letter-spacing: 0.8px;
     box-shadow: 
-        0 6px 20px rgba(227, 24, 55, 0.25),
-        0 3px 10px rgba(227, 24, 55, 0.15);
+        0 6px 20px rgba(8, 92, 46, 0.25),
+        0 3px 10px rgba(8, 92, 46, 0.15);
     position: relative;
     overflow: hidden;
     animation: fadeInUp 0.8s ease 0.6s both;
@@ -330,7 +350,7 @@ body {
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: var(--mapims-red);
+    background: rgba(255, 255, 255, 0.2);
     transform: translate(-50%, -50%);
     transition: width 0.6s, height 0.6s;
     z-index: 1;
@@ -342,7 +362,7 @@ body {
     display: inline-block;
     text-align: center;
     pointer-events: none;
-    color: var(--mapims-red) !important;
+    color: var(--mapims-white) !important;
     font-size: 1.05rem;
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -368,11 +388,11 @@ body {
 }
 
 .btn-next, .btn-submit {
-    background: var(--mapims-red-gradient);
+    background: #085C2E;
     color: var(--mapims-white);
     box-shadow: 
-        0 8px 25px rgba(227, 24, 55, 0.35),
-        0 4px 12px rgba(227, 24, 55, 0.25),
+        0 8px 25px rgba(8, 92, 46, 0.35),
+        0 4px 12px rgba(8, 92, 46, 0.25),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     position: relative;
     overflow: hidden;
@@ -396,8 +416,8 @@ body {
 .btn-next:active, .btn-submit:active {
     transform: translateY(-1px);
     box-shadow: 
-        0 4px 16px rgba(227, 24, 55, 0.3),
-        0 2px 8px rgba(227, 24, 55, 0.2);
+        0 4px 16px rgba(8, 92, 46, 0.3),
+        0 2px 8px rgba(8, 92, 46, 0.2);
 }
 
 .btn-back {
@@ -1288,24 +1308,111 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 .symptom-question-card .radio-group,
 .condition-question-card .radio-group {
     display: flex;
-    gap: 8px;
+    gap: 16px;
     flex-wrap: wrap;
-    margin-top: 4px;
+    margin-top: 12px;
 }
 
 .symptom-question-card .radio-label,
-.condition-question-card .radio-label {
+.condition-question-card .radio-label,
+.form-group .radio-label {
+    /* Inherit all base styles from .radio-label */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 12px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid var(--mapims-grey);
     flex: 1;
-    min-width: 60px;
-    text-align: center;
-    font-size: 0.85rem;
+    min-width: 100px;
+    justify-content: center;
+    box-shadow: 
+        0 3px 8px rgba(0, 0, 0, 0.04),
+        0 1px 3px rgba(0, 0, 0, 0.02),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    position: relative;
+    overflow: visible;
+    pointer-events: auto;
+    white-space: normal;
+    word-wrap: break-word;
+    font-size: 0.95rem;
+    line-height: 1.5;
 }
 
 .condition-question-card .radio-label {
-    min-width: 70px;
+    min-width: 100px;
     overflow: visible;
     white-space: normal;
 }
+
+/* Ensure consistent radio input styling for condition cards and form-group */
+.symptom-question-card .radio-label input[type="radio"],
+.condition-question-card .radio-label input[type="radio"],
+.form-group .radio-label input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #66BB6A;
+    cursor: pointer;
+    pointer-events: auto;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+    margin: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    border: 2px solid var(--mapims-grey);
+    border-radius: 50%;
+    background: var(--mapims-white);
+    transition: all 0.2s ease;
+}
+
+.symptom-question-card .radio-label input[type="radio"]:checked,
+.condition-question-card .radio-label input[type="radio"]:checked,
+.form-group .radio-label input[type="radio"]:checked {
+    border-color: #66BB6A;
+    background: var(--mapims-white);
+    box-shadow: 0 0 0 2px rgba(8, 92, 46, 0.15);
+}
+
+.symptom-question-card .radio-label input[type="radio"]:checked::after,
+.condition-question-card .radio-label input[type="radio"]:checked::after,
+.form-group .radio-label input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #66BB6A;
+    box-shadow: 0 1px 2px rgba(8, 92, 46, 0.25);
+}
+
+/* Ensure consistent selected state for condition cards and form-group */
+.symptom-question-card .radio-label:has(input[type="radio"]:checked),
+.condition-question-card .radio-label:has(input[type="radio"]:checked),
+.form-group .radio-label:has(input[type="radio"]:checked) {
+    background: linear-gradient(135deg, rgba(8, 92, 46, 0.1) 0%, rgba(8, 92, 46, 0.15) 100%);
+    border-color: #66BB6A;
+    border-width: 2px;
+    box-shadow: 
+        0 2px 8px rgba(8, 92, 46, 0.15),
+        0 1px 4px rgba(8, 92, 46, 0.08);
+}
+
+.symptom-question-card .radio-label:has(input[type="radio"]:checked) span,
+.condition-question-card .radio-label:has(input[type="radio"]:checked) span,
+.form-group .radio-label:has(input[type="radio"]:checked) span {
+    color: var(--mapims-text);
+    font-weight: 600;
+}
+
+/* Note: .form-group .radio-label styles are defined after base .radio-label rules (around line 1776) */
+/* to ensure proper CSS cascade and avoid conflicts */
 
 /* ==================== VOICE INPUT ==================== */
 .voice-input-container {
@@ -1518,16 +1625,80 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 }
 
 .radio-label:has(input[type="radio"]:checked) {
-    background: linear-gradient(135deg, rgba(227, 24, 55, 0.05) 0%, rgba(227, 24, 55, 0.08) 100%);
-    border-color: var(--mapims-red);
+    background: linear-gradient(135deg, rgba(8, 92, 46, 0.1) 0%, rgba(8, 92, 46, 0.15) 100%);
+    border-color: #66BB6A;
     border-width: 2px;
     box-shadow: 
-        0 2px 8px rgba(227, 24, 55, 0.1),
-        0 1px 4px rgba(227, 24, 55, 0.05);
+        0 2px 8px rgba(8, 92, 46, 0.15),
+        0 1px 4px rgba(8, 92, 46, 0.08);
 }
 
 .radio-label:has(input[type="radio"]:checked)::before {
     display: none;
+}
+
+/* Base radio input styling - ensures all radio buttons look consistent */
+.radio-label input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #66BB6A;
+    cursor: pointer;
+    pointer-events: auto;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+    margin: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    border: 2px solid var(--mapims-grey);
+    border-radius: 50%;
+    background: var(--mapims-white);
+    transition: all 0.2s ease;
+}
+
+.radio-label input[type="radio"]:checked {
+    border-color: #66BB6A;
+    background: var(--mapims-white);
+    box-shadow: 0 0 0 2px rgba(8, 92, 46, 0.15);
+}
+
+.radio-label input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #66BB6A;
+    box-shadow: 0 1px 2px rgba(8, 92, 46, 0.25);
+}
+
+/* ==================== FORM-GROUP RADIO BUTTONS ==================== */
+/* Note: .form-group .radio-label styles are included in the shared selectors above */
+/* (with .condition-question-card .radio-label) to ensure exact matching */
+/* Only unselected state overrides are kept here for clarity */
+
+/* Ensure unselected state is explicitly white */
+.form-group .radio-label input[type="radio"]:not(:checked) {
+    border-color: var(--mapims-grey);
+    background: var(--mapims-white);
+}
+
+.form-group .radio-label input[type="radio"]:not(:checked)::after {
+    content: none;
+    display: none;
+}
+
+.form-group .radio-label:not(:has(input[type="radio"]:checked)) {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-color: var(--mapims-grey);
+    border-width: 2px;
+    box-shadow: 
+        0 3px 8px rgba(0, 0, 0, 0.04),
+        0 1px 3px rgba(0, 0, 0, 0.02),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 /* Button styles consolidated - see general button styles above */
@@ -1554,10 +1725,10 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 
 .checkbox-label:has(input[type="checkbox"]:checked),
 .checkbox-label:has(input[type="radio"]:checked) {
-    background: linear-gradient(135deg, rgba(227, 24, 55, 0.08) 0%, rgba(227, 24, 55, 0.12) 100%);
-    border-color: var(--mapims-red);
+    background: linear-gradient(135deg, rgba(8, 92, 46, 0.1) 0%, rgba(8, 92, 46, 0.15) 100%);
+    border-color: #66BB6A;
     box-shadow: 
-        0 4px 12px rgba(227, 24, 55, 0.2),
+        0 4px 12px rgba(8, 92, 46, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
@@ -1568,7 +1739,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     margin-top: 2px;
     cursor: pointer;
     flex-shrink: 0;
-    accent-color: var(--mapims-red);
+    accent-color: #66BB6A;
     cursor: pointer;
     pointer-events: auto;
     position: relative;
@@ -1585,10 +1756,10 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 
 .checkbox-label input[type="checkbox"]:checked,
 .checkbox-label input[type="radio"]:checked {
-    background: var(--mapims-red-gradient);
-    border-color: var(--mapims-red);
+    background: #66BB6A;
+    border-color: #66BB6A;
     box-shadow: 
-        0 2px 8px rgba(227, 24, 55, 0.3),
+        0 2px 8px rgba(8, 92, 46, 0.3),
         inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -1684,6 +1855,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
 }
 
 .analysis-actions {
@@ -1742,6 +1916,16 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 .risk-score-card h2 {
     position: relative;
     z-index: 1;
+    margin-bottom: 12px;
+}
+
+.risk-score-card #riskScoreValue {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 8px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .risk-score-card::before {
@@ -1789,6 +1973,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 24px;
     margin-top: 32px;
+    align-items: stretch;
 }
 
 .risk-item {
@@ -1798,6 +1983,11 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     border-left: 4px solid var(--mapims-red);
     transition: var(--transition);
     box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    min-height: 140px;
+    align-items: flex-start;
+    justify-content: flex-start;
 }
 
 
@@ -1806,6 +1996,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     margin-bottom: 12px;
     font-size: 1.1rem;
     font-weight: 600;
+    flex-shrink: 0;
 }
 
 .risk-item p {
@@ -1813,6 +2004,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     font-size: 0.9rem;
     line-height: 1.7;
     margin: 0;
+    flex: 1;
 }
 
 .reasoning-box {
@@ -1822,6 +2014,10 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     border-left: 4px solid var(--mapims-red);
     margin: 40px 0;
     box-shadow: var(--shadow-sm);
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .reasoning-box h3 {
@@ -1845,6 +2041,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     background: var(--mapims-light-grey);
     border-radius: 16px;
     border: 2px solid var(--mapims-grey);
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .ml-analysis-section h3 {
@@ -1853,13 +2052,18 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     margin-bottom: 32px;
     text-align: center;
     font-weight: 700;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.3;
 }
 
 .ml-modules-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
     gap: 24px;
     margin-bottom: 24px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .ml-module-card {
@@ -1871,6 +2075,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     transition: var(--transition);
     position: relative;
     overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 .ml-module-card::before {
@@ -1906,6 +2113,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     font-size: 1.3rem;
     margin-bottom: 20px;
     font-weight: 700;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.3;
 }
 
 .ml-score {
@@ -1982,6 +2192,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     position: relative;
     color: var(--mapims-text-light);
     font-size: 0.9rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
 }
 
 .ml-tests li::before {
@@ -2004,6 +2217,15 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 
 .priority-factors {
     margin-top: 40px;
+    background: var(--mapims-light-grey);
+    padding: 24px;
+    border-radius: 12px;
+    border-left: 4px solid var(--mapims-red);
+    box-shadow: var(--shadow-sm);
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .priority-factors h3 {
@@ -2019,11 +2241,12 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
+    margin: 0;
 }
 
 .priority-factors li {
     padding: 14px 18px;
-    background: var(--mapims-light-grey);
+    background: var(--mapims-white);
     border-radius: 8px;
     border-left: 3px solid var(--mapims-red);
     transition: var(--transition);
@@ -2332,7 +2555,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 .btn-select-package {
     width: 100%;
     padding: 16px;
-    background: var(--mapims-red-gradient);
+    background: #085C2E;
     color: var(--mapims-white);
     border: none;
     border-radius: 10px;
@@ -2342,7 +2565,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     transition: var(--transition);
     margin-top: auto;
     letter-spacing: 0.5px;
-    box-shadow: var(--shadow-md);
+    box-shadow: 
+        0 4px 12px rgba(8, 92, 46, 0.3),
+        0 2px 6px rgba(8, 92, 46, 0.2);
     position: relative;
     z-index: 1;
 }
@@ -2376,7 +2601,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     height: 20px;
     margin-right: 12px;
     cursor: pointer;
-    accent-color: var(--mapims-red);
+    accent-color: #66BB6A;
 }
 
 .addon-name {
@@ -2402,7 +2627,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 
 .btn-proceed-booking {
     display: inline-block;
-    background: var(--mapims-red-gradient);
+    background: #085C2E;
     color: var(--mapims-white);
     padding: 18px 50px;
     border: none;
@@ -2413,8 +2638,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     letter-spacing: 0.5px;
     box-shadow: 
-        0 8px 24px rgba(227, 24, 55, 0.35),
-        0 4px 12px rgba(227, 24, 55, 0.25);
+        0 8px 24px rgba(8, 92, 46, 0.35),
+        0 4px 12px rgba(8, 92, 46, 0.25);
     position: relative;
     overflow: hidden;
     min-width: 250px;
@@ -2451,8 +2676,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 .btn-proceed-booking:active {
     transform: translateY(-2px);
     box-shadow: 
-        0 6px 20px rgba(227, 24, 55, 0.35),
-        0 3px 10px rgba(227, 24, 55, 0.25);
+        0 6px 20px rgba(8, 92, 46, 0.35),
+        0 3px 10px rgba(8, 92, 46, 0.25);
 }
 
 .btn-proceed-booking:disabled {
@@ -2526,7 +2751,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 .booking-form .cta-button span {
     position: relative;
     z-index: 10;
-    color: var(--mapims-red) !important;
+    color: var(--mapims-white) !important;
     font-size: 1.05rem;
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -2550,90 +2775,31 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     font-weight: 700;
 }
 
+/* Radio group styles - consistent across all forms */
 .radio-group {
     display: flex;
-    gap: 24px;
-    margin-top: 16px;
+    gap: 16px;
     flex-wrap: wrap;
+    margin-top: 12px;
 }
 
-.radio-label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    padding: 16px 24px;
-    background: var(--mapims-light-grey);
-    border-radius: 10px;
-    border: 2px solid var(--mapims-grey);
-    transition: var(--transition);
-    flex: 1;
-    min-width: 200px;
-}
-
-
-.radio-label input[type="radio"]:checked + span {
-    color: var(--mapims-text);
-    font-weight: 600;
-}
-
-.radio-label input[type="radio"]:checked ~ span {
-    color: var(--mapims-text);
-    font-weight: 600;
-}
-
-.radio-label input[type="radio"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--mapims-red);
-    cursor: pointer;
-    pointer-events: auto;
-    position: relative;
-    z-index: 10;
-    flex-shrink: 0;
-    margin: 0;
-    -webkit-appearance: none;
-    appearance: none;
-    border: 2px solid var(--mapims-grey);
-    border-radius: 50%;
-    background: var(--mapims-white);
-    transition: all 0.2s ease;
-}
-
-
-.radio-label input[type="radio"]:checked {
-    border-color: var(--mapims-red);
-    background: var(--mapims-white);
-    box-shadow: 0 0 0 2px rgba(227, 24, 55, 0.1);
-}
-
-.radio-label input[type="radio"]:checked::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--mapims-red);
-    box-shadow: 0 1px 2px rgba(227, 24, 55, 0.2);
-}
+/* Note: Base .radio-label styles are defined earlier in the file (around line 1470) */
+/* These styles ensure consistency - the base definition applies to all radio labels */
 
 /* Booking page specific radio button styling */
 .booking-form .radio-label:has(input[type="radio"]:checked) {
-    border-color: var(--mapims-red);
+    border-color: #66BB6A;
     border-width: 2px;
-    background: linear-gradient(135deg, rgba(227, 24, 55, 0.05) 0%, rgba(227, 24, 55, 0.08) 100%);
+    background: linear-gradient(135deg, rgba(8, 92, 46, 0.1) 0%, rgba(8, 92, 46, 0.15) 100%);
     box-shadow: 
-        0 2px 8px rgba(227, 24, 55, 0.1),
-        0 1px 4px rgba(227, 24, 55, 0.05);
+        0 2px 8px rgba(8, 92, 46, 0.15),
+        0 1px 4px rgba(8, 92, 46, 0.08);
 }
 
 .booking-form .radio-label input[type="radio"] {
     width: 18px;
     height: 18px;
-    accent-color: var(--mapims-red);
+    accent-color: #66BB6A;
     -webkit-appearance: none;
     appearance: none;
     border: 2px solid var(--mapims-grey);
@@ -2648,9 +2814,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 
 
 .booking-form .radio-label input[type="radio"]:checked {
-    border-color: var(--mapims-red);
+    border-color: #66BB6A;
     background: var(--mapims-white);
-    box-shadow: 0 0 0 2px rgba(227, 24, 55, 0.1);
+    box-shadow: 0 0 0 2px rgba(8, 92, 46, 0.15);
 }
 
 .booking-form .radio-label input[type="radio"]:checked::after {
@@ -2662,8 +2828,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--mapims-red);
-    box-shadow: 0 1px 2px rgba(227, 24, 55, 0.2);
+    background: #66BB6A;
+    box-shadow: 0 1px 2px rgba(8, 92, 46, 0.25);
 }
 
 .payment-summary {
@@ -3046,6 +3212,24 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     opacity: 0.9;
 }
 
+/* CTA section button - original white background with red styling */
+.cta-section .cta-button-large {
+    background: var(--mapims-white) !important;
+    color: var(--mapims-red) !important;
+    border: 3px solid var(--mapims-red) !important;
+    box-shadow: 
+        0 6px 20px rgba(227, 24, 55, 0.25),
+        0 3px 10px rgba(227, 24, 55, 0.15) !important;
+}
+
+.cta-section .cta-button-large span {
+    color: var(--mapims-red) !important;
+}
+
+.cta-section .cta-button-large::before {
+    background: var(--mapims-red) !important;
+}
+
 /* ==================== FOOTER ==================== */
 .mapims-footer {
     background: var(--mapims-soft-black);
@@ -3315,6 +3499,202 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     .condition-question-card .radio-label {
         min-width: 100%;
     }
+    
+    /* Analysis Page - Very Small Screens */
+    .analysis-main {
+        padding: 16px 0;
+    }
+    
+    .analysis-container {
+        padding: 16px 8px;
+        margin: 0 4px;
+        box-sizing: border-box;
+        width: calc(100% - 8px);
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+        margin-bottom: 6px;
+    }
+    
+    .page-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 24px;
+    }
+    
+    .risk-score-card {
+        padding: 20px 12px;
+        margin-bottom: 20px;
+    }
+    
+    .risk-score-card h2 {
+        font-size: 1.1rem;
+    }
+    
+    .risk-score-card #riskScoreValue {
+        font-size: 1.2rem;
+    }
+    
+    .health-risks-section h3 {
+        font-size: 1.2rem;
+        margin-bottom: 16px;
+    }
+    
+    .risks-grid {
+        gap: 12px;
+    }
+    
+    .risk-item {
+        padding: 16px 12px;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .risk-item h4 {
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+    
+    .risk-item p {
+        font-size: 0.8rem;
+        flex: 1;
+    }
+    
+    .reasoning-box {
+        padding: 16px 12px;
+        margin: 24px 0;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .reasoning-box h3 {
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .reasoning-box p {
+        font-size: 0.85rem;
+        flex: 1;
+    }
+    
+    .ml-analysis-section {
+        padding: 16px 8px;
+        margin-top: 24px;
+        border-radius: 12px;
+        overflow-x: hidden;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .ml-analysis-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+        line-height: 1.3;
+        padding: 0 4px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .ml-modules-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .ml-module-card {
+        padding: 16px 12px;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+    
+    .ml-module-card h4 {
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+        line-height: 1.3;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .ml-score {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .score-value {
+        font-size: 1.6rem;
+        line-height: 1;
+    }
+    
+    .score-level {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        align-self: flex-start;
+    }
+    
+    .ml-confidence {
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+    
+    .ml-tests {
+        margin-top: 12px;
+        padding-top: 12px;
+    }
+    
+    .ml-tests strong {
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+    
+    .ml-tests li {
+        font-size: 0.75rem;
+        padding: 4px 0;
+        padding-left: 18px;
+        line-height: 1.4;
+    }
+    
+    .priority-factors {
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .priority-factors h3 {
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .priority-factors ul {
+        flex: 1;
+    }
+    
+    .priority-factors li {
+        font-size: 0.85rem;
+        padding: 10px 12px;
+    }
+    
+    .analysis-actions {
+        margin-top: 24px;
+        padding-top: 20px;
+    }
+    
+    .analysis-actions .cta-button {
+        padding: 14px 16px;
+        font-size: 0.95rem;
+    }
 }
 
 /* Small Devices (landscape phones, 481px to 768px) */
@@ -3432,11 +3812,16 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
         padding: 16px 32px;
         font-size: 1.1rem;
         min-height: 56px;
+        margin: 0 auto;
+        display: flex;
     }
     
     .package-actions {
         margin-bottom: 80px;
         padding: 30px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     
     .packages-main {
@@ -3510,10 +3895,242 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
         font-size: 2rem;
     }
     
+    /* Analysis Page Mobile Styles */
+    .analysis-main {
+        padding: 20px 0;
+        min-height: calc(100vh - 180px);
+    }
+    
     .analysis-container, .booking-form {
-        padding: 32px 16px;
+        padding: 24px 16px;
         box-sizing: border-box;
         overflow-x: hidden;
+        margin: 0 8px;
+        border-radius: 12px;
+        width: calc(100% - 16px);
+        max-width: 100%;
+    }
+    
+    .page-title {
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+        line-height: 1.3;
+        padding: 0 4px;
+    }
+    
+    .page-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 32px;
+        padding: 0 4px;
+        line-height: 1.5;
+    }
+    
+    .risk-score-card {
+        padding: 24px 16px;
+        margin-bottom: 24px;
+        border-radius: 12px;
+    }
+    
+    .risk-score-card h2 {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+    
+    .risk-score-card #riskScoreValue {
+        font-size: 1.4rem;
+        display: block;
+        margin-top: 8px;
+        word-wrap: break-word;
+    }
+    
+    .health-risks-section {
+        margin: 32px 0;
+    }
+    
+    .health-risks-section h3 {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        padding: 0 4px;
+    }
+    
+    .risks-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 20px;
+    }
+    
+    .risk-item {
+        padding: 18px 16px;
+        border-radius: 10px;
+        border-left-width: 3px;
+        min-height: 130px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .risk-item h4 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        flex-shrink: 0;
+    }
+    
+    .risk-item p {
+        font-size: 0.85rem;
+        line-height: 1.6;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        flex: 1;
+    }
+    
+    .reasoning-box {
+        padding: 20px 16px;
+        margin: 32px 0;
+        border-radius: 10px;
+        border-left-width: 3px;
+        min-height: 130px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .reasoning-box h3 {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+        flex-shrink: 0;
+    }
+    
+    .reasoning-box p {
+        font-size: 0.9rem;
+        line-height: 1.7;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        flex: 1;
+    }
+    
+    .ml-analysis-section {
+        margin-top: 32px;
+        padding: 24px 16px;
+        border-radius: 12px;
+        overflow-x: hidden;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .ml-analysis-section h3 {
+        font-size: 1.3rem;
+        margin-bottom: 24px;
+        line-height: 1.3;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        padding: 0 4px;
+    }
+    
+    .ml-modules-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .ml-module-card {
+        padding: 20px 16px;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+    
+    .ml-module-card h4 {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+        line-height: 1.3;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .ml-score {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+    
+    .score-value {
+        font-size: 2rem;
+        line-height: 1;
+    }
+    
+    .score-level {
+        font-size: 0.95rem;
+        padding: 6px 12px;
+        align-self: flex-start;
+    }
+    
+    .ml-confidence {
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .ml-tests {
+        margin-top: 12px;
+        padding-top: 12px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .ml-tests strong {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .ml-tests li {
+        font-size: 0.85rem;
+        padding: 5px 0;
+        padding-left: 20px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .ml-overall-confidence {
+        font-size: 1rem;
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+    
+    .priority-factors {
+        margin-top: 32px;
+        min-height: 130px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .priority-factors h3 {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+        flex-shrink: 0;
+    }
+    
+    .priority-factors ul {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        flex: 1;
+    }
+    
+    .priority-factors li {
+        padding: 12px 16px;
+        font-size: 0.9rem;
+        border-left-width: 3px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
     
     .analysis-actions {
@@ -3524,6 +4141,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
         padding-right: 0;
         width: 100%;
         box-sizing: border-box;
+        margin-top: 32px;
+        padding-top: 24px;
     }
     
     .analysis-actions .cta-button {
@@ -3536,6 +4155,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
         overflow-wrap: break-word;
         padding: 16px 20px;
         box-sizing: border-box;
+        font-size: 1rem;
     }
     
     .analysis-actions .cta-button span {
@@ -3862,9 +4482,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 
 .fasting-modal-footer .cta-button {
     min-width: 200px;
-    background: var(--mapims-red-gradient) !important;
+    background: #085C2E !important;
     color: var(--mapims-white) !important;
-    border-color: var(--mapims-red) !important;
+    border-color: #085C2E !important;
     position: relative;
     z-index: 2;
     font-size: 1rem !important;
@@ -3899,7 +4519,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 /* Make sure the button text content is not hidden - specific ID selector */
 #fastingConsentButton {
     color: var(--mapims-white) !important;
-    background: var(--mapims-red-gradient) !important;
+    background: #085C2E !important;
 }
 
 #fastingConsentButton::before {
@@ -3911,7 +4531,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     opacity: 0.7 !important;
     cursor: not-allowed;
     pointer-events: none;
-    background: var(--mapims-red-gradient) !important;
+    background: #085C2E !important;
     color: var(--mapims-white) !important;
 }
 
@@ -4055,9 +4675,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 
 .success-modal-footer .cta-button {
     min-width: 200px;
-    background: var(--mapims-red-gradient) !important;
+    background: #085C2E !important;
     color: var(--mapims-white) !important;
-    border-color: var(--mapims-red) !important;
+    border-color: #085C2E !important;
     font-size: 1rem !important;
     font-weight: 700 !important;
     padding: 14px 32px;

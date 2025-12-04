@@ -115,13 +115,10 @@ function toggleLanguage() {
 function checkDynamicFields() {
     const age = parseInt(document.getElementById('age')?.value) || 0;
     const gender = document.getElementById('gender')?.value || '';
-    
+
     const femaleFields = document.getElementById('femaleFields');
     const age40Fields = document.getElementById('age40Fields');
     const pediatricFields = document.getElementById('pediatricFields');
-    const pregnancyQuestion = document.getElementById('pregnancyQuestion');
-    const menstrualQuestion = document.getElementById('menstrualQuestion');
-    const menopauseQuestion = document.getElementById('menopauseQuestion');
     
     // Hide all dynamic sections first
     if (femaleFields) femaleFields.style.display = 'none';
@@ -140,50 +137,15 @@ function checkDynamicFields() {
             pediatricFields.style.display = 'block';
         }
         
-        // For female teenagers (13-17), also show limited women's health questions
-        if (gender === 'female' && age >= 13 && age <= 60 && femaleFields) {
-            femaleFields.style.display = 'block';
-            
-            // Pregnancy - only for older teenagers (16-17)
-            if (pregnancyQuestion) {
-                pregnancyQuestion.style.display = (age >= 16) ? 'block' : 'none';
-            }
-            
-            // Menstrual cycle - for teenagers who may have started (13+)
-            if (menstrualQuestion) {
-                menstrualQuestion.style.display = 'block';
-            }
-            
-            // No menopause questions for teenagers
-            if (menopauseQuestion) {
-                menopauseQuestion.style.display = 'none';
-            }
-        }
-        
         // No adult screening questions for children
         return;
     }
     
     // ADULTS (age 18+)
     if (age >= 18) {
-        // Show female-specific fields for adult females (13-60)
-        if (gender === 'female' && age >= 13 && age <= 60 && femaleFields) {
+        // Show Women's Health section for females
+        if (gender === 'female' && femaleFields) {
             femaleFields.style.display = 'block';
-            
-            // Pregnancy question - reproductive age (16-50)
-            if (pregnancyQuestion) {
-                pregnancyQuestion.style.display = (age >= 16 && age <= 50) ? 'block' : 'none';
-            }
-            
-            // Menstrual cycle - for reproductive age (13-55)
-            if (menstrualQuestion) {
-                menstrualQuestion.style.display = (age >= 13 && age <= 55) ? 'block' : 'none';
-            }
-            
-            // Menopause question - for older females (40+)
-            if (menopauseQuestion) {
-                menopauseQuestion.style.display = (age >= 40) ? 'block' : 'none';
-            }
         }
         
         // Show age 40+ screening fields
@@ -619,7 +581,7 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
         consent: false
     };
     
-    // Add female-specific fields if visible (Step 5)
+    // Add Women's Health fields if visible (Step 4)
     const femaleFields = document.getElementById('femaleFields');
     if (femaleFields && femaleFields.style.display !== 'none') {
         const pregnant = document.querySelector('input[name="pregnant"]:checked');

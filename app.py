@@ -405,10 +405,10 @@ def analyze_health_with_ai(patient_data):
         if patient_data.get('pregnant') == 'yes':
             total_score += 15
             priority_factors.append("Pregnancy - Specialized Care Required")
-        if patient_data.get('menstrual_cycle') == 'irregular':
+        if patient_data.get('menstrual_regular') == 'irregular' or patient_data.get('menstrual_regular') == 'no':
             total_score += 5
             priority_factors.append("Irregular Menstrual Cycle")
-        if patient_data.get('menopause_status') == 'menopause' or patient_data.get('menopause_status') == 'post':
+        if patient_data.get('menopause_status') == 'stopped':
             total_score += 10
             health_risks["metabolic"]["score"] += 5
             priority_factors.append("Menopause - Hormonal Health Monitoring")
@@ -758,8 +758,6 @@ def submit_assessment():
             # Include dynamic fields in analysis data
             analysis_data = data.copy()
             # Add dynamic fields to analysis if they exist
-            if 'pregnant' in data:
-                analysis_data['pregnant'] = data.get('pregnant')
             if 'chest_pain' in data:
                 analysis_data['chest_pain'] = data.get('chest_pain')
             if 'shortness_breath' in data:
@@ -774,8 +772,10 @@ def submit_assessment():
                 analysis_data['slow_healing'] = data.get('slow_healing')
             if 'family_diabetes' in data:
                 analysis_data['family_diabetes'] = data.get('family_diabetes')
-            if 'menstrual_cycle' in data:
-                analysis_data['menstrual_cycle'] = data.get('menstrual_cycle')
+            if 'pregnant' in data:
+                analysis_data['pregnant'] = data.get('pregnant')
+            if 'menstrual_regular' in data:
+                analysis_data['menstrual_regular'] = data.get('menstrual_regular')
             if 'menopause_status' in data:
                 analysis_data['menopause_status'] = data.get('menopause_status')
             
@@ -832,13 +832,6 @@ def submit_assessment():
             'status': 'assessment_completed'
         }
         
-        # Add female-specific fields if present
-        if data.get('pregnant') is not None:
-            patient_document['pregnant'] = data.get('pregnant')
-            patient_document['menstrual_cycle'] = data.get('menstrual_cycle', '')
-            patient_document['menopause_status'] = data.get('menopause_status', '')
-            patient_document['birth_control'] = data.get('birth_control', False)
-        
         # Add age > 45 specific fields if present
         if data.get('chest_pain') is not None or data.get('shortness_breath') is not None:
             patient_document['cardiac_health'] = {
@@ -852,6 +845,12 @@ def submit_assessment():
                 'slow_healing': data.get('slow_healing', False),
                 'family_diabetes': data.get('family_diabetes', False)
             }
+        
+        # Add Women's Health fields if present
+        if data.get('pregnant') is not None:
+            patient_document['pregnant'] = data.get('pregnant')
+            patient_document['menstrual_regular'] = data.get('menstrual_regular', '')
+            patient_document['menopause_status'] = data.get('menopause_status', '')
         
         # Add pediatric fields if present
         if data.get('vaccination_up_to_date') is not None:
