@@ -111,6 +111,70 @@ function toggleLanguage() {
     setLanguage(newLang);
 }
 
+// Validate age input - prevent values greater than 120
+function validateAgeInput(event) {
+    const ageField = event.target;
+    let value = ageField.value;
+    
+    // Remove any non-numeric characters
+    value = value.replace(/[^0-9]/g, '');
+    
+    // If value is greater than 120, limit it to 120
+    if (value && parseInt(value) > 120) {
+        value = '120';
+    }
+    
+    ageField.value = value;
+}
+
+// Validate age on change
+function validateAge() {
+    const ageField = document.getElementById('age');
+    if (!ageField) return;
+    
+    const age = parseInt(ageField.value);
+    
+    if (ageField.value && (isNaN(age) || age < 1 || age > 120)) {
+        ageField.setCustomValidity('Age must be between 1 and 120');
+        ageField.style.borderColor = '#E31837';
+    } else {
+        ageField.setCustomValidity('');
+        ageField.style.borderColor = '';
+    }
+}
+
+// Validate phone input - allow only digits and limit to 10
+function validatePhoneInput(event) {
+    const phoneField = event.target;
+    let value = phoneField.value;
+    
+    // Remove any non-digit characters (including spaces, dashes, country codes)
+    value = value.replace(/[^0-9]/g, '');
+    
+    // Limit to 10 digits
+    if (value.length > 10) {
+        value = value.substring(0, 10);
+    }
+    
+    phoneField.value = value;
+}
+
+// Validate phone on change
+function validatePhone() {
+    const phoneField = document.getElementById('phone');
+    if (!phoneField) return;
+    
+    const phone = phoneField.value.replace(/[^0-9]/g, '');
+    
+    if (phoneField.value && phone.length !== 10) {
+        phoneField.setCustomValidity('Phone number must be exactly 10 digits');
+        phoneField.style.borderColor = '#E31837';
+    } else {
+        phoneField.setCustomValidity('');
+        phoneField.style.borderColor = '';
+    }
+}
+
 // Check and show/hide dynamic fields based on age and gender
 function checkDynamicFields() {
     const age = parseInt(document.getElementById('age')?.value) || 0;
@@ -125,8 +189,8 @@ function checkDynamicFields() {
     if (age40Fields) age40Fields.style.display = 'none';
     if (pediatricFields) pediatricFields.style.display = 'none';
     
-    // Validate age
-    if (!age || age < 1 || age > 120) {
+    // Validate age (only check if age exists and is positive)
+    if (!age || age < 1) {
         return; // Invalid age
     }
     
@@ -357,6 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set up dynamic field checking
     const ageField = document.getElementById('age');
     const genderField = document.getElementById('gender');
+    const phoneField = document.getElementById('phone');
     
     if (ageField) {
         ageField.addEventListener('change', checkDynamicFields);
@@ -364,6 +429,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if (genderField) {
         genderField.addEventListener('change', checkDynamicFields);
+    }
+    if (phoneField) {
+        phoneField.addEventListener('blur', validatePhone);
     }
     
     // Initial check
@@ -456,6 +524,20 @@ function nextStep() {
             return;
         }
         
+        // Check age validation for step 1
+        if (currentStep === 1) {
+            const ageField = document.getElementById('age');
+            if (ageField && ageField.value) {
+                const age = parseInt(ageField.value);
+                if (!isNaN(age) && age > 120) {
+                    alert('Age cannot be greater than 120. Please enter a valid age.');
+                    ageField.style.borderColor = '#E31837';
+                    ageField.focus();
+                    return;
+                }
+            }
+        }
+        
         // Move to next step
         document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('active');
         document.querySelector(`.progress-step[data-step="${currentStep}"]`).classList.remove('active');
@@ -512,6 +594,23 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
     // Validate required fields before submission
     if (!name || !age || !gender || !phone) {
         alert('Please fill in all required fields (marked with *)');
+        document.getElementById('loadingOverlay').style.display = 'none';
+        return;
+    }
+    
+    // Validate age is positive
+    if (age < 1) {
+        alert('Age must be at least 1');
+        document.getElementById('age')?.focus();
+        document.getElementById('loadingOverlay').style.display = 'none';
+        return;
+    }
+    
+    // Validate phone number (must be exactly 10 digits)
+    const phoneDigits = phone.replace(/[^0-9]/g, '');
+    if (phoneDigits.length !== 10) {
+        alert('Phone number must be exactly 10 digits');
+        document.getElementById('phone')?.focus();
         document.getElementById('loadingOverlay').style.display = 'none';
         return;
     }

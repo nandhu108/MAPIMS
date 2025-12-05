@@ -125,6 +125,7 @@
                   id="name"
                   name="name"
                   required
+                  data-translate-placeholder="form.namePlaceholder"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -140,7 +141,7 @@
                     name="age"
                     required
                     min="1"
-                    max="120"
+                    data-translate-placeholder="form.agePlaceholder"
                     placeholder="Your age"
                     onchange="checkDynamicFields()"
                     oninput="checkDynamicFields()"
@@ -182,6 +183,10 @@
                   name="phone"
                   required
                   placeholder="+91 1234567890"
+                  maxlength="10"
+                  pattern="[0-9]{10}"
+                  oninput="validatePhoneInput(event)"
+                  onchange="validatePhone()"
                 />
               </div>
 

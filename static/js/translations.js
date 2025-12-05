@@ -13,7 +13,9 @@ const translations = {
         
         // Basic Info
         'form.name': 'Full Name',
+        'form.namePlaceholder': 'Enter your full name',
         'form.age': 'Age',
+        'form.agePlaceholder': 'Your age',
         'form.gender': 'Gender',
         'form.selectGender': 'Select',
         'form.male': 'Male',
@@ -381,7 +383,96 @@ const translations = {
         
         // Landing Page
         'landing.getStarted': 'Get Started',
-        'landing.learnMore': 'Learn More'
+        'landing.learnMore': 'Learn More',
+        
+        // Navigation
+        'nav.benefits': 'Benefits',
+        'nav.howItWorks': 'How It Works',
+        'nav.testimonials': 'Testimonials',
+        'nav.faq': 'FAQ',
+        'nav.home': 'Home',
+        'nav.assessment': 'Health Assessment',
+        
+        // Hero Section
+        'landing.heroTitle': 'MAPIMS AI Health Assessment',
+        'landing.heroSubtitle': 'Free in 60 Seconds',
+        'landing.heroDescription': 'Advanced AI-Powered Health Assessment for Personalized Care',
+        'landing.ctaButton': 'Start AI Health Assessment',
+        'landing.trusted': '✓ Trusted by thousands',
+        'landing.noCreditCard': '✓ No credit card required',
+        'landing.confidential': '✓ 100% confidential',
+        
+        // Benefits Section
+        'landing.benefitsTitle': 'Why Choose MAPIMS AI Health Assessment?',
+        'landing.benefit1Title': '60-Second Assessment',
+        'landing.benefit1Desc': 'Get personalized health recommendations in just one minute',
+        'landing.benefit2Title': 'AI-Powered Analysis',
+        'landing.benefit2Desc': 'Advanced AI analyzes your health profile with precision',
+        'landing.benefit3Title': 'Expert Recommendations',
+        'landing.benefit3Desc': 'Get the right health checkup package for your needs',
+        'landing.benefit4Title': 'Professional Excellence',
+        'landing.benefit4Desc': 'Trusted healthcare with advanced technology and expert care',
+        
+        // Health Risks Section
+        'landing.risksTitle': 'Health Risks Our AI Can Identify',
+        'landing.risk1Title': 'Cardiovascular',
+        'landing.risk1Desc': 'Heart disease, hypertension, stroke risks',
+        'landing.risk2Title': 'Metabolic',
+        'landing.risk2Desc': 'Diabetes, thyroid, cholesterol issues',
+        'landing.risk3Title': 'Respiratory',
+        'landing.risk3Desc': 'Lung conditions, breathing problems',
+        'landing.risk4Title': 'Lifestyle',
+        'landing.risk4Desc': 'Stress, sleep, exercise patterns',
+        
+        // Professional Excellence Section
+        'landing.trustTitle': 'Why Choose MAPIMS?',
+        'landing.trustMessage1': 'MAPIMS is a leading healthcare institution committed to providing world-class medical services. Our state-of-the-art facilities, experienced medical professionals, and advanced diagnostic technologies ensure accurate health assessments and personalized treatment plans.',
+        'landing.trustMessage2': 'With a focus on preventive care and early detection, we help you maintain optimal health through comprehensive health checkups and expert medical guidance.',
+        
+        // How It Works Section
+        'landing.howItWorksTitle': 'How It Works',
+        'landing.step1Title': 'Fill Assessment',
+        'landing.step1Desc': 'Answer simple questions about your health',
+        'landing.step2Title': 'AI Analysis',
+        'landing.step2Desc': 'Our AI analyzes your health profile',
+        'landing.step3Title': 'Get Recommendations',
+        'landing.step3Desc': 'Receive personalized package suggestions',
+        'landing.step4Title': 'Book & Pay',
+        'landing.step4Desc': 'Choose your package and schedule appointment',
+        
+        // Testimonials Section
+        'landing.testimonialsTitle': 'What Our Patients Say',
+        'landing.testimonial1Text': '"The AI assessment was so accurate! MAPIMS recommended exactly what I needed."',
+        'landing.testimonial1Author': '- Rajesh K., Age 45',
+        'landing.testimonial2Text': '"Professional service and accurate recommendations. MAPIMS truly cares about patient health."',
+        'landing.testimonial2Author': '- Priya M., Age 38',
+        'landing.testimonial3Text': '"Quick, easy, and the recommendations were spot on. Highly recommend!"',
+        'landing.testimonial3Author': '- Amit S., Age 52',
+        
+        // FAQ Section
+        'landing.faqTitle': 'Frequently Asked Questions',
+        'landing.faq1Question': 'Is the assessment really free?',
+        'landing.faq1Answer': 'Yes! The AI health assessment is completely free. You only pay when you book a health checkup package.',
+        'landing.faq2Question': 'How accurate is the AI analysis?',
+        'landing.faq2Answer': 'Our AI uses advanced algorithms trained on medical data to provide accurate health risk assessments.',
+        'landing.faq3Question': 'Is my data secure?',
+        'landing.faq3Answer': 'Absolutely. We follow strict privacy protocols and your data is encrypted and secure.',
+        'landing.faq4Question': 'Can I book home sample collection?',
+        'landing.faq4Answer': 'Yes! We offer both hospital visits and home sample collection for your convenience.',
+        
+        // CTA Section
+        'landing.ctaTitle': 'Ready to Know Your Health Status?',
+        'landing.ctaText': 'Get your free AI health assessment in 60 seconds',
+        'landing.ctaButtonLarge': 'Start Free Assessment Now',
+        
+        // Footer
+        'footer.tagline': 'Professional Healthcare Excellence',
+        'footer.subtagline': 'Advanced Medical Care & Technology',
+        'footer.quickLinks': 'Quick Links',
+        'footer.contact': 'Contact',
+        'footer.email': 'Email: info@mapims.org',
+        'footer.website': 'Website:',
+        'footer.copyright': '© 2025 MAPIMS. All rights reserved. | Professional Healthcare Solutions'
     },
     ta: {
         // Header
@@ -396,7 +487,9 @@ const translations = {
         
         // Basic Info
         'form.name': 'முழு பெயர்',
+        'form.namePlaceholder': 'உங்கள் முழு பெயரை உள்ளிடவும்',
         'form.age': 'வயது',
+        'form.agePlaceholder': 'உங்கள் வயது',
         'form.gender': 'பாலினம்',
         'form.selectGender': 'தேர்ந்தெடு',
         'form.male': 'ஆண்',
@@ -765,7 +858,96 @@ const translations = {
         
         // Landing Page
         'landing.getStarted': 'தொடங்குங்கள்',
-        'landing.learnMore': 'மேலும் அறிக'
+        'landing.learnMore': 'மேலும் அறிக',
+        
+        // Navigation
+        'nav.benefits': 'பயன்கள்',
+        'nav.howItWorks': 'எவ்வாறு செயல்படுகிறது',
+        'nav.testimonials': 'மதிப்புரைகள்',
+        'nav.faq': 'அடிக்கடி கேட்கப்படும் கேள்விகள்',
+        'nav.home': 'முகப்பு',
+        'nav.assessment': 'சுகாதார மதிப்பீடு',
+        
+        // Hero Section
+        'landing.heroTitle': 'MAPIMS AI சுகாதார மதிப்பீடு',
+        'landing.heroSubtitle': '60 வினாடிகளில் இலவசம்',
+        'landing.heroDescription': 'தனிப்பயனாக்கப்பட்ட பராமரிப்புக்கான மேம்பட்ட AI-சக்தியுள்ள சுகாதார மதிப்பீடு',
+        'landing.ctaButton': 'AI சுகாதார மதிப்பீட்டைத் தொடங்குங்கள்',
+        'landing.trusted': '✓ ஆயிரக்கணக்கானோரால் நம்பப்படுகிறது',
+        'landing.noCreditCard': '✓ கிரெடிட் கார்டு தேவையில்லை',
+        'landing.confidential': '✓ 100% இரகசியம்',
+        
+        // Benefits Section
+        'landing.benefitsTitle': 'MAPIMS AI சுகாதார மதிப்பீட்டை ஏன் தேர்வு செய்ய வேண்டும்?',
+        'landing.benefit1Title': '60-வினாடி மதிப்பீடு',
+        'landing.benefit1Desc': 'ஒரு நிமிடத்தில் தனிப்பயனாக்கப்பட்ட சுகாதார பரிந்துரைகளைப் பெறுங்கள்',
+        'landing.benefit2Title': 'AI-சக்தியுள்ள பகுப்பாய்வு',
+        'landing.benefit2Desc': 'மேம்பட்ட AI உங்கள் சுகாதார சுயவிவரத்தை துல்லியமாக பகுப்பாய்வு செய்கிறது',
+        'landing.benefit3Title': 'நிபுணர் பரிந்துரைகள்',
+        'landing.benefit3Desc': 'உங்கள் தேவைகளுக்கு பொருத்தமான சுகாதார சோதனை தொகுப்பைப் பெறுங்கள்',
+        'landing.benefit4Title': 'தொழில்முறை சிறப்பு',
+        'landing.benefit4Desc': 'மேம்பட்ட தொழில்நுட்பம் மற்றும் நிபுணர் பராமரிப்புடன் நம்பகமான சுகாதாரம்',
+        
+        // Health Risks Section
+        'landing.risksTitle': 'எங்கள் AI-ஐ அடையாளம் காணக்கூடிய சுகாதார ஆபத்துகள்',
+        'landing.risk1Title': 'இதயநாள',
+        'landing.risk1Desc': 'இதய நோய், உயர் இரத்த அழுத்தம், பக்கவாத ஆபத்துகள்',
+        'landing.risk2Title': 'வளர்சிதை மாற்றம்',
+        'landing.risk2Desc': 'நீரிழிவு, தைராய்டு, கolesterாலால் பிரச்சனைகள்',
+        'landing.risk3Title': 'சுவாச',
+        'landing.risk3Desc': 'நுரையீரல் நிலைமைகள், சுவாச பிரச்சனைகள்',
+        'landing.risk4Title': 'வாழ்க்கை முறை',
+        'landing.risk4Desc': 'மன அழுத்தம், தூக்கம், உடற்பயிற்சி வடிவங்கள்',
+        
+        // Professional Excellence Section
+        'landing.trustTitle': 'MAPIMS-ஐ ஏன் தேர்வு செய்ய வேண்டும்?',
+        'landing.trustMessage1': 'MAPIMS உலகத்தரம் வாய்ந்த மருத்துவ சேவைகளை வழங்குவதற்கு உறுதிபூண்ட ஒரு முன்னணி சுகாதார நிறுவனம். எங்களின் நவீன வசதிகள், அனுபவமிக்க மருத்துவ நிபுணர்கள் மற்றும் மேம்பட்ட கண்டறியும் தொழில்நுட்பங்கள் துல்லியமான சுகாதார மதிப்பீடுகள் மற்றும் தனிப்பயனாக்கப்பட்ட சிகிச்சை திட்டங்களை உறுதி செய்கின்றன.',
+        'landing.trustMessage2': 'தடுப்பு பராமரிப்பு மற்றும் ஆரம்பகால கண்டறிதலில் கவனம் செலுத்துவதன் மூலம், விரிவான சுகாதார சோதனைகள் மற்றும் நிபுணர் மருத்துவ வழிகாட்டுதலின் மூலம் உகந்த சுகாதாரத்தை பராமரிக்க உதவுகிறோம்.',
+        
+        // How It Works Section
+        'landing.howItWorksTitle': 'எவ்வாறு செயல்படுகிறது',
+        'landing.step1Title': 'மதிப்பீட்டை நிரப்புங்கள்',
+        'landing.step1Desc': 'உங்கள் சுகாதாரம் குறித்த எளிய கேள்விகளுக்கு பதிலளிக்கவும்',
+        'landing.step2Title': 'AI பகுப்பாய்வு',
+        'landing.step2Desc': 'எங்கள் AI உங்கள் சுகாதார சுயவிவரத்தை பகுப்பாய்வு செய்கிறது',
+        'landing.step3Title': 'பரிந்துரைகளைப் பெறுங்கள்',
+        'landing.step3Desc': 'தனிப்பயனாக்கப்பட்ட தொகுப்பு பரிந்துரைகளைப் பெறுங்கள்',
+        'landing.step4Title': 'முன்பதிவு & கட்டணம்',
+        'landing.step4Desc': 'உங்கள் தொகுப்பைத் தேர்ந்தெடுத்து க appointmentsட்சி நாளைத் திட்டமிடுங்கள்',
+        
+        // Testimonials Section
+        'landing.testimonialsTitle': 'எங்கள் நோயாளிகள் என்ன சொல்கிறார்கள்',
+        'landing.testimonial1Text': '"AI மதிப்பீடு மிகவும் துல்லியமாக இருந்தது! MAPIMS எனக்கு தேவையானதை சரியாக பரிந்துரைத்தது."',
+        'landing.testimonial1Author': '- ராஜேஷ் கே., வயது 45',
+        'landing.testimonial2Text': '"தொழில்முறை சேவை மற்றும் துல்லியமான பரிந்துரைகள். MAPIMS உண்மையிலேயே நோயாளி சுகாதாரத்தைப் பற்றி அக்கறை கொண்டுள்ளது."',
+        'landing.testimonial2Author': '- பிரியா எம்., வயது 38',
+        'landing.testimonial3Text': '"விரைவு, எளிது மற்றும் பரிந்துரைகள் சரியாக இருந்தன. மிகவும் பரிந்துரைக்கிறேன்!"',
+        'landing.testimonial3Author': '- அமித் எஸ்., வயது 52',
+        
+        // FAQ Section
+        'landing.faqTitle': 'அடிக்கடி கேட்கப்படும் கேள்விகள்',
+        'landing.faq1Question': 'மதிப்பீடு உண்மையில் இலவசமா?',
+        'landing.faq1Answer': 'ஆம்! AI சுகாதார மதிப்பீடு முற்றிலும் இலவசம். நீங்கள் சுகாதார சோதனை தொகுப்பை முன்பதிவு செய்யும்போது மட்டுமே கட்டணம் செலுத்த வேண்டும்.',
+        'landing.faq2Question': 'AI பகுப்பாய்வு எவ்வளவு துல்லியமானது?',
+        'landing.faq2Answer': 'எங்கள் AI மருத்துவ தரவுகளில் பயிற்சி பெற்ற மேம்பட்ட வழிமுறைகளைப் பயன்படுத்தி துல்லியமான சுகாதார ஆபத்து மதிப்பீடுகளை வழங்குகிறது.',
+        'landing.faq3Question': 'எனது தரவு பாதுகாப்பானதா?',
+        'landing.faq3Answer': 'முற்றிலும். நாங்கள் கடுமையான தனியுரிமை நெறிமுறைகளைப் பின்பற்றுகிறோம் மற்றும் உங்கள் தரவு குறியாக்கம் செய்யப்பட்டு பாதுகாப்பானது.',
+        'landing.faq4Question': 'வீட்டில் மாதிரி சேகரிப்பை முன்பதிவு செய்ய முடியுமா?',
+        'landing.faq4Answer': 'ஆம்! எங்களின் வசதிக்காக மருத்துவமனை வருகைகள் மற்றும் வீட்டில் மாதிரி சேகரிப்பு ஆகிய இரண்டையும் வழங்குகிறோம்.',
+        
+        // CTA Section
+        'landing.ctaTitle': 'உங்கள் சுகாதார நிலையை அறிய தயாரா?',
+        'landing.ctaText': '60 வினாடிகளில் உங்கள் இலவச AI சுகாதார மதிப்பீட்டைப் பெறுங்கள்',
+        'landing.ctaButtonLarge': 'இப்போது இலவச மதிப்பீட்டைத் தொடங்குங்கள்',
+        
+        // Footer
+        'footer.tagline': 'தொழில்முறை சுகாதார சிறப்பு',
+        'footer.subtagline': 'மேம்பட்ட மருத்துவ பராமரிப்பு & தொழில்நுட்பம்',
+        'footer.quickLinks': 'விரைவு இணைப்புகள்',
+        'footer.contact': 'தொடர்பு',
+        'footer.email': 'மின்னஞ்சல்: info@mapims.org',
+        'footer.website': 'இணையதளம்:',
+        'footer.copyright': '© 2025 MAPIMS. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை. | தொழில்முறை சுகாதார தீர்வுகள்'
     }
 };
 
