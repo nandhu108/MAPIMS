@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, g, send_file
 import os
+import random
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 from openai import OpenAI
@@ -1276,245 +1277,6 @@ def admin_bookings():
                          total_pages=total_pages,
                          total_bookings_count=total_bookings_count)
 
-@app.route('/admin/analytics')
-@admin_required
-def admin_analytics():
-    """Analytics Dashboard"""
-    from collections import Counter
-    from datetime import datetime, timedelta
-    
-    # Get date filter and pagination parameters
-    start_date = request.args.get('start_date', '')
-    end_date = request.args.get('end_date', '')
-    risk_page = int(request.args.get('risk_page', 1))
-    package_page = int(request.args.get('package_page', 1))
-    per_page = int(request.args.get('per_page', 10))
-    
-    # Build date filter for patients
-    patient_date_filter = {}
-    if start_date:
-        try:
-            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
-            patient_date_filter['submitted_at'] = {'$gte': start_dt}
-        except ValueError:
-            pass
-    if end_date:
-        try:
-            end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
-            if 'submitted_at' in patient_date_filter:
-                patient_date_filter['submitted_at']['$lt'] = end_dt
-            else:
-                patient_date_filter['submitted_at'] = {'$lt': end_dt}
-        except ValueError:
-            pass
-    
-    # Build date filter for bookings
-    booking_date_filter = {}
-    if start_date:
-        try:
-            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
-            booking_date_filter['created_at'] = {'$gte': start_dt}
-        except ValueError:
-            pass
-    if end_date:
-        try:
-            end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
-            if 'created_at' in booking_date_filter:
-                booking_date_filter['created_at']['$lt'] = end_dt
-            else:
-                booking_date_filter['created_at'] = {'$lt': end_dt}
-        except ValueError:
-            pass
-    
-    # Get basic stats (use date filters for consistency - all metrics must use the same filters)
-    # When date filters are applied, all metrics should reflect the filtered time period
-    total_patients = patients_collection.count_documents(patient_date_filter if patient_date_filter else {})
-    total_bookings = bookings_collection.count_documents(booking_date_filter if booking_date_filter else {})
-    confirmed_filter = booking_date_filter.copy() if booking_date_filter else {}
-    confirmed_filter['booking_status'] = 'confirmed'
-    confirmed_bookings = bookings_collection.count_documents(confirmed_filter)
-    
-    # Calculate revenue (with date filter - must match booking_date_filter for consistency)
-    revenue_filter = booking_date_filter.copy() if booking_date_filter else {}
-    revenue_filter['total_price'] = {'$exists': True}
-    bookings_with_price = list(bookings_collection.find(revenue_filter))
-    total_revenue = sum(booking.get('total_price', 0) for booking in bookings_with_price)
-    
-    # Calculate average risk score (with date filter)
-    patients_with_analysis_query = {'ai_analysis.risk_score': {'$exists': True}}
-    patients_with_analysis_query.update(patient_date_filter)
-    patients_with_analysis = list(patients_collection.find(patients_with_analysis_query))
-    risk_scores = []
-    for patient in patients_with_analysis:
-        risk = patient.get('ai_analysis', {}).get('risk_score', 'Moderate')
-        if risk == 'Low':
-            risk_scores.append(25)
-        elif risk == 'Moderate':
-            risk_scores.append(50)
-        elif risk == 'High':
-            risk_scores.append(75)
-        elif risk == 'Critical':
-            risk_scores.append(90)
-    avg_risk_score = round(sum(risk_scores) / len(risk_scores), 1) if risk_scores else 0
-    
-    # Calculate conversion rate
-    conversion_rate = round((confirmed_bookings / total_patients * 100), 1) if total_patients > 0 else 0
-    
-    # Package distribution (with date filter)
-    package_filter = booking_date_filter.copy()
-    package_filter['package_id'] = {'$exists': True}
-    package_counts = {}
-    for booking in bookings_collection.find(package_filter):
-        pkg_id = booking.get('package_id', 'unknown')
-        package_counts[pkg_id] = package_counts.get(pkg_id, 0) + 1
-    
-    package_labels = []
-    package_data = []
-    for pkg_id, count in sorted(package_counts.items(), key=lambda x: x[1], reverse=True):
-        pkg_name = PACKAGES.get(pkg_id, {}).get('name', pkg_id)
-        package_labels.append(pkg_name)
-        package_data.append(count)
-    
-    # Risk score distribution
-    risk_distribution = Counter()
-    for patient in patients_with_analysis:
-        risk = patient.get('ai_analysis', {}).get('risk_score', 'Moderate')
-        risk_distribution[risk] += 1
-    
-    risk_labels = ['Low', 'Moderate', 'High', 'Critical']
-    risk_data = [risk_distribution.get(r, 0) for r in risk_labels]
-    
-    # Age distribution (with date filter)
-    age_filter = patient_date_filter.copy()
-    age_filter['age'] = {'$exists': True}
-    age_groups = {'0-20': 0, '21-30': 0, '31-40': 0, '41-50': 0, '51-60': 0, '60+': 0}
-    for patient in patients_collection.find(age_filter):
-        age = patient.get('age', 0)
-        if age <= 20:
-            age_groups['0-20'] += 1
-        elif age <= 30:
-            age_groups['21-30'] += 1
-        elif age <= 40:
-            age_groups['31-40'] += 1
-        elif age <= 50:
-            age_groups['41-50'] += 1
-        elif age <= 60:
-            age_groups['51-60'] += 1
-        else:
-            age_groups['60+'] += 1
-    
-    age_labels = list(age_groups.keys())
-    age_data = list(age_groups.values())
-    
-    # Revenue trend (last 30 days)
-    revenue_labels = []
-    revenue_data = []
-    for i in range(30, 0, -1):
-        date = (datetime.now() - timedelta(days=i)).strftime('%m/%d')
-        revenue_labels.append(date)
-        start_date = datetime.now() - timedelta(days=i)
-        end_date = datetime.now() - timedelta(days=i-1)
-        day_revenue = sum(
-            b.get('total_price', 0) for b in bookings_collection.find({
-                'created_at': {'$gte': start_date, '$lt': end_date},
-                'total_price': {'$exists': True}
-            })
-        )
-        revenue_data.append(day_revenue)
-    
-    # Top risk factors (with pagination)
-    all_priority_factors = []
-    for patient in patients_with_analysis:
-        factors = patient.get('ai_analysis', {}).get('priority_factors', [])
-        all_priority_factors.extend(factors)
-    
-    factor_counts = Counter(all_priority_factors)
-    all_risk_factors = []
-    for factor, count in factor_counts.most_common():
-        percentage = round((count / len(patients_with_analysis) * 100), 1) if patients_with_analysis else 0
-        all_risk_factors.append({
-            'name': factor,
-            'count': count,
-            'percentage': percentage
-        })
-    
-    # Paginate risk factors
-    total_risk_factors = len(all_risk_factors)
-    risk_skip = (risk_page - 1) * per_page
-    top_risk_factors = all_risk_factors[risk_skip:risk_skip + per_page]
-    total_risk_pages = (total_risk_factors + per_page - 1) // per_page
-    
-    # Package performance (with date filter and pagination)
-    all_package_performance = []
-    for pkg_id, pkg_info in PACKAGES.items():
-        pkg_query = {'package_id': pkg_id}
-        pkg_query.update(booking_date_filter)
-        pkg_bookings = list(bookings_collection.find(pkg_query))
-        pkg_revenue = sum(b.get('total_price', pkg_info['price']) for b in pkg_bookings)
-        avg_price = pkg_info['price']
-        all_package_performance.append({
-            'name': pkg_info['name'],
-            'bookings': len(pkg_bookings),
-            'revenue': pkg_revenue,
-            'avg_price': avg_price
-        })
-    all_package_performance.sort(key=lambda x: x['revenue'], reverse=True)
-    
-    # Paginate package performance
-    total_packages = len(all_package_performance)
-    package_skip = (package_page - 1) * per_page
-    package_performance = all_package_performance[package_skip:package_skip + per_page]
-    total_package_pages = (total_packages + per_page - 1) // per_page
-    
-    # Monthly trends (last 6 months)
-    monthly_labels = []
-    monthly_patients = []
-    monthly_bookings = []
-    for i in range(5, -1, -1):
-        month_start = datetime.now().replace(day=1) - timedelta(days=30*i)
-        month_end = month_start + timedelta(days=30)
-        month_label = month_start.strftime('%b %Y')
-        monthly_labels.append(month_label)
-        
-        month_patients = patients_collection.count_documents({
-            'submitted_at': {'$gte': month_start, '$lt': month_end}
-        })
-        month_bookings = bookings_collection.count_documents({
-            'created_at': {'$gte': month_start, '$lt': month_end}
-        })
-        monthly_patients.append(month_patients)
-        monthly_bookings.append(month_bookings)
-    
-    return render_template('admin/analytics.html',
-                         total_patients=total_patients,
-                         total_bookings=total_bookings,
-                         confirmed_bookings=confirmed_bookings,
-                         total_revenue=total_revenue,
-                         avg_risk_score=avg_risk_score,
-                         conversion_rate=conversion_rate,
-                         package_labels=package_labels,
-                         package_data=package_data,
-                         risk_labels=risk_labels,
-                         risk_data=risk_data,
-                         age_labels=age_labels,
-                         age_data=age_data,
-                         revenue_labels=revenue_labels,
-                         revenue_data=revenue_data,
-                         top_risk_factors=top_risk_factors,
-                         package_performance=package_performance,
-                         monthly_labels=monthly_labels,
-                         monthly_patients=monthly_patients,
-                         monthly_bookings=monthly_bookings,
-                         start_date=start_date,
-                         end_date=end_date,
-                         risk_page=risk_page,
-                         package_page=package_page,
-                         per_page=per_page,
-                         total_risk_pages=total_risk_pages,
-                         total_package_pages=total_package_pages,
-                         total_risk_factors=total_risk_factors,
-                         total_packages=total_packages)
-
 @app.route('/admin/logout')
 def admin_logout():
     """Admin logout - securely clears all session data"""
@@ -1528,6 +1290,36 @@ def export_leads():
     # Get date filter parameters
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
+    hide_headers = request.args.get('hide_headers', '0') == '1'
+    columns_param = request.args.get('columns', '')
+    
+    # Parse selected columns
+    selected_columns = columns_param.split(',') if columns_param else []
+    
+    # Define all available columns with their mappings
+    all_columns = {
+        'sno': {'header': 'S.No', 'index': 0},
+        'name': {'header': 'Name', 'index': 1},
+        'age': {'header': 'Age', 'index': 2},
+        'gender': {'header': 'Gender', 'index': 3},
+        'phone': {'header': 'Phone', 'index': 4},
+        'email': {'header': 'Email', 'index': 5},
+        'bmi': {'header': 'BMI', 'index': 6},
+        'bmi_category': {'header': 'BMI Category', 'index': 7},
+        'risk_score': {'header': 'Risk Score', 'index': 8},
+        'submitted_date': {'header': 'Submitted Date', 'index': 9},
+        'status': {'header': 'Status', 'index': 10}
+    }
+    
+    # If no columns selected, use all columns
+    if not selected_columns:
+        selected_columns = list(all_columns.keys())
+    
+    # Filter to only valid columns
+    selected_columns = [col for col in selected_columns if col in all_columns]
+    
+    # Sort columns by their original index to maintain order
+    selected_columns = sorted(selected_columns, key=lambda x: all_columns[x]['index'])
     
     # Build date filter (same logic as admin_leads)
     date_filter = {}
@@ -1559,42 +1351,64 @@ def export_leads():
     header_fill = PatternFill(start_color="E31837", end_color="E31837", fill_type="solid")
     header_font = Font(bold=True, color="FFFFFF", size=12)
     
+    # Determine starting row (2 if headers are hidden, 1 if shown)
+    start_row = 2 if hide_headers else 1
+    header_row = 1
+    
     # Write headers
-    headers = ['S.No', 'Name', 'Age', 'Gender', 'Phone', 'Email', 'BMI', 'BMI Category', 
-               'Risk Score', 'Submitted Date', 'Status']
-    for col_num, header in enumerate(headers, 1):
-        cell = ws.cell(row=1, column=col_num)
+    for col_num, col_key in enumerate(selected_columns, 1):
+        header = all_columns[col_key]['header']
+        cell = ws.cell(row=header_row, column=col_num)
         cell.value = header
         cell.fill = header_fill
         cell.font = header_font
         cell.alignment = Alignment(horizontal='center', vertical='center')
     
+    # Hide the header row if requested
+    if hide_headers:
+        ws.row_dimensions[1].hidden = True
+    
     # Write data
-    for row_num, patient in enumerate(patients, 2):
-        ws.cell(row=row_num, column=1, value=row_num - 1)
-        ws.cell(row=row_num, column=2, value=patient.get('name', 'N/A'))
-        ws.cell(row=row_num, column=3, value=patient.get('age', 'N/A'))
-        ws.cell(row=row_num, column=4, value=patient.get('gender', 'N/A'))
-        ws.cell(row=row_num, column=5, value=patient.get('phone', 'N/A'))
-        ws.cell(row=row_num, column=6, value=patient.get('email', 'N/A'))
-        ws.cell(row=row_num, column=7, value=patient.get('bmi', 'N/A'))
-        ws.cell(row=row_num, column=8, value=patient.get('bmi_category', 'N/A'))
-        risk_score = patient.get('ai_analysis', {}).get('risk_score', 'N/A') if patient.get('ai_analysis') else 'N/A'
-        ws.cell(row=row_num, column=9, value=risk_score)
-        submitted_at = patient.get('submitted_at')
-        ws.cell(row=row_num, column=10, value=submitted_at.strftime('%Y-%m-%d %H:%M') if submitted_at else 'N/A')
-        ws.cell(row=row_num, column=11, value=patient.get('status', 'N/A'))
+    for row_num, patient in enumerate(patients, start_row):
+        for col_num, col_key in enumerate(selected_columns, 1):
+            value = 'N/A'
+            if col_key == 'sno':
+                value = row_num - (start_row - 1)
+            elif col_key == 'name':
+                value = patient.get('name', 'N/A')
+            elif col_key == 'age':
+                value = patient.get('age', 'N/A')
+            elif col_key == 'gender':
+                value = patient.get('gender', 'N/A')
+            elif col_key == 'phone':
+                value = patient.get('phone', 'N/A')
+            elif col_key == 'email':
+                value = patient.get('email', 'N/A')
+            elif col_key == 'bmi':
+                value = patient.get('bmi', 'N/A')
+            elif col_key == 'bmi_category':
+                value = patient.get('bmi_category', 'N/A')
+            elif col_key == 'risk_score':
+                value = patient.get('ai_analysis', {}).get('risk_score', 'N/A') if patient.get('ai_analysis') else 'N/A'
+            elif col_key == 'submitted_date':
+                submitted_at = patient.get('submitted_at')
+                value = submitted_at.strftime('%Y-%m-%d %H:%M') if submitted_at else 'N/A'
+            elif col_key == 'status':
+                value = patient.get('status', 'N/A')
+            
+            ws.cell(row=row_num, column=col_num, value=value)
     
     # Auto-adjust column widths
-    for column in ws.columns:
+    for col_num in range(1, len(selected_columns) + 1):
         max_length = 0
-        column_letter = column[0].column_letter
-        for cell in column:
-            try:
-                if len(str(cell.value)) > max_length:
-                    max_length = len(str(cell.value))
-            except:
-                pass
+        column_letter = ws.cell(row=start_row, column=col_num).column_letter
+        for row in ws.iter_rows(min_row=start_row, max_row=ws.max_row, min_col=col_num, max_col=col_num):
+            for cell in row:
+                try:
+                    if cell.value and len(str(cell.value)) > max_length:
+                        max_length = len(str(cell.value))
+                except:
+                    pass
         adjusted_width = min(max_length + 2, 50)
         ws.column_dimensions[column_letter].width = adjusted_width
     
@@ -1623,6 +1437,37 @@ def export_bookings():
     # Get date filter parameters
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
+    hide_headers = request.args.get('hide_headers', '0') == '1'
+    columns_param = request.args.get('columns', '')
+    
+    # Parse selected columns
+    selected_columns = columns_param.split(',') if columns_param else []
+    
+    # Define all available columns with their mappings
+    all_columns = {
+        'sno': {'header': 'S.No', 'index': 0},
+        'reference': {'header': 'Reference', 'index': 1},
+        'patient_name': {'header': 'Patient Name', 'index': 2},
+        'patient_phone': {'header': 'Patient Phone', 'index': 3},
+        'package': {'header': 'Package', 'index': 4},
+        'total_amount': {'header': 'Total Amount (₹)', 'index': 5},
+        'booking_date': {'header': 'Booking Date', 'index': 6},
+        'time': {'header': 'Time', 'index': 7},
+        'sample_type': {'header': 'Sample Type', 'index': 8},
+        'payment_status': {'header': 'Payment Status', 'index': 9},
+        'booking_status': {'header': 'Booking Status', 'index': 10},
+        'created_date': {'header': 'Created Date', 'index': 11}
+    }
+    
+    # If no columns selected, use all columns
+    if not selected_columns:
+        selected_columns = list(all_columns.keys())
+    
+    # Filter to only valid columns
+    selected_columns = [col for col in selected_columns if col in all_columns]
+    
+    # Sort columns by their original index to maintain order
+    selected_columns = sorted(selected_columns, key=lambda x: all_columns[x]['index'])
     
     # Build date filter (same logic as admin_bookings)
     date_filter = {}
@@ -1654,44 +1499,67 @@ def export_bookings():
     header_fill = PatternFill(start_color="E31837", end_color="E31837", fill_type="solid")
     header_font = Font(bold=True, color="FFFFFF", size=12)
     
+    # Determine starting row (2 if headers are hidden, 1 if shown)
+    start_row = 2 if hide_headers else 1
+    header_row = 1
+    
     # Write headers
-    headers = ['S.No', 'Reference', 'Patient Name', 'Patient Phone', 'Package', 
-               'Total Amount (₹)', 'Booking Date', 'Time', 'Sample Type', 
-               'Payment Status', 'Booking Status', 'Created Date']
-    for col_num, header in enumerate(headers, 1):
-        cell = ws.cell(row=1, column=col_num)
+    for col_num, col_key in enumerate(selected_columns, 1):
+        header = all_columns[col_key]['header']
+        cell = ws.cell(row=header_row, column=col_num)
         cell.value = header
         cell.fill = header_fill
         cell.font = header_font
         cell.alignment = Alignment(horizontal='center', vertical='center')
     
+    # Hide the header row if requested
+    if hide_headers:
+        ws.row_dimensions[1].hidden = True
+    
     # Write data
-    for row_num, booking in enumerate(bookings, 2):
-        ws.cell(row=row_num, column=1, value=row_num - 1)
-        ws.cell(row=row_num, column=2, value=booking.get('booking_reference', 'N/A'))
-        ws.cell(row=row_num, column=3, value=booking.get('patient_name', 'N/A'))
-        ws.cell(row=row_num, column=4, value=booking.get('patient_phone', 'N/A'))
-        ws.cell(row=row_num, column=5, value=booking.get('package_name', 'N/A'))
-        ws.cell(row=row_num, column=6, value=booking.get('total_price', 0))
-        booking_date = booking.get('booking_date')
-        ws.cell(row=row_num, column=7, value=booking_date.strftime('%Y-%m-%d') if booking_date else 'N/A')
-        ws.cell(row=row_num, column=8, value=booking.get('booking_time', 'N/A'))
-        ws.cell(row=row_num, column=9, value=booking.get('sample_type', 'N/A'))
-        ws.cell(row=row_num, column=10, value=booking.get('payment_status', 'N/A'))
-        ws.cell(row=row_num, column=11, value=booking.get('booking_status', 'N/A'))
-        created_at = booking.get('created_at')
-        ws.cell(row=row_num, column=12, value=created_at.strftime('%Y-%m-%d %H:%M') if created_at else 'N/A')
+    for row_num, booking in enumerate(bookings, start_row):
+        for col_num, col_key in enumerate(selected_columns, 1):
+            value = 'N/A'
+            if col_key == 'sno':
+                value = row_num - (start_row - 1)
+            elif col_key == 'reference':
+                value = booking.get('booking_reference', 'N/A')
+            elif col_key == 'patient_name':
+                value = booking.get('patient_name', 'N/A')
+            elif col_key == 'patient_phone':
+                value = booking.get('patient_phone', 'N/A')
+            elif col_key == 'package':
+                value = booking.get('package_name', 'N/A')
+            elif col_key == 'total_amount':
+                value = booking.get('total_price', 0)
+            elif col_key == 'booking_date':
+                booking_date = booking.get('booking_date')
+                value = booking_date.strftime('%Y-%m-%d') if booking_date else 'N/A'
+            elif col_key == 'time':
+                value = booking.get('booking_time', 'N/A')
+            elif col_key == 'sample_type':
+                value = booking.get('sample_type', 'N/A')
+            elif col_key == 'payment_status':
+                value = booking.get('payment_status', 'N/A')
+            elif col_key == 'booking_status':
+                value = booking.get('booking_status', 'N/A')
+            elif col_key == 'created_date':
+                created_at = booking.get('created_at')
+                value = created_at.strftime('%Y-%m-%d %H:%M') if created_at else 'N/A'
+            
+            ws.cell(row=row_num, column=col_num, value=value)
     
     # Auto-adjust column widths
-    for column in ws.columns:
+    for col_num in range(1, len(selected_columns) + 1):
         max_length = 0
-        column_letter = column[0].column_letter
-        for cell in column:
-            try:
-                if len(str(cell.value)) > max_length:
-                    max_length = len(str(cell.value))
-            except:
-                pass
+        column_letter = ws.cell(row=start_row, column=col_num).column_letter
+        for row in ws.iter_rows(min_row=start_row, max_row=ws.max_row, min_col=col_num, max_col=col_num):
+            for cell in row:
+                try:
+                    if cell.value and len(str(cell.value)) > max_length:
+                        max_length = len(str(cell.value))
+                except:
+                    pass
         adjusted_width = min(max_length + 2, 50)
         ws.column_dimensions[column_letter].width = adjusted_width
     
