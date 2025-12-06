@@ -11,7 +11,6 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon_io/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ url_for('static', filename='favicon_io/site.webmanifest') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/mapims.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <style>
         .analytics-main {
             padding: 40px 0;
@@ -219,7 +218,7 @@
             <div class="chart-container">
                 <h3>Package Distribution</h3>
                 <div class="chart-wrapper">
-                    <canvas id="packageChart"></canvas>
+                    <canvas id="packageChart" width="400" height="300"></canvas>
                 </div>
             </div>
 
@@ -227,7 +226,7 @@
             <div class="chart-container">
                 <h3>Health Risk Score Distribution</h3>
                 <div class="chart-wrapper">
-                    <canvas id="riskChart"></canvas>
+                    <canvas id="riskChart" width="400" height="300"></canvas>
                 </div>
             </div>
 
@@ -235,7 +234,7 @@
             <div class="chart-container">
                 <h3>Patient Age Distribution</h3>
                 <div class="chart-wrapper">
-                    <canvas id="ageChart"></canvas>
+                    <canvas id="ageChart" width="400" height="300"></canvas>
                 </div>
             </div>
 
@@ -243,7 +242,23 @@
             <div class="chart-container">
                 <h3>Revenue Trend (Last 30 Days)</h3>
                 <div class="chart-wrapper">
-                    <canvas id="revenueChart"></canvas>
+                    <canvas id="revenueChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- Booking Status Distribution Chart -->
+            <div class="chart-container">
+                <h3>Booking Status Distribution</h3>
+                <div class="chart-wrapper">
+                    <canvas id="bookingStatusChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- Revenue by Package Chart -->
+            <div class="chart-container">
+                <h3>Revenue by Package</h3>
+                <div class="chart-wrapper">
+                    <canvas id="revenueByPackageChart" width="400" height="300"></canvas>
                 </div>
             </div>
 
@@ -369,146 +384,559 @@
             <div class="analytics-section">
                 <h2>Monthly Trends</h2>
                 <div class="chart-wrapper" style="height: 400px;">
-                    <canvas id="monthlyTrendChart"></canvas>
+                    <canvas id="monthlyTrendChart" width="400" height="400"></canvas>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Load Chart.js before initializing charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" 
+            onerror="console.error('Failed to load Chart.js from CDN'); 
+                     var script = document.createElement('script');
+                     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
+                     document.head.appendChild(script);"></script>
     <script>
-        // Package Distribution Chart
-        const packageCtx = document.getElementById('packageChart').getContext('2d');
-        new Chart(packageCtx, {
-            type: 'doughnut',
-            data: {
-                labels: {{ package_labels|tojson }},
-                datasets: [{
-                    data: {{ package_data|tojson }},
-                    backgroundColor: [
-                        '#E31837',
-                        '#B8142C',
-                        '#F04A5F',
-                        '#FF6B7A',
-                        '#FF8A95',
-                        '#FFA8B0'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
+        // Wait for Chart.js and DOM to be fully loaded
+        function initializeCharts() {
+            // Check if Chart.js is loaded
+            if (typeof Chart === 'undefined') {
+                console.log('Waiting for Chart.js to load...');
+                setTimeout(initializeCharts, 100);
+                return;
             }
-        });
+            
+            console.log('Chart.js loaded, initializing charts...');
+            
+            // Chart color palette
+            const chartColors = {
+                primary: '#E31837',
+                secondary: '#B8142C',
+                tertiary: '#F04A5F',
+                quaternary: '#FF6B7A',
+                quinary: '#FF8A95',
+                senary: '#FFA8B0'
+            };
 
-        // Risk Score Distribution Chart
-        const riskCtx = document.getElementById('riskChart').getContext('2d');
-        new Chart(riskCtx, {
-            type: 'bar',
-            data: {
-                labels: {{ risk_labels|tojson }},
-                datasets: [{
-                    label: 'Patients',
-                    data: {{ risk_data|tojson }},
-                    backgroundColor: '#E31837'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
+            // Helper function to safely get JSON data
+            function getData(jsonData, defaultValue) {
+                try {
+                    if (jsonData === undefined || jsonData === null) {
+                        return defaultValue;
                     }
+                    return Array.isArray(jsonData) ? jsonData : defaultValue;
+                } catch (e) {
+                    console.error('Error parsing data:', e);
+                    return defaultValue;
                 }
             }
-        });
 
-        // Age Distribution Chart
-        const ageCtx = document.getElementById('ageChart').getContext('2d');
-        new Chart(ageCtx, {
-            type: 'line',
-            data: {
-                labels: {{ age_labels|tojson }},
-                datasets: [{
-                    label: 'Patients',
-                    data: {{ age_data|tojson }},
-                    borderColor: '#E31837',
-                    backgroundColor: 'rgba(227, 24, 55, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+            // Package Distribution Chart
+            try {
+                const packageCtx = document.getElementById('packageChart');
+                if (!packageCtx) {
+                    console.error('Package chart canvas not found');
+                } else {
+                    const packageLabels = getData({{ package_labels|tojson }}, []);
+                    const packageData = getData({{ package_data|tojson }}, []);
+                    
+                    console.log('Package chart data:', { labels: packageLabels, data: packageData });
+                    
+                    // Ensure we have valid data arrays - always show something
+                    let labels = packageLabels.length > 0 ? packageLabels : ['No Packages Yet'];
+                    let data = packageData.length > 0 ? packageData : [100];
+                    
+                    // Ensure we have enough colors
+                    const colors = [
+                        chartColors.primary,
+                        chartColors.secondary,
+                        chartColors.tertiary,
+                        chartColors.quaternary,
+                        chartColors.quinary,
+                        chartColors.senary
+                    ];
+                    const bgColors = labels.map((_, i) => colors[i % colors.length]);
+                    
+                    new Chart(packageCtx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: data,
+                                backgroundColor: bgColors,
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
+                        },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 15,
+                                            font: {
+                                                size: 12
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const label = context.label || '';
+                                                const value = context.parsed || 0;
+                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                const percentage = ((value / total) * 100).toFixed(1);
+                                                return `${label}: ${value} (${percentage}%)`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                }
+                    console.log('Package chart created successfully');
+                }
+            } catch (error) {
+                console.error('Error creating package chart:', error);
+                const packageCtx = document.getElementById('packageChart');
+                if (packageCtx && packageCtx.parentElement) {
+                    packageCtx.parentElement.innerHTML = '<div style="text-align: center; color: #999; padding: 50px;"><p>Error loading chart</p><p style="font-size: 0.8em;">' + error.message + '</p></div>';
                 }
             }
-        });
 
-        // Revenue Trend Chart
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: {{ revenue_labels|tojson }},
-                datasets: [{
-                    label: 'Revenue (₹)',
-                    data: {{ revenue_data|tojson }},
-                    borderColor: '#E31837',
-                    backgroundColor: 'rgba(227, 24, 55, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+            // Risk Score Distribution Chart
+            try {
+                const riskCtx = document.getElementById('riskChart');
+                if (!riskCtx) {
+                    console.error('Risk chart canvas not found');
+                } else {
+                    const riskLabels = getData({{ risk_labels|tojson }}, ['Low', 'Moderate', 'High', 'Critical']);
+                    const riskData = getData({{ risk_data|tojson }}, [0, 0, 0, 0]);
+                    
+                    console.log('Risk chart data:', { labels: riskLabels, data: riskData });
+                    
+                    new Chart(riskCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: riskLabels,
+                            datasets: [{
+                                label: 'Number of Patients',
+                                data: riskData,
+                                    backgroundColor: [
+                                        '#4CAF50',  // Low - Green
+                                        '#FFC107',  // Moderate - Yellow
+                                        '#FF9800',  // High - Orange
+                                        chartColors.primary  // Critical - Red
+                                    ],
+                                    borderColor: chartColors.secondary,
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return `${context.parsed.y} patients`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            stepSize: 1
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                }
+                    console.log('Risk chart created successfully');
+                }
+            } catch (error) {
+                console.error('Error creating risk chart:', error);
+                const riskCtx = document.getElementById('riskChart');
+                if (riskCtx && riskCtx.parentElement) {
+                    riskCtx.parentElement.innerHTML = '<div style="text-align: center; color: #999; padding: 50px;"><p>Error loading chart</p><p style="font-size: 0.8em;">' + error.message + '</p></div>';
                 }
             }
-        });
 
-        // Monthly Trends Chart
-        const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
-        new Chart(monthlyCtx, {
-            type: 'bar',
-            data: {
-                labels: {{ monthly_labels|tojson }},
-                datasets: [
-                    {
-                        label: 'Patients',
-                        data: {{ monthly_patients|tojson }},
-                        backgroundColor: '#E31837'
-                    },
-                    {
-                        label: 'Bookings',
-                        data: {{ monthly_bookings|tojson }},
-                        backgroundColor: '#B8142C'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+            // Age Distribution Chart
+            try {
+                const ageCtx = document.getElementById('ageChart');
+                if (!ageCtx) {
+                    console.error('Age chart canvas not found');
+                } else {
+                    const ageLabels = getData({{ age_labels|tojson }}, ['0-20', '21-30', '31-40', '41-50', '51-60', '60+']);
+                    const ageData = getData({{ age_data|tojson }}, [0, 0, 0, 0, 0, 0]);
+                    
+                    console.log('Age chart data:', { labels: ageLabels, data: ageData });
+                    
+                    new Chart(ageCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: ageLabels,
+                            datasets: [{
+                                label: 'Number of Patients',
+                                data: ageData,
+                                    borderColor: chartColors.primary,
+                                    backgroundColor: 'rgba(227, 24, 55, 0.6)',
+                                    borderWidth: 2,
+                                    fill: false
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return `${context.parsed.y} patients`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            stepSize: 1
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                }
+                    console.log('Age chart created successfully');
+                }
+            } catch (error) {
+                console.error('Error creating age chart:', error);
+                const ageCtx = document.getElementById('ageChart');
+                if (ageCtx && ageCtx.parentElement) {
+                    ageCtx.parentElement.innerHTML = '<div style="text-align: center; color: #999; padding: 50px;"><p>Error loading chart</p><p style="font-size: 0.8em;">' + error.message + '</p></div>';
                 }
             }
-        });
+
+            // Revenue Trend Chart
+            try {
+                const revenueCtx = document.getElementById('revenueChart');
+                if (!revenueCtx) {
+                    console.error('Revenue chart canvas not found');
+                } else {
+                    let revenueLabels = getData({{ revenue_labels|tojson }}, []);
+                    let revenueData = getData({{ revenue_data|tojson }}, []);
+                    
+                    // Generate default labels if empty (last 30 days)
+                    if (revenueLabels.length === 0) {
+                        revenueLabels = [];
+                        revenueData = [];
+                        for (let i = 29; i >= 0; i--) {
+                            const date = new Date();
+                            date.setDate(date.getDate() - i);
+                            revenueLabels.push(date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' }));
+                            revenueData.push(0);
+                        }
+                    }
+                    
+                    console.log('Revenue chart data:', { labels: revenueLabels.length, data: revenueData.length });
+                    
+                    new Chart(revenueCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: revenueLabels,
+                            datasets: [{
+                                label: 'Revenue (₹)',
+                                data: revenueData,
+                                    borderColor: chartColors.primary,
+                                    backgroundColor: 'rgba(227, 24, 55, 0.1)',
+                                    borderWidth: 3,
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6,
+                                    pointBackgroundColor: chartColors.primary,
+                                    pointBorderColor: '#fff',
+                                    pointBorderWidth: 2
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return `Revenue: ₹${context.parsed.y.toLocaleString('en-IN')}`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return '₹' + value.toLocaleString('en-IN');
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                }
+                    console.log('Revenue chart created successfully');
+                }
+            } catch (error) {
+                console.error('Error creating revenue chart:', error);
+                const revenueCtx = document.getElementById('revenueChart');
+                if (revenueCtx && revenueCtx.parentElement) {
+                    revenueCtx.parentElement.innerHTML = '<div style="text-align: center; color: #999; padding: 50px;"><p>Error loading chart</p><p style="font-size: 0.8em;">' + error.message + '</p></div>';
+                }
+            }
+
+            // Monthly Trends Chart
+            try {
+                const monthlyCtx = document.getElementById('monthlyTrendChart');
+                if (!monthlyCtx) {
+                    console.error('Monthly trends chart canvas not found');
+                } else {
+                    let monthlyLabels = getData({{ monthly_labels|tojson }}, []);
+                    let monthlyPatients = getData({{ monthly_patients|tojson }}, []);
+                    let monthlyBookings = getData({{ monthly_bookings|tojson }}, []);
+                    
+                    // Generate default labels if empty (last 6 months)
+                    if (monthlyLabels.length === 0) {
+                        monthlyLabels = [];
+                        monthlyPatients = [];
+                        monthlyBookings = [];
+                        for (let i = 5; i >= 0; i--) {
+                            const date = new Date();
+                            date.setMonth(date.getMonth() - i);
+                            monthlyLabels.push(date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }));
+                            monthlyPatients.push(0);
+                            monthlyBookings.push(0);
+                        }
+                    }
+                    
+                    console.log('Monthly trends chart data:', { labels: monthlyLabels.length, patients: monthlyPatients.length, bookings: monthlyBookings.length });
+                    
+                    new Chart(monthlyCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: monthlyLabels,
+                            datasets: [
+                                {
+                                    label: 'Patients',
+                                    data: monthlyPatients,
+                                    backgroundColor: chartColors.primary,
+                                    borderColor: chartColors.secondary,
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Bookings',
+                                    data: monthlyBookings,
+                                        backgroundColor: chartColors.tertiary,
+                                        borderColor: chartColors.secondary,
+                                        borderWidth: 1
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return `${context.dataset.label}: ${context.parsed.y}`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            stepSize: 1
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                }
+                    console.log('Monthly trends chart created successfully');
+                }
+            } catch (error) {
+                console.error('Error creating monthly trends chart:', error);
+                const monthlyCtx = document.getElementById('monthlyTrendChart');
+                if (monthlyCtx && monthlyCtx.parentElement) {
+                    monthlyCtx.parentElement.innerHTML = '<div style="text-align: center; color: #999; padding: 50px;"><p>Error loading chart</p><p style="font-size: 0.8em;">' + error.message + '</p></div>';
+                }
+            }
+
+            // Booking Status Distribution Chart
+            try {
+                const bookingStatusCtx = document.getElementById('bookingStatusChart');
+                if (!bookingStatusCtx) {
+                    console.error('Booking status chart canvas not found');
+                } else {
+                    const bookingStatusLabels = getData({{ booking_status_labels|tojson }}, ['Confirmed', 'Pending', 'Cancelled', 'Completed']);
+                    const bookingStatusData = getData({{ booking_status_data|tojson }}, [0, 0, 0, 0]);
+                    
+                    console.log('Booking status chart data:', { labels: bookingStatusLabels, data: bookingStatusData });
+                    
+                    new Chart(bookingStatusCtx.getContext('2d'), {
+                        type: 'pie',
+                        data: {
+                            labels: bookingStatusLabels,
+                            datasets: [{
+                                data: bookingStatusData,
+                                    backgroundColor: [
+                                        '#4CAF50',  // Confirmed - Green
+                                        '#FFC107',  // Pending - Yellow
+                                        '#F44336',  // Cancelled - Red
+                                        '#2196F3'   // Completed - Blue
+                                    ],
+                                    borderColor: '#fff',
+                                    borderWidth: 2
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 15,
+                                            font: {
+                                                size: 12
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const label = context.label || '';
+                                                const value = context.parsed || 0;
+                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                                return `${label}: ${value} (${percentage}%)`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                }
+                    console.log('Booking status chart created successfully');
+                }
+            } catch (error) {
+                console.error('Error creating booking status chart:', error);
+                const bookingStatusCtx = document.getElementById('bookingStatusChart');
+                if (bookingStatusCtx && bookingStatusCtx.parentElement) {
+                    bookingStatusCtx.parentElement.innerHTML = '<div style="text-align: center; color: #999; padding: 50px;"><p>Error loading chart</p><p style="font-size: 0.8em;">' + error.message + '</p></div>';
+                }
+            }
+
+            // Revenue by Package Chart
+            try {
+                const revenueByPackageCtx = document.getElementById('revenueByPackageChart');
+                if (!revenueByPackageCtx) {
+                    console.error('Revenue by package chart canvas not found');
+                } else {
+                    const revenueByPackageLabels = getData({{ revenue_by_package_labels|tojson }}, []);
+                    const revenueByPackageData = getData({{ revenue_by_package_data|tojson }}, []);
+                    
+                    // Always show chart, even if empty
+                    const labels = revenueByPackageLabels.length > 0 ? revenueByPackageLabels : ['No Packages Yet'];
+                    const data = revenueByPackageData.length > 0 ? revenueByPackageData : [0];
+                    
+                    console.log('Revenue by package chart data:', { labels: labels, data: data });
+                    
+                    new Chart(revenueByPackageCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Revenue (₹)',
+                                data: data,
+                                    backgroundColor: chartColors.primary,
+                                    borderColor: chartColors.secondary,
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                indexAxis: 'y',  // Horizontal bar chart
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return `Revenue: ₹${context.parsed.x.toLocaleString('en-IN')}`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return '₹' + value.toLocaleString('en-IN');
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                }
+                    console.log('Revenue by package chart created successfully');
+                }
+            } catch (error) {
+                console.error('Error creating revenue by package chart:', error);
+                const revenueByPackageCtx = document.getElementById('revenueByPackageChart');
+                if (revenueByPackageCtx && revenueByPackageCtx.parentElement) {
+                    revenueByPackageCtx.parentElement.innerHTML = '<div style="text-align: center; color: #999; padding: 50px;"><p>Error loading chart</p><p style="font-size: 0.8em;">' + error.message + '</p></div>';
+                }
+            }
+            
+            console.log('All charts initialization completed');
+        }
+
+        // Initialize charts when DOM and Chart.js are ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(initializeCharts, 100);
+            });
+        } else {
+            setTimeout(initializeCharts, 100);
+        }
         
         // Global Filter Functions
         function applyGlobalFilters() {
