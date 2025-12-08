@@ -632,7 +632,7 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
     
     // Collect medical conditions (Step 2) - Yes/No/Not sure
     const conditions = {};
-    const conditionFields = ['diabetes', 'hypertension', 'heart_disease', 'thyroid', 'asthma', 'kidney', 'cancer'];
+    const conditionFields = ['diabetes', 'hypertension', 'heart_disease', 'thyroid', 'asthma', 'kidney'];
     conditionFields.forEach(condition => {
         const radio = document.querySelector(`input[name="condition_${condition}"]:checked`);
         conditions[`condition_${condition}`] = radio ? radio.value : 'no';
@@ -641,7 +641,7 @@ document.getElementById('assessmentForm')?.addEventListener('submit', async func
     
     // Collect family history (Step 3)
     const familyHistory = {};
-    const familyFields = ['diabetes', 'heart_disease', 'cancer'];
+    const familyFields = ['diabetes', 'heart_disease'];
     familyFields.forEach(field => {
         const radio = document.querySelector(`input[name="family_${field}"]:checked`);
         familyHistory[`family_${field}`] = radio ? radio.value : 'no';
