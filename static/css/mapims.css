@@ -1269,12 +1269,73 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 
 /* ==================== SYMPTOM & CONDITION QUESTION CARDS ==================== */
 .symptoms-grid,
-.medical-conditions-grid,
-.family-history-grid {
+.medical-conditions-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
     margin-top: 32px;
+}
+
+.family-history-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+    max-width: 100%;
+}
+
+/* Family History Grid - Special Radio Button Layout */
+/* Matches the image: Yes/No on same line, Not sure centered below */
+.family-history-grid .condition-question-card .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.family-history-grid .condition-question-card .radio-label {
+    flex: 0 1 auto;
+    min-width: 80px;
+    padding: 12px 16px;
+}
+
+/* Yes and No on same line - each takes ~50% width */
+.family-history-grid .condition-question-card .radio-label:first-child,
+.family-history-grid .condition-question-card .radio-label:nth-child(2) {
+    flex: 0 1 calc(50% - 6px);
+    max-width: calc(50% - 6px);
+}
+
+/* Not sure on new line, centered - takes full width but content centered */
+.family-history-grid .condition-question-card .radio-label:nth-child(3) {
+    flex: 0 0 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 768px) {
+    .family-history-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .family-history-grid .condition-question-card .radio-label:first-child,
+    .family-history-grid .condition-question-card .radio-label:nth-child(2) {
+        flex: 0 1 calc(50% - 6px);
+        max-width: calc(50% - 6px);
+    }
+    
+    .family-history-grid .condition-question-card .radio-label:nth-child(3) {
+        flex: 0 1 100%;
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 .symptom-question-card,
@@ -3491,10 +3552,36 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     }
     
     .symptoms-grid,
-    .medical-conditions-grid,
+    .medical-conditions-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+    
     .family-history-grid {
         grid-template-columns: 1fr;
         gap: 14px;
+    }
+    
+    /* Maintain family history radio button layout on mobile */
+    .family-history-grid .condition-question-card .radio-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: space-between;
+    }
+    
+    .family-history-grid .condition-question-card .radio-label:first-child,
+    .family-history-grid .condition-question-card .radio-label:nth-child(2) {
+        flex: 0 1 calc(50% - 6px);
+        max-width: calc(50% - 6px);
+    }
+    
+    .family-history-grid .condition-question-card .radio-label:nth-child(3) {
+        flex: 0 0 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     
     .symptom-question-card,
