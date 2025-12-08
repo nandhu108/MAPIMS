@@ -226,6 +226,139 @@ def get_bmi_category(bmi):
     else:
         return 'Obese'
 
+def transform_form_data_to_ml_format(data):
+    """
+    Transform structured form data into string format expected by ML modules.
+    
+    Converts:
+    - condition_* fields and other_conditions -> medical_history string
+    - family_* fields -> family_history string
+    - lifestyle fields -> lifestyle string
+    - symptoms field (if exists)
+    """
+    # Build medical_history from condition fields
+    medical_history_parts = []
+    condition_mapping = {
+        'condition_diabetes': 'diabetes',
+        'condition_hypertension': 'hypertension',
+        'condition_heart_disease': 'heart disease',
+        'condition_thyroid': 'thyroid',
+        'condition_asthma': 'asthma',
+        'condition_kidney': 'kidney disease'
+    }
+    
+    for field_key, condition_name in condition_mapping.items():
+        value = data.get(field_key, '').lower()
+        if value == 'yes':
+            medical_history_parts.append(condition_name)
+        elif value == 'not_sure':
+            medical_history_parts.append(f"possible {condition_name}")
+    
+    # Add other_conditions if provided
+    other_conditions = data.get('other_conditions', '').strip()
+    if other_conditions:
+        medical_history_parts.append(other_conditions)
+    
+    medical_history = ', '.join(medical_history_parts) if medical_history_parts else ''
+    
+    # Build family_history from family fields
+    family_history_parts = []
+    family_mapping = {
+        'family_diabetes': 'diabetes',
+        'family_heart_disease': 'heart disease'
+    }
+    
+    for field_key, condition_name in family_mapping.items():
+        value = data.get(field_key, '').lower()
+        if value == 'yes':
+            family_history_parts.append(condition_name)
+        elif value == 'not_sure':
+            family_history_parts.append(f"possible {condition_name}")
+    
+    family_history = ', '.join(family_history_parts) if family_history_parts else ''
+    
+    # Build lifestyle string from lifestyle fields
+    lifestyle_parts = []
+    
+    # Sleep hours
+    sleep_hours = data.get('sleep_hours', '').strip()
+    if sleep_hours:
+        try:
+            hours = float(sleep_hours)
+            if hours < 6:
+                lifestyle_parts.append('less sleep')
+            elif hours >= 6 and hours <= 8:
+                lifestyle_parts.append('adequate sleep')
+            else:
+                lifestyle_parts.append('excessive sleep')
+        except (ValueError, TypeError):
+            if sleep_hours.lower() in ['less', 'low', 'insufficient']:
+                lifestyle_parts.append('less sleep')
+    
+    # Exercise frequency
+    exercise_frequency = data.get('exercise_frequency', '').strip().lower()
+    if exercise_frequency:
+        if exercise_frequency in ['never', 'rarely', 'seldom']:
+            lifestyle_parts.append('sedentary lifestyle')
+            lifestyle_parts.append('no exercise')
+        elif exercise_frequency in ['sometimes', 'occasionally']:
+            lifestyle_parts.append('low exercise')
+        elif exercise_frequency in ['regularly', 'often', 'frequently', 'daily']:
+            lifestyle_parts.append('regular exercise')
+            lifestyle_parts.append('active lifestyle')
+    
+    # Smoking status
+    smoking_status = data.get('smoking_status', '').strip().lower()
+    if smoking_status:
+        if smoking_status in ['yes', 'current', 'smoker', 'regular']:
+            lifestyle_parts.append('smoking')
+            lifestyle_parts.append('tobacco use')
+        elif smoking_status in ['former', 'quit', 'ex-smoker']:
+            lifestyle_parts.append('former smoker')
+    
+    # Alcohol consumption
+    alcohol_consumption = data.get('alcohol_consumption', '').strip().lower()
+    if alcohol_consumption:
+        if alcohol_consumption in ['yes', 'regular', 'frequent', 'daily']:
+            lifestyle_parts.append('alcohol consumption')
+        elif alcohol_consumption in ['excessive', 'heavy', 'binge']:
+            lifestyle_parts.append('excessive alcohol')
+            lifestyle_parts.append('heavy drinking')
+        elif alcohol_consumption in ['occasional', 'social']:
+            lifestyle_parts.append('occasional alcohol')
+    
+    # Diet type
+    diet_type = data.get('diet_type', '').strip().lower()
+    if diet_type:
+        lifestyle_parts.append(f"{diet_type} diet")
+    
+    # Lifestyle other
+    lifestyle_other = data.get('lifestyle_other', '').strip()
+    if lifestyle_other:
+        lifestyle_parts.append(lifestyle_other)
+    
+    # Check for stress/anxiety keywords in lifestyle_other
+    if lifestyle_other:
+        lifestyle_lower = lifestyle_other.lower()
+        if 'stress' in lifestyle_lower:
+            lifestyle_parts.append('stress')
+        if 'anxiety' in lifestyle_lower:
+            lifestyle_parts.append('anxiety')
+    
+    lifestyle = ', '.join(lifestyle_parts) if lifestyle_parts else ''
+    
+    # Get symptoms (if provided, otherwise empty string)
+    symptoms = data.get('symptoms', '').strip()
+    
+    # Create transformed data dict
+    transformed_data = data.copy()
+    transformed_data['symptoms'] = symptoms
+    transformed_data['medical_history'] = medical_history
+    transformed_data['family_history'] = family_history
+    transformed_data['lifestyle'] = lifestyle
+    
+    return transformed_data
+
 def analyze_health_with_ai(patient_data):
     """
     Advanced ML-powered health analysis system
@@ -426,7 +559,7 @@ def analyze_health_with_ai(patient_data):
             health_risks[risk_type]["level"] = "Low"
     
     # ========== MEDICAL HISTORY ANALYSIS (0-25 points) ==========
-    critical_conditions = ["diabetes", "hypertension", "heart disease", "stroke", "kidney", "liver", "cancer", "thyroid"]
+    critical_conditions = ["diabetes", "hypertension", "heart disease", "stroke", "kidney", "liver", "thyroid"]
     moderate_conditions = ["asthma", "arthritis", "cholesterol", "anemia", "migraine"]
     
     medical_score = 0
@@ -454,7 +587,7 @@ def analyze_health_with_ai(patient_data):
             break
     
     # ========== FAMILY HISTORY ANALYSIS (0-15 points) ==========
-    family_conditions = ["diabetes", "heart", "cancer", "hypertension", "stroke", "kidney", "liver"]
+    family_conditions = ["diabetes", "heart", "hypertension", "stroke", "kidney", "liver"]
     family_score = 0
     for condition in family_conditions:
         if condition in family_history:
@@ -756,8 +889,11 @@ def submit_assessment():
         
         # Get health analysis using advanced rule-based system
         try:
+            # Transform structured form data to ML-expected format
+            transformed_data = transform_form_data_to_ml_format(data)
+            
             # Include dynamic fields in analysis data
-            analysis_data = data.copy()
+            analysis_data = transformed_data.copy()
             # Add dynamic fields to analysis if they exist
             if 'chest_pain' in data:
                 analysis_data['chest_pain'] = data.get('chest_pain')
