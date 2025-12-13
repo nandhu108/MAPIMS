@@ -104,94 +104,114 @@ PACKAGES = {
     'basic': {
         'id': 'basic',
         'price': 999,
-        'name': 'Basic Health Checkup',
-        'description': 'Essential health screening for preventive care',
+        'name': 'Basic Health Check Up Package',
+        'description': 'Complete Basic Health Check-up',
         'includes': [
-            'Complete Blood Count (CBC)',
-            'Blood Sugar (Fasting)',
+            'Complete Blood Count',
             'Lipid Profile',
-            'BMI Analysis',
-            'General Physician Consultation'
+            'Fasting Sugar',
+            'PPBS',
+            'Urea',
+            'Creatinine',
+            'TSH',
+            'Complete Urine Routine',
+            'ECG',
+            'X-Ray Chest PA View',
+            'Ultrasound of the Whole Abdomen',
+            'Clinical examination',
+            'Medical summary and advice by a Consultant Physician',
+            'Dietician Consultation'
         ],
         'duration': '2-3 hours'
     },
-    'standard': {
-        'id': 'standard',
-        'price': 1499,
-        'name': 'Standard Health Checkup',
-        'description': 'Comprehensive screening for adults',
-        'includes': [
-            'All Basic Tests',
-            'Liver Function Test (LFT)',
-            'Kidney Function Test (KFT)',
-            'Thyroid Function Test (TFT)',
-            'ECG',
-            'Chest X-Ray',
-            'Doctor Consultation'
-        ],
-        'duration': '3-4 hours'
-    },
-    'advanced': {
-        'id': 'advanced',
-        'price': 1799,
-        'name': 'Advanced Health Checkup',
-        'description': 'Advanced screening with detailed analysis',
-        'includes': [
-            'All Standard Tests',
-            'Diabetes Profile (HbA1c)',
-            'Vitamin D & B12',
-            'Cardiac Risk Markers',
-            'Ultrasound Abdomen',
-            'Specialist Consultation'
-        ],
-        'duration': '4-5 hours'
-    },
     'master': {
         'id': 'master',
-        'price': 2499,
-        'name': 'Master Health Checkup',
-        'description': 'Complete health assessment package',
+        'price': 1999,
+        'name': 'Master Health Check Up Package',
+        'description': 'Complete Health Check-up for All',
         'includes': [
-            'All Advanced Tests',
-            'Cancer Screening Markers',
-            'Bone Density Test',
-            'Full Body Checkup',
-            'Stress Test',
-            'Multiple Specialist Consultations',
-            'Detailed Health Report'
+            'Blood Grouping',
+            'Complete Blood Count',
+            'Fasting Sugar',
+            'PPBS',
+            'Urea',
+            'Creatinine',
+            'TSH',
+            'Uric Acid',
+            'Lipid Profile',
+            'Liver Function Test',
+            'Complete Urine Routine',
+            'ECG',
+            'X-Ray Chest PA View',
+            'Ultrasound of the Whole Abdomen',
+            'Clinical examination',
+            'Medical summary and advice by a Consultant Physician',
+            'Dietician Consultation'
         ],
-        'duration': '5-6 hours'
+        'duration': '3-4 hours'
     },
     'cardiac': {
         'id': 'cardiac',
-        'price': 2999,
-        'name': 'Cardiac Checkup',
-        'description': 'Comprehensive heart health assessment',
+        'price': 2499,
+        'name': 'Cardio Health Check Up Package',
+        'description': 'Cardiac Check-up for All',
         'includes': [
-            'Complete Cardiac Profile',
-            'ECG & Stress Test',
-            'Echocardiography',
-            'Cardiac Risk Markers',
+            'Blood Grouping',
+            'Complete Blood Count',
+            'Fasting Sugar',
+            'PPBS',
+            'Urea',
+            'Creatinine',
+            'Uric Acid',
+            'Lipid Profile',
+            'Liver Function Test',
+            'HbA1C',
+            'Sr. Electrolytes',
+            'Thyroid Function Test',
+            'ECG',
+            'X-Ray Chest',
+            'USG Whole Abdomen',
+            'ECHO',
+            'Pulmonary Function Test',
+            'Hearing Assessment (AUDIOGRAM)',
+            'Clinical examination',
+            'Medical summary and advice by a Consultant Physician',
             'Cardiologist Consultation',
-            'Detailed Cardiac Report'
+            'Dietician Consultation'
         ],
         'duration': '4-5 hours'
     },
-    'diabetic': {
-        'id': 'diabetic',
-        'price': 1999,
-        'name': 'Diabetic Profile',
-        'description': 'Complete diabetes management package',
+    'well_women': {
+        'id': 'well_women',
+        'price': 2999,
+        'name': 'Well Women Checkup Executive Package',
+        'description': 'Well Women Checkup Executive Package',
         'includes': [
-            'HbA1c (3 months average)',
-            'Fasting & Post-Prandial Sugar',
-            'Insulin Levels',
-            'Kidney Function (for diabetics)',
-            'Eye & Foot Examination',
-            'Diabetologist Consultation',
-            'Diet & Lifestyle Guidance'
+            'Blood Grouping',
+            'Complete Blood Count',
+            'Fasting Sugar',
+            'PPBS',
+            'Urea',
+            'Creatinine',
+            'Lipid Profile',
+            'Liver Function Test',
+            'Complete Urine Routine',
+            'HbA1C',
+            'Sr. Electrolytes',
+            'Serum Calcium',
+            'Thyroid Function Test',
+            'ECG',
+            'X-Ray Chest',
+            'USG Whole Abdomen & Pelvis',
+            'USG Breast/Above 40yrs Mammogram',
+            'ECHO',
+            'Papsmear Investigation',
+            'Hearing Assessment (AUDIOGRAM)',
+            'Gynecologist & Cardiologist Consultant',
+            'Eye Consultant',
+            'Dietician Consultation'
         ],
-        'duration': '3-4 hours'
+        'duration': '5-6 hours'
     }
 }
 
@@ -1064,11 +1084,11 @@ def packages():
 
 @app.route('/api/select-package', methods=['POST'])
 def select_package():
-    """Select package and add-ons"""
+    """Select package"""
     try:
         data = request.json
         session['selected_package'] = data.get('package_id')
-        session['selected_addons'] = data.get('addons', [])
+        session['selected_addons'] = []  # Addons section removed
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500

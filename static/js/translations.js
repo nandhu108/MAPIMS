@@ -203,20 +203,16 @@ const translations = {
         'packages.additionalInPackage': 'Additional in this package:',
         
         // Package Names
-        'package.basic': 'Basic Health Checkup',
-        'package.standard': 'Standard Health Checkup',
-        'package.advanced': 'Advanced Health Checkup',
-        'package.master': 'Master Health Checkup',
-        'package.cardiac': 'Cardiac Checkup',
-        'package.diabetic': 'Diabetic Profile',
+        'package.basic': 'Basic Health Check Up Package',
+        'package.master': 'Master Health Check Up Package',
+        'package.cardiac': 'Cardio Health Check Up Package',
+        'package.well_women': 'Well Women Checkup Executive Package',
         
         // Package Descriptions
-        'package.basic.desc': 'Essential health screening for preventive care',
-        'package.standard.desc': 'Comprehensive screening for adults',
-        'package.advanced.desc': 'Advanced screening with detailed analysis',
-        'package.master.desc': 'Complete health assessment package',
-        'package.cardiac.desc': 'Comprehensive heart health assessment',
-        'package.diabetic.desc': 'Complete diabetes management package',
+        'package.basic.desc': 'Complete Basic Health Check-up',
+        'package.master.desc': 'Complete Health Check-up for All',
+        'package.cardiac.desc': 'Cardiac Check-up for All',
+        'package.well_women.desc': 'Well Women Checkup Executive Package',
         
         // Test Names
         'test.cbc': 'Complete Blood Count (CBC)',
@@ -256,6 +252,39 @@ const translations = {
         'test.eyeFootExamination': 'Eye & Foot Examination',
         'test.diabetologistConsultation': 'Diabetologist Consultation',
         'test.dietLifestyleGuidance': 'Diet & Lifestyle Guidance',
+        
+        // New Package Test Names
+        'test.completeBloodCount': 'Complete Blood Count',
+        'test.lipidProfile': 'Lipid Profile',
+        'test.fastingSugar': 'Fasting Sugar',
+        'test.ppbs': 'PPBS',
+        'test.urea': 'Urea',
+        'test.creatinine': 'Creatinine',
+        'test.tsh': 'TSH',
+        'test.completeUrineRoutine': 'Complete Urine Routine',
+        'test.xrayChestPAView': 'X-Ray Chest PA View',
+        'test.ultrasoundWholeAbdomen': 'Ultrasound of the Whole Abdomen',
+        'test.clinicalExamination': 'Clinical examination',
+        'test.medicalSummaryAdvice': 'Medical summary and advice by a Consultant Physician',
+        'test.dieticianConsultation': 'Dietician Consultation',
+        'test.bloodGrouping': 'Blood Grouping',
+        'test.uricAcid': 'Uric Acid',
+        'test.liverFunctionTest': 'Liver Function Test',
+        'test.hba1c': 'HbA1C',
+        'test.srElectrolytes': 'Sr. Electrolytes',
+        'test.thyroidFunctionTest': 'Thyroid Function Test',
+        'test.xrayChest': 'X-Ray Chest',
+        'test.usgWholeAbdomen': 'USG Whole Abdomen',
+        'test.echo': 'ECHO',
+        'test.pulmonaryFunctionTest': 'Pulmonary Function Test',
+        'test.hearingAssessment': 'Hearing Assessment (AUDIOGRAM)',
+        'test.cardiologistConsultation': 'Cardiologist Consultation',
+        'test.serumCalcium': 'Serum Calcium',
+        'test.usgWholeAbdomenPelvis': 'USG Whole Abdomen & Pelvis',
+        'test.usgBreastMammogram': 'USG Breast/Above 40yrs Mammogram',
+        'test.papsmearInvestigation': 'Papsmear Investigation',
+        'test.gynecologistCardiologistConsultant': 'Gynecologist & Cardiologist Consultant',
+        'test.eyeConsultant': 'Eye Consultant',
         
         // Addon Tests
         'addon.vitaminD': 'Vitamin D Test',
@@ -678,20 +707,16 @@ const translations = {
         'packages.additionalInPackage': 'இந்த தொகுப்பில் கூடுதல்:',
         
         // Package Names
-        'package.basic': 'அடிப்படை சுகாதார சோதனை',
-        'package.standard': 'தரமான சுகாதார சோதனை',
-        'package.advanced': 'மேம்பட்ட சுகாதார சோதனை',
-        'package.master': 'மாஸ்டர் சுகாதார சோதனை',
-        'package.cardiac': 'இதய சுகாதார சோதனை',
-        'package.diabetic': 'நீரிழிவு சுயவிவரம்',
+        'package.basic': 'அடிப்படை சுகாதார சோதனை தொகுப்பு',
+        'package.master': 'மாஸ்டர் சுகாதார சோதனை தொகுப்பு',
+        'package.cardiac': 'இருதய சுகாதார சோதனை தொகுப்பு',
+        'package.well_women': 'பெண்களுக்கான முழு உடல் பரிசோதனை',
         
         // Package Descriptions
-        'package.basic.desc': 'தடுப்பு சிகிச்சைக்கான அத்தியாவசிய சுகாதார திரையிடல்',
-        'package.standard.desc': 'பெரியவர்களுக்கான விரிவான திரையிடல்',
-        'package.advanced.desc': 'விரிவான பகுப்பாய்வுடன் மேம்பட்ட திரையிடல்',
-        'package.master.desc': 'முழுமையான சுகாதார மதிப்பீட்டு தொகுப்பு',
-        'package.cardiac.desc': 'விரிவான இதய சுகாதார மதிப்பீடு',
-        'package.diabetic.desc': 'முழுமையான நீரிழிவு மேலாண்மை தொகுப்பு',
+        'package.basic.desc': 'முழுமையான அடிப்படை உடல்நல பரிசோதனை',
+        'package.master.desc': 'அனைவருக்குமான முழு உடல் பரிசோதனை',
+        'package.cardiac.desc': 'அனைவருக்குமான இருதய பரிசோதனை',
+        'package.well_women.desc': 'பெண்களுக்கான முழு உடல் பரிசோதனை',
         
         // Test Names
         'test.cbc': 'முழுமையான இரத்த எண்ணிக்கை (CBC)',
@@ -731,6 +756,39 @@ const translations = {
         'test.eyeFootExamination': 'கண் & கால் பரிசோதனை',
         'test.diabetologistConsultation': 'நீரிழிவு நோய் நிபுணர் ஆலோசனை',
         'test.dietLifestyleGuidance': 'உணவு & வாழ்க்கை முறை வழிகாட்டுதல்',
+        
+        // New Package Test Names (Tamil)
+        'test.completeBloodCount': 'முழு இரத்த பரிசோதனை',
+        'test.lipidProfile': 'கொழுப்பு பரிசோதனை',
+        'test.fastingSugar': 'உணவுக்கு முன் சர்க்கரை அளவு பரிசோதனை',
+        'test.ppbs': 'உணவுக்குப் பின் சர்க்கரை அளவு பரிசோதனை',
+        'test.urea': 'உப்புச்சத்து பரிசோதனை',
+        'test.creatinine': 'கிட்னி பரிசோதனை',
+        'test.tsh': 'தைராய்டு பரிசோதனை',
+        'test.completeUrineRoutine': 'சிறுநீர் பரிசோதனை',
+        'test.xrayChestPAView': 'மார்பு எக்ஸ்ரே பார்வை',
+        'test.ultrasoundWholeAbdomen': 'அடிவயிறு, இடுப்பு பகுதி ஸ்கேன்',
+        'test.clinicalExamination': 'மருத்துவர் பரிசோதனை',
+        'test.medicalSummaryAdvice': 'மருத்துவத் தொகுப்பு மற்றும் மருத்துவர் ஆலோசனை',
+        'test.dieticianConsultation': 'உணவியல் மருத்துவர் ஆலோசனை',
+        'test.bloodGrouping': 'இரத்த மாதிரி பரிசோதனை',
+        'test.uricAcid': 'யூரிக் அமிலம் பரிசோதனை',
+        'test.liverFunctionTest': 'கல்லீரல் பரிசோதனை',
+        'test.hba1c': 'மூன்று மாத சர்க்கரை அளவு பரிசோதனை',
+        'test.srElectrolytes': 'சீரம் எலக்ட்ரோலைட்ஸ் பரிசோதனை',
+        'test.thyroidFunctionTest': 'தைராய்டு பரிசோதனை',
+        'test.xrayChest': 'மார்பு எக்ஸ்ரே',
+        'test.usgWholeAbdomen': 'அடிவயிறு, இடுப்பு பகுதி ஸ்கேன்',
+        'test.echo': 'எக்கோ கார்டியோகிராம்',
+        'test.pulmonaryFunctionTest': 'நுரையீரல் பரிசோதனை',
+        'test.hearingAssessment': 'காது பரிசோதனை',
+        'test.cardiologistConsultation': 'இருதய மருத்துவர் ஆலோசனை',
+        'test.serumCalcium': 'சீரம் கால்சியம் பரிசோதனை',
+        'test.usgWholeAbdomenPelvis': 'அடிவயிறு, இடுப்பு பகுதி ஸ்கேன்',
+        'test.usgBreastMammogram': 'மார்பக ஸ்கேன்',
+        'test.papsmearInvestigation': 'கருப்பை வாய் புற்றுநோய் பரிசோதனை',
+        'test.gynecologistCardiologistConsultant': 'பெண்கள் நல மருத்துவர் ஆலோசனை மற்றும் இருதய மருத்துவர் ஆலோசனை வழங்கப்படும்',
+        'test.eyeConsultant': 'கண் மருத்துவர் ஆலோசனை',
         
         // Addon Tests
         'addon.vitaminD': 'வைட்டமின் D சோதனை',
@@ -994,11 +1052,9 @@ window.toggleLanguage = toggleLanguage;
 function getPackageTranslationKey(packageId) {
     const mapping = {
         'basic': 'package.basic',
-        'standard': 'package.standard',
-        'advanced': 'package.advanced',
         'master': 'package.master',
         'cardiac': 'package.cardiac',
-        'diabetic': 'package.diabetic'
+        'well_women': 'package.well_women'
     };
     return mapping[packageId] || null;
 }
@@ -1006,11 +1062,9 @@ function getPackageTranslationKey(packageId) {
 function getPackageDescTranslationKey(packageId) {
     const mapping = {
         'basic': 'package.basic.desc',
-        'standard': 'package.standard.desc',
-        'advanced': 'package.advanced.desc',
         'master': 'package.master.desc',
         'cardiac': 'package.cardiac.desc',
-        'diabetic': 'package.diabetic.desc'
+        'well_women': 'package.well_women.desc'
     };
     return mapping[packageId] || null;
 }
@@ -1019,14 +1073,44 @@ function translateTestName(testName) {
     // Map English test names to translation keys
     const testMapping = {
         'Complete Blood Count (CBC)': 'test.cbc',
+        'Complete Blood Count': 'test.completeBloodCount',
         'Blood Sugar (Fasting)': 'test.bloodSugar',
+        'Fasting Sugar': 'test.fastingSugar',
         'Lipid Profile': 'test.lipidProfile',
+        'PPBS': 'test.ppbs',
+        'Urea': 'test.urea',
+        'Creatinine': 'test.creatinine',
+        'TSH': 'test.tsh',
+        'Complete Urine Routine': 'test.completeUrineRoutine',
+        'X-Ray Chest PA View': 'test.xrayChestPAView',
+        'X-Ray Chest': 'test.xrayChest',
+        'Ultrasound of the Whole Abdomen': 'test.ultrasoundWholeAbdomen',
+        'USG Whole Abdomen': 'test.usgWholeAbdomen',
+        'Clinical examination': 'test.clinicalExamination',
+        'Medical summary and advice by a Consultant Physician': 'test.medicalSummaryAdvice',
+        'Dietician Consultation': 'test.dieticianConsultation',
+        'Blood Grouping': 'test.bloodGrouping',
+        'Uric Acid': 'test.uricAcid',
+        'Liver Function Test': 'test.liverFunctionTest',
+        'Liver Function Test (LFT)': 'test.lft',
+        'HbA1C': 'test.hba1c',
+        'Sr. Electrolytes': 'test.srElectrolytes',
+        'Thyroid Function Test': 'test.thyroidFunctionTest',
+        'Thyroid Function Test (TFT)': 'test.tft',
+        'ECHO': 'test.echo',
+        'Pulmonary Function Test': 'test.pulmonaryFunctionTest',
+        'Hearing Assessment (AUDIOGRAM)': 'test.hearingAssessment',
+        'Cardiologist Consultation': 'test.cardiologistConsultation',
+        'Serum Calcium': 'test.serumCalcium',
+        'USG Whole Abdomen & Pelvis': 'test.usgWholeAbdomenPelvis',
+        'USG Breast/Above 40yrs Mammogram': 'test.usgBreastMammogram',
+        'Papsmear Investigation': 'test.papsmearInvestigation',
+        'Gynecologist & Cardiologist Consultant': 'test.gynecologistCardiologistConsultant',
+        'Eye Consultant': 'test.eyeConsultant',
         'BMI Analysis': 'test.bmiAnalysis',
         'General Physician Consultation': 'test.generalPhysician',
         'All Basic Tests': 'test.allBasicTests',
-        'Liver Function Test (LFT)': 'test.lft',
         'Kidney Function Test (KFT)': 'test.kft',
-        'Thyroid Function Test (TFT)': 'test.tft',
         'ECG': 'test.ecg',
         'Chest X-Ray': 'test.chestXray',
         'Doctor Consultation': 'test.doctorConsultation',
@@ -1046,7 +1130,6 @@ function translateTestName(testName) {
         'Complete Cardiac Profile': 'test.completeCardiacProfile',
         'ECG & Stress Test': 'test.ecgStressTest',
         'Echocardiography': 'test.echocardiography',
-        'Cardiologist Consultation': 'test.cardiologistConsultation',
         'Detailed Cardiac Report': 'test.detailedCardiacReport',
         'HbA1c (3 months average)': 'test.hba1c3months',
         'Fasting & Post-Prandial Sugar': 'test.fastingPostPrandial',
