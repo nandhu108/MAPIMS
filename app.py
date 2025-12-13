@@ -1100,7 +1100,7 @@ def booking():
         return redirect(url_for('packages'))
     
     package_id = session.get('selected_package')
-    package = PACKAGES.get(package_id, PACKAGES['standard'])
+    package = PACKAGES.get(package_id, PACKAGES['basic'])
     addons = session.get('selected_addons', [])
     
     return render_template('booking.html',
