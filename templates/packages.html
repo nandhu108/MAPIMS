@@ -11,6 +11,26 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon_io/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ url_for('static', filename='favicon_io/site.webmanifest') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/mapims.css') }}">
+    <style>
+        .package-item-hidden {
+            display: none;
+        }
+        .package-more-indicator {
+            margin-top: 10px;
+            padding: 8px;
+            text-align: center;
+            color: #0066cc;
+            font-weight: 600;
+            cursor: pointer;
+            border-top: 1px solid #e0e0e0;
+        }
+        .package-more-indicator:hover {
+            color: #0052a3;
+        }
+        .package-card.selected .package-includes-list li {
+            display: list-item;
+        }
+    </style>
 </head>
 <body>
     <header class="mapims-header">
@@ -51,34 +71,20 @@
                         <h4 data-translate="packages.includes">Includes:</h4>
                         <ul class="package-includes-list" data-package-includes="{{ package.includes|join('|||') }}">
                             {% for item in package.includes %}
-                            <li data-item="{{ item }}" data-original-text="{{ item }}">{{ item }}</li>
+                            <li class="{% if loop.index > 6 %}package-item-hidden{% endif %}" data-item="{{ item }}" data-original-text="{{ item }}">{{ item }}</li>
                             {% endfor %}
                         </ul>
-                    </div>
-                    <div class="package-differences" style="display: none;">
-                        <h4 class="differences-title"></h4>
-                        <ul class="differences-list"></ul>
+                        {% if package.includes|length > 6 %}
+                        <div class="package-more-indicator" data-package-id="{{ package_id }}" style="display: none;">
+                            <span class="package-more-text">+{{ package.includes|length - 6 }} more items</span>
+                        </div>
+                        {% endif %}
                     </div>
                     <button class="btn-select-package" onclick="selectPackage('{{ package_id }}', event)">
                         <span data-translate="packages.selectPackage">Select Package</span>
                     </button>
                 </div>
                 {% endfor %}
-            </div>
-
-            <div id="addonsSection" style="display: none;">
-                <h2 class="section-title" data-translate="packages.addonsTitle">Add Additional Tests</h2>
-                <div class="addons-grid">
-                    {% for addon_id, addon in addon_tests.items() %}
-                    <div class="addon-card">
-                        <label class="addon-checkbox">
-                            <input type="checkbox" value="{{ addon_id }}" data-price="{{ addon.price }}">
-                            <span class="addon-name" data-original-text="{{ addon.name }}">{{ addon.name }}</span>
-                            <span class="addon-price">+₹{{ addon.price }}</span>
-                        </label>
-                    </div>
-                    {% endfor %}
-                </div>
             </div>
 
             <div class="package-actions">
@@ -109,7 +115,31 @@
         };
 
         let selectedPackage = null;
-        let selectedAddons = [];
+        const INITIAL_ITEMS_TO_SHOW = 6;
+
+        // Initialize package display - show only first few items
+        function initializePackages() {
+            document.querySelectorAll('.package-card').forEach(card => {
+                const packageId = card.dataset.packageId;
+                const includesList = card.querySelector('.package-includes-list');
+                const allItems = includesList.querySelectorAll('li');
+                const moreIndicator = card.querySelector('.package-more-indicator');
+                
+                // Hide items beyond initial limit
+                allItems.forEach((item, index) => {
+                    if (index >= INITIAL_ITEMS_TO_SHOW) {
+                        item.classList.add('package-item-hidden');
+                    }
+                });
+                
+                // Show "more" indicator if there are hidden items
+                if (allItems.length > INITIAL_ITEMS_TO_SHOW && moreIndicator) {
+                    const hiddenCount = allItems.length - INITIAL_ITEMS_TO_SHOW;
+                    moreIndicator.querySelector('.package-more-text').textContent = `+${hiddenCount} more items`;
+                    moreIndicator.style.display = 'block';
+                }
+            });
+        }
 
         // Add click event listeners to all package cards
         function attachCardListeners() {
@@ -144,6 +174,14 @@
         
         // Also try attaching after a short delay to ensure everything is ready
         setTimeout(attachCardListeners, 100);
+        
+        // Initialize packages on page load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePackages);
+        } else {
+            initializePackages();
+        }
+        setTimeout(initializePackages, 100);
 
         function selectPackage(packageId, event) {
             // Prevent default if event is provided
@@ -161,92 +199,59 @@
                 return;
             }
             
-            // Remove selected class from all cards
+            // Remove selected class from all cards and collapse their items
             document.querySelectorAll('.package-card').forEach(card => {
                 card.classList.remove('selected');
-                const differencesDiv = card.querySelector('.package-differences');
-                if (differencesDiv) {
-                    differencesDiv.style.display = 'none';
+                const cardPackageId = card.dataset.packageId;
+                if (cardPackageId !== packageId) { // Only collapse if not the selected one
+                    collapsePackageItems(card);
                 }
             });
             
-            // Add selected class to clicked card
+            // Add selected class to clicked card and expand all items
             selectedCard.classList.add('selected');
             console.log('Selected card classes:', selectedCard.className);
             
             // Force a reflow to ensure CSS is applied
             void selectedCard.offsetWidth;
             
-            // Show differences for all packages
-            showPackageDifferences(packageId);
+            // Expand all items for selected package
+            expandPackageItems(selectedCard);
+        }
+
+        function expandPackageItems(card) {
+            const includesList = card.querySelector('.package-includes-list');
+            const allItems = includesList.querySelectorAll('li');
+            const moreIndicator = card.querySelector('.package-more-indicator');
             
-            // Show addons section
-            const addonsSection = document.getElementById('addonsSection');
-            if (addonsSection) {
-                addonsSection.style.display = 'block';
-                
-                // Scroll to addons section smoothly
-                setTimeout(() => {
-                    addonsSection.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'start' 
-                    });
-                }, 300);
+            // Show all items
+            allItems.forEach(item => {
+                item.classList.remove('package-item-hidden');
+            });
+            
+            // Hide "more" indicator
+            if (moreIndicator) {
+                moreIndicator.style.display = 'none';
             }
         }
 
-        function showPackageDifferences(selectedPackageId) {
-            const selectedPackage = packagesData[selectedPackageId];
-            if (!selectedPackage) return;
-
-            const selectedIncludes = new Set(selectedPackage.includes);
-
-            // Compare with all other packages
-            document.querySelectorAll('.package-card').forEach(card => {
-                const packageId = card.dataset.packageId;
-                if (packageId === selectedPackageId) {
-                    // For selected package, show what's unique to it
-                    const otherIncludes = new Set();
-                    Object.keys(packagesData).forEach(pkgId => {
-                        if (pkgId !== selectedPackageId) {
-                            packagesData[pkgId].includes.forEach(item => otherIncludes.add(item));
-                        }
-                    });
-                    
-                    const uniqueItems = selectedPackage.includes.filter(item => !otherIncludes.has(item));
-                    showDifferences(card, uniqueItems, true, 'Unique to this package:');
-                } else {
-                    // For other packages, show what they have that selected doesn't
-                    const otherPackage = packagesData[packageId];
-                    const uniqueItems = otherPackage.includes.filter(item => !selectedIncludes.has(item));
-                    showDifferences(card, uniqueItems, false, 'Additional in this package:');
+        function collapsePackageItems(card) {
+            const includesList = card.querySelector('.package-includes-list');
+            const allItems = includesList.querySelectorAll('li');
+            const moreIndicator = card.querySelector('.package-more-indicator');
+            
+            // Hide items beyond initial limit
+            allItems.forEach((item, index) => {
+                if (index >= INITIAL_ITEMS_TO_SHOW) {
+                    item.classList.add('package-item-hidden');
                 }
             });
-        }
-
-        function showDifferences(card, uniqueItems, isSelected, titleText) {
-            const differencesDiv = card.querySelector('.package-differences');
-            const differencesTitle = card.querySelector('.differences-title');
-            const differencesList = card.querySelector('.differences-list');
             
-            if (uniqueItems.length > 0) {
-                const lang = (typeof currentLanguage !== 'undefined' && currentLanguage === 'ta') ? 'ta' : 'en';
-                const titleKey = isSelected ? 'packages.uniqueToPackage' : 'packages.additionalInPackage';
-                const translatedTitle = (typeof translations !== 'undefined' && translations[lang] && translations[lang][titleKey]) 
-                    ? translations[lang][titleKey] 
-                    : (titleText || (isSelected ? 'Unique to this package:' : 'Additional in this package:'));
-                differencesTitle.textContent = translatedTitle;
-                differencesList.innerHTML = '';
-                uniqueItems.forEach(item => {
-                    const li = document.createElement('li');
-                    li.setAttribute('data-original-text', item);
-                    li.textContent = (typeof translateTestName === 'function') ? translateTestName(item) : item;
-                    li.className = isSelected ? 'unique-item' : 'missing-item';
-                    differencesList.appendChild(li);
-                });
-                differencesDiv.style.display = 'block';
-            } else {
-                differencesDiv.style.display = 'none';
+            // Show "more" indicator if there are hidden items
+            if (allItems.length > INITIAL_ITEMS_TO_SHOW && moreIndicator) {
+                const hiddenCount = allItems.length - INITIAL_ITEMS_TO_SHOW;
+                moreIndicator.querySelector('.package-more-text').textContent = `+${hiddenCount} more items`;
+                moreIndicator.style.display = 'block';
             }
         }
 
@@ -257,19 +262,11 @@
                 return;
             }
 
-            selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox input:checked'))
-                .map(cb => ({
-                    id: cb.value,
-                    name: cb.closest('.addon-card').querySelector('.addon-name').textContent,
-                    price: parseInt(cb.dataset.price)
-                }));
-
             fetch('/api/select-package', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    package_id: selectedPackage,
-                    addons: selectedAddons
+                    package_id: selectedPackage
                 })
             })
             .then(r => r.json())
