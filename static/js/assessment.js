@@ -1,7 +1,7 @@
 // Assessment Form JavaScript
 
 let currentStep = 1;
-const totalSteps = 5;
+const totalSteps = 4;
 let recognition = null;
 let isRecording = false;
 

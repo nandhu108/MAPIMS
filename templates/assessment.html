@@ -95,10 +95,6 @@
               <div class="step-circle">4</div>
               <p data-translate="step.specialInfo">Special Info</p>
             </div>
-            <div class="progress-step" data-step="5">
-              <div class="step-circle">5</div>
-              <p data-translate="step.contact">Contact</p>
-            </div>
           </div>
 
           <form id="assessmentForm" class="assessment-form">
@@ -1071,73 +1067,6 @@
                   Back
                 </button>
                 <button
-                  type="button"
-                  class="btn-next"
-                  onclick="nextStep()"
-                  data-translate="form.next"
-                >
-                  Next: Contact
-                </button>
-              </div>
-            </div>
-
-            <!-- Step 5: Contact (final step) -->
-            <div class="form-step" data-step="5">
-              <h2 class="step-title" data-translate="form.contact">
-                Contact Details
-              </h2>
-              <p
-                class="step-description"
-                style="
-                  color: #6c757d;
-                  margin-bottom: 1.5rem;
-                  text-align: center;
-                "
-                data-translate="form.contactDescription"
-              >
-                How can we reach you?
-              </p>
-
-              <div class="form-group">
-                <label for="email" data-translate="form.email"
-                  >Email Address (optional)</label
-                >
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="your.email@example.com"
-                />
-              </div>
-
-              <div class="form-group">
-                <label
-                  for="preferred_contact"
-                  data-translate="form.preferredContact"
-                  >Preferred contact method</label
-                >
-                <select id="preferred_contact" name="preferred_contact">
-                  <option value="" data-translate="form.select">Select</option>
-                  <option value="phone_call" data-translate="form.phoneCall">
-                    Phone call
-                  </option>
-                  <option value="whatsapp" data-translate="form.whatsapp">
-                    WhatsApp
-                  </option>
-                  <option value="sms" data-translate="form.sms">SMS</option>
-                </select>
-              </div>
-
-              <div class="form-actions">
-                <button
-                  type="button"
-                  class="btn-back"
-                  onclick="prevStep()"
-                  data-translate="form.back"
-                >
-                  Back
-                </button>
-                <button
                   type="submit"
                   class="btn-submit"
                   data-translate="form.submit"
@@ -1146,6 +1075,7 @@
                 </button>
               </div>
             </div>
+
           </form>
 
           <div
