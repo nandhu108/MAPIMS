@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Permissions-Policy" content="microphone=(self), geolocation=(), camera=()" />
+    <meta
+      http-equiv="Permissions-Policy"
+      content="microphone=(self), geolocation=(), camera=()"
+    />
     <title>Health Assessment - MAPIMS</title>
     <!-- Favicon -->
     <link
@@ -174,9 +177,25 @@
               </div>
 
               <div class="form-group">
-                <label for="phone" data-translate="form.phone"
-                  >Phone Number <span class="required">*</span></label
-                >
+                <label for="phone">
+                  <span data-translate="form.phone">Phone Number</span>
+                  <span class="required">*</span>
+                  <img
+                    src="{{ url_for('static', filename='images/whatsapp.png') }}"
+                    alt="WhatsApp"
+                    style="
+                      display: inline-block !important;
+                      vertical-align: middle !important;
+                      margin-left: 8px !important;
+                      width: 24px !important;
+                      height: 24px !important;
+                      object-fit: contain !important;
+                      position: relative !important;
+                      top: -1px !important;
+                    "
+                    onerror="this.style.display='none'; console.error('WhatsApp icon failed to load');"
+                  />
+                </label>
                 <input
                   type="tel"
                   id="phone"
@@ -220,7 +239,11 @@
               <!-- Medical Conditions - Yes/No/Not sure -->
               <div class="medical-conditions-grid">
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="condition.diabetes">Diabetes</label>
+                  <label
+                    class="condition-label"
+                    data-translate="condition.diabetes"
+                    >Diabetes</label
+                  >
                   <div class="radio-group">
                     <label class="radio-label">
                       <input
@@ -250,7 +273,9 @@
                 </div>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="condition.hypertension"
+                  <label
+                    class="condition-label"
+                    data-translate="condition.hypertension"
                     >High blood pressure (hypertension)</label
                   >
                   <div class="radio-group">
@@ -282,7 +307,11 @@
                 </div>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="condition.heartDisease">Heart disease</label>
+                  <label
+                    class="condition-label"
+                    data-translate="condition.heartDisease"
+                    >Heart disease</label
+                  >
                   <div class="radio-group">
                     <label class="radio-label">
                       <input
@@ -311,20 +340,19 @@
                   </div>
                 </div>
 
-
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="condition.kidney">Kidney disease</label>
+                  <label
+                    class="condition-label"
+                    data-translate="condition.kidney"
+                    >Kidney disease</label
+                  >
                   <div class="radio-group">
                     <label class="radio-label">
                       <input type="radio" name="condition_kidney" value="yes" />
                       <span data-translate="form.yes">Yes</span>
                     </label>
                     <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="condition_kidney"
-                        value="no"
-                      />
+                      <input type="radio" name="condition_kidney" value="no" />
                       <span data-translate="form.no">No</span>
                     </label>
                     <label class="radio-label">
@@ -339,7 +367,11 @@
                 </div>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="condition.thyroid">Thyroid problem</label>
+                  <label
+                    class="condition-label"
+                    data-translate="condition.thyroid"
+                    >Thyroid problem</label
+                  >
                   <div class="radio-group">
                     <label class="radio-label">
                       <input
@@ -350,11 +382,7 @@
                       <span data-translate="form.yes">Yes</span>
                     </label>
                     <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="condition_thyroid"
-                        value="no"
-                      />
+                      <input type="radio" name="condition_thyroid" value="no" />
                       <span data-translate="form.no">No</span>
                     </label>
                     <label class="radio-label">
@@ -369,7 +397,9 @@
                 </div>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="condition.asthma"
+                  <label
+                    class="condition-label"
+                    data-translate="condition.asthma"
                     >Asthma or breathing problem</label
                   >
                   <div class="radio-group">
@@ -378,11 +408,7 @@
                       <span data-translate="form.yes">Yes</span>
                     </label>
                     <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="condition_asthma"
-                        value="no"
-                      />
+                      <input type="radio" name="condition_asthma" value="no" />
                       <span data-translate="form.no">No</span>
                     </label>
                     <label class="radio-label">
@@ -398,10 +424,13 @@
               </div>
 
               <!-- Other health problems -->
-              <div class="form-group" style="margin-top: 48px" id="other_conditions_field">
-                <label
-                  for="other_conditions"
-                >Any other health problems? (optional)</label
+              <div
+                class="form-group"
+                style="margin-top: 48px"
+                id="other_conditions_field"
+              >
+                <label for="other_conditions"
+                  >Any other health problems? (optional)</label
                 >
                 <textarea
                   id="other_conditions"
@@ -431,7 +460,9 @@
 
               <div class="family-history-grid">
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="family.diabetes"
+                  <label
+                    class="condition-label"
+                    data-translate="family.diabetes"
                     >Diabetes in your family?</label
                   >
                   <div class="radio-group">
@@ -440,11 +471,7 @@
                       <span data-translate="form.yes">Yes</span>
                     </label>
                     <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="family_diabetes"
-                        value="no"
-                      />
+                      <input type="radio" name="family_diabetes" value="no" />
                       <span data-translate="form.no">No</span>
                     </label>
                     <label class="radio-label">
@@ -459,7 +486,9 @@
                 </div>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="family.heartDisease"
+                  <label
+                    class="condition-label"
+                    data-translate="family.heartDisease"
                     >Heart disease or stroke in your family?</label
                   >
                   <div class="radio-group">
@@ -534,11 +563,27 @@
                     >Sleep hours</label
                   >
                   <select id="sleep_hours" name="sleep_hours">
-                    <option value="" data-translate="form.select">Select</option>
-                    <option value="less_than_5" data-translate="option.lessThan5">Less than 5 hours</option>
-                    <option value="5_to_7" data-translate="option.5to7">5–7 hours</option>
-                    <option value="7_to_9" data-translate="option.7to9">7–9 hours</option>
-                    <option value="more_than_9" data-translate="option.moreThan9">More than 9 hours</option>
+                    <option value="" data-translate="form.select">
+                      Select
+                    </option>
+                    <option
+                      value="less_than_5"
+                      data-translate="option.lessThan5"
+                    >
+                      Less than 5 hours
+                    </option>
+                    <option value="5_to_7" data-translate="option.5to7">
+                      5–7 hours
+                    </option>
+                    <option value="7_to_9" data-translate="option.7to9">
+                      7–9 hours
+                    </option>
+                    <option
+                      value="more_than_9"
+                      data-translate="option.moreThan9"
+                    >
+                      More than 9 hours
+                    </option>
                   </select>
                 </div>
 
@@ -549,24 +594,55 @@
                     >Exercise / physical activity</label
                   >
                   <select id="exercise_frequency" name="exercise_frequency">
-                    <option value="" data-translate="form.select">Select</option>
-                    <option value="almost_never" data-translate="option.almostNever">Almost never</option>
-                    <option value="1_to_2_days" data-translate="option.1to2Days">1–2 days/week</option>
-                    <option value="3_to_5_days" data-translate="option.3to5Days">3–5 days/week</option>
-                    <option value="daily" data-translate="option.daily">Daily</option>
+                    <option value="" data-translate="form.select">
+                      Select
+                    </option>
+                    <option
+                      value="almost_never"
+                      data-translate="option.almostNever"
+                    >
+                      Almost never
+                    </option>
+                    <option
+                      value="1_to_2_days"
+                      data-translate="option.1to2Days"
+                    >
+                      1–2 days/week
+                    </option>
+                    <option
+                      value="3_to_5_days"
+                      data-translate="option.3to5Days"
+                    >
+                      3–5 days/week
+                    </option>
+                    <option value="daily" data-translate="option.daily">
+                      Daily
+                    </option>
                   </select>
                 </div>
 
                 <div class="form-group">
-                  <label for="smoking_status" data-translate="form.smokingStatus"
+                  <label
+                    for="smoking_status"
+                    data-translate="form.smokingStatus"
                     >Smoking / Tobacco</label
                   >
                   <select id="smoking_status" name="smoking_status">
-                    <option value="" data-translate="form.select">Select</option>
-                    <option value="never" data-translate="option.never">Never</option>
-                    <option value="stopped" data-translate="option.stopped">Stopped</option>
-                    <option value="sometimes" data-translate="option.sometimes">Sometimes</option>
-                    <option value="daily" data-translate="option.daily">Daily</option>
+                    <option value="" data-translate="form.select">
+                      Select
+                    </option>
+                    <option value="never" data-translate="option.never">
+                      Never
+                    </option>
+                    <option value="stopped" data-translate="option.stopped">
+                      Stopped
+                    </option>
+                    <option value="sometimes" data-translate="option.sometimes">
+                      Sometimes
+                    </option>
+                    <option value="daily" data-translate="option.daily">
+                      Daily
+                    </option>
                   </select>
                 </div>
 
@@ -577,14 +653,23 @@
                     >Alcohol</label
                   >
                   <select id="alcohol_consumption" name="alcohol_consumption">
-                    <option value="" data-translate="form.select">Select</option>
-                    <option value="never" data-translate="option.never">Never</option>
-                    <option value="occasional" data-translate="option.occasional">Occasionally</option>
-                    <option value="regular" data-translate="option.regular">Regularly</option>
+                    <option value="" data-translate="form.select">
+                      Select
+                    </option>
+                    <option value="never" data-translate="option.never">
+                      Never
+                    </option>
+                    <option
+                      value="occasional"
+                      data-translate="option.occasional"
+                    >
+                      Occasionally
+                    </option>
+                    <option value="regular" data-translate="option.regular">
+                      Regularly
+                    </option>
                   </select>
                 </div>
-
-             
               </div>
 
               <div class="form-group">
@@ -669,10 +754,26 @@
                 </div>
               </div>
 
-              <div class="bmi-display" id="bmiDisplay" style="display: none; visibility: hidden;">
+              <div
+                class="bmi-display"
+                id="bmiDisplay"
+                style="display: none; visibility: hidden"
+              >
                 <p>
-                  <span data-translate="form.bmi">Your BMI:</span> <strong id="bmiValue" style="color: var(--mapims-red); font-size: 1.3rem; margin: 0 4px;"></strong> 
-                  (<span id="bmiCategory" style="color: var(--mapims-red); font-weight: 600;"></span>)
+                  <span data-translate="form.bmi">Your BMI:</span>
+                  <strong
+                    id="bmiValue"
+                    style="
+                      color: var(--mapims-red);
+                      font-size: 1.3rem;
+                      margin: 0 4px;
+                    "
+                  ></strong>
+                  (<span
+                    id="bmiCategory"
+                    style="color: var(--mapims-red); font-weight: 600"
+                  ></span
+                  >)
                 </p>
               </div>
 
@@ -687,7 +788,11 @@
                 </h3>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="form.pregnantNow">Are you pregnant now?</label>
+                  <label
+                    class="condition-label"
+                    data-translate="form.pregnantNow"
+                    >Are you pregnant now?</label
+                  >
                   <div class="radio-group">
                     <label class="radio-label">
                       <input type="radio" name="pregnant" value="yes" />
@@ -705,7 +810,11 @@
                 </div>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="form.periodsRegular">Are your periods regular?</label>
+                  <label
+                    class="condition-label"
+                    data-translate="form.periodsRegular"
+                    >Are your periods regular?</label
+                  >
                   <div class="radio-group">
                     <label class="radio-label">
                       <input
@@ -731,16 +840,14 @@
                 </div>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="form.menopauseQuestion"
+                  <label
+                    class="condition-label"
+                    data-translate="form.menopauseQuestion"
                     >Have your periods stopped completely (menopause)?</label
                   >
                   <div class="radio-group">
                     <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="menopause_status"
-                        value="no"
-                      />
+                      <input type="radio" name="menopause_status" value="no" />
                       <span data-translate="form.no">No</span>
                     </label>
                     <label class="radio-label">
@@ -749,7 +856,9 @@
                         name="menopause_status"
                         value="irregular"
                       />
-                      <span data-translate="form.periodsIrregular">Periods becoming irregular</span>
+                      <span data-translate="form.periodsIrregular"
+                        >Periods becoming irregular</span
+                      >
                     </label>
                     <label class="radio-label">
                       <input
@@ -757,7 +866,9 @@
                         name="menopause_status"
                         value="stopped"
                       />
-                      <span data-translate="form.periodsStopped">Periods stopped completely</span>
+                      <span data-translate="form.periodsStopped"
+                        >Periods stopped completely</span
+                      >
                     </label>
                   </div>
                 </div>
@@ -774,7 +885,9 @@
                 </h3>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="form.age40ChestPain"
+                  <label
+                    class="condition-label"
+                    data-translate="form.age40ChestPain"
                     >Do you get chest pain when walking or climbing
                     stairs?</label
                   >
@@ -784,18 +897,16 @@
                       <span data-translate="form.yes">Yes</span>
                     </label>
                     <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="age40_chest_pain"
-                        value="no"
-                      />
+                      <input type="radio" name="age40_chest_pain" value="no" />
                       <span data-translate="form.no">No</span>
                     </label>
                   </div>
                 </div>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="form.age40Breathless"
+                  <label
+                    class="condition-label"
+                    data-translate="form.age40Breathless"
                     >Do you get breathless easily?</label
                   >
                   <div class="radio-group">
@@ -804,18 +915,16 @@
                       <span data-translate="form.yes">Yes</span>
                     </label>
                     <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="age40_breathless"
-                        value="no"
-                      />
+                      <input type="radio" name="age40_breathless" value="no" />
                       <span data-translate="form.no">No</span>
                     </label>
                   </div>
                 </div>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="form.age40HighBpSugar"
+                  <label
+                    class="condition-label"
+                    data-translate="form.age40HighBpSugar"
                     >Have you been told you have high BP or high sugar?</label
                   >
                   <div class="radio-group">
@@ -839,7 +948,9 @@
                 </div>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="form.age40Swelling"
+                  <label
+                    class="condition-label"
+                    data-translate="form.age40Swelling"
                     >Do you have swelling in legs or feet?</label
                   >
                   <div class="radio-group">
@@ -848,11 +959,7 @@
                       <span data-translate="form.yes">Yes</span>
                     </label>
                     <label class="radio-label">
-                      <input
-                        type="radio"
-                        name="age40_swelling"
-                        value="no"
-                      />
+                      <input type="radio" name="age40_swelling" value="no" />
                       <span data-translate="form.no">No</span>
                     </label>
                   </div>
@@ -873,7 +980,9 @@
                 </h3>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="form.vaccinationsUpToDate"
+                  <label
+                    class="condition-label"
+                    data-translate="form.vaccinationsUpToDate"
                     >Vaccinations up to date?</label
                   >
                   <div class="radio-group">
@@ -905,7 +1014,9 @@
                 </div>
 
                 <div class="condition-question-card">
-                  <label class="condition-label" data-translate="form.learningGrowthConcerns"
+                  <label
+                    class="condition-label"
+                    data-translate="form.learningGrowthConcerns"
                     >Any learning or growth concerns?</label
                   >
                   <div class="radio-group">
@@ -1007,8 +1118,12 @@
                 >
                 <select id="preferred_contact" name="preferred_contact">
                   <option value="" data-translate="form.select">Select</option>
-                  <option value="phone_call" data-translate="form.phoneCall">Phone call</option>
-                  <option value="whatsapp" data-translate="form.whatsapp">WhatsApp</option>
+                  <option value="phone_call" data-translate="form.phoneCall">
+                    Phone call
+                  </option>
+                  <option value="whatsapp" data-translate="form.whatsapp">
+                    WhatsApp
+                  </option>
                   <option value="sms" data-translate="form.sms">SMS</option>
                 </select>
               </div>
