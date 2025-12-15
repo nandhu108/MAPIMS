@@ -81,14 +81,18 @@
             const lang = getCurrentLang();
             if (lang === 'en') return level;
             
-            if (level === 'Low' || level === 'LOW' || level === 'Low-Moderate') {
+            // Handle all risk level variations
+            const levelLower = level.toLowerCase();
+            if (levelLower === 'very low' || levelLower === 'very-low') {
+                return getTranslation('analysis.riskVeryLow') || 'Very Low';
+            } else if (levelLower === 'low' || levelLower === 'low-moderate') {
                 return getTranslation('analysis.riskLow');
-            } else if (level === 'Moderate' || level === 'MODERATE' || level === 'Moderate-High') {
+            } else if (levelLower === 'moderate' || levelLower === 'high-moderate') {
                 return getTranslation('analysis.riskModerate');
-            } else if (level === 'High' || level === 'HIGH') {
+            } else if (levelLower === 'high' || levelLower === 'moderate-critical') {
                 return getTranslation('analysis.riskHigh');
-            } else if (level === 'Critical' || level === 'CRITICAL') {
-                return getTranslation('analysis.riskHigh'); // Use High for Critical in Tamil
+            } else if (levelLower === 'critical') {
+                return getTranslation('analysis.riskCritical') || getTranslation('analysis.riskHigh');
             }
             return level;
         }
@@ -318,10 +322,9 @@
                 <div class="ml-analysis-section">
                     <h3 data-translate="analysis.mlPowered">ML-Powered Specialized Analysis</h3>
                     <div class="ml-modules-grid">
-                        <div class="ml-module-card ${analysis.ml_analysis.diabetes.risk_level.toLowerCase()}">
+                        <div class="ml-module-card ${analysis.ml_analysis.diabetes.risk_level.toLowerCase().replace(/\s+/g, '-')}">
                             <h4 data-translate="analysis.diabetesRisk">🩺 Diabetes Risk Assessment</h4>
                             <div class="ml-score">
-                                <span class="score-value">${analysis.ml_analysis.diabetes.risk_score}/100</span>
                                 <span class="score-level" data-original-level="${analysis.ml_analysis.diabetes.risk_level}">${translateRiskLevel(analysis.ml_analysis.diabetes.risk_level)}</span>
                             </div>
                             <p class="ml-confidence"><span data-translate="analysis.confidence">Confidence</span>: ${(analysis.ml_analysis.diabetes.confidence * 100).toFixed(0)}%</p>
@@ -338,10 +341,9 @@
                             ` : ''}
                         </div>
 
-                        <div class="ml-module-card ${analysis.ml_analysis.heart_disease.risk_level.toLowerCase()}">
+                        <div class="ml-module-card ${analysis.ml_analysis.heart_disease.risk_level.toLowerCase().replace(/\s+/g, '-')}">
                             <h4 data-translate="analysis.heartDiseaseRisk">❤️ Heart Disease Risk Assessment</h4>
                             <div class="ml-score">
-                                <span class="score-value">${analysis.ml_analysis.heart_disease.risk_score}/100</span>
                                 <span class="score-level" data-original-level="${analysis.ml_analysis.heart_disease.risk_level}">${translateRiskLevel(analysis.ml_analysis.heart_disease.risk_level)}</span>
                             </div>
                             <p class="ml-confidence"><span data-translate="analysis.confidence">Confidence</span>: ${(analysis.ml_analysis.heart_disease.confidence * 100).toFixed(0)}%</p>
@@ -358,10 +360,9 @@
                             ` : ''}
                         </div>
 
-                        <div class="ml-module-card ${analysis.ml_analysis.thyroid.risk_level.toLowerCase()}">
+                        <div class="ml-module-card ${analysis.ml_analysis.thyroid.risk_level.toLowerCase().replace(/\s+/g, '-')}">
                             <h4 data-translate="analysis.thyroidRisk">🦋 Thyroid Risk Assessment</h4>
                             <div class="ml-score">
-                                <span class="score-value">${analysis.ml_analysis.thyroid.risk_score}/100</span>
                                 <span class="score-level" data-original-level="${analysis.ml_analysis.thyroid.risk_level}">${translateRiskLevel(analysis.ml_analysis.thyroid.risk_level)}</span>
                             </div>
                             <p class="ml-confidence"><span data-translate="analysis.confidence">Confidence</span>: ${(analysis.ml_analysis.thyroid.confidence * 100).toFixed(0)}%</p>

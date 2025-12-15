@@ -306,10 +306,10 @@ def require_admin(f):
 
 
 def validate_assessment_input(data):
-    """Validate assessment form input"""
+    """Validate assessment form input - ensures all fields needed for ML analysis are provided"""
     errors = []
     
-    # Required fields
+    # Required fields for basic information
     required_fields = ['name', 'age', 'gender', 'weight', 'height', 'phone']
     for field in required_fields:
         if not data.get(field):
@@ -359,12 +359,57 @@ def validate_assessment_input(data):
         if not SecurityConfig.validate_email(data['email']):
             errors.append("Invalid email format")
     
+    # ========== ML ANALYSIS REQUIRED FIELDS ==========
+    # Medical conditions - at least one must be answered for ML analysis
+    medical_condition_fields = [
+        'condition_diabetes', 'condition_hypertension', 'condition_heart_disease',
+        'condition_thyroid', 'condition_asthma', 'condition_kidney'
+    ]
+    has_medical_answer = False
+    for field in medical_condition_fields:
+        value = data.get(field)
+        if value and str(value).strip() and str(value).strip().lower() in ['yes', 'no', 'not_sure']:
+            has_medical_answer = True
+            break
+    
+    if not has_medical_answer:
+        errors.append("Please answer at least one medical condition question (required for accurate health analysis)")
+    
+    # Family history - at least one must be answered for ML analysis
+    family_history_fields = ['family_diabetes', 'family_heart_disease']
+    has_family_answer = False
+    for field in family_history_fields:
+        value = data.get(field)
+        if value and str(value).strip() and str(value).strip().lower() in ['yes', 'no', 'not_sure']:
+            has_family_answer = True
+            break
+    
+    if not has_family_answer:
+        errors.append("Please answer at least one family history question (required for accurate health analysis)")
+    
+    # Lifestyle fields - required for ML analysis
+    sleep_hours = data.get('sleep_hours', '').strip() if data.get('sleep_hours') else ''
+    if not sleep_hours:
+        errors.append("Sleep hours is required (needed for health risk assessment)")
+    
+    exercise_frequency = data.get('exercise_frequency', '').strip() if data.get('exercise_frequency') else ''
+    if not exercise_frequency:
+        errors.append("Exercise frequency is required (needed for health risk assessment)")
+    
+    # Symptoms - if not provided, set empty string (ML can work without it, but prefer it)
+    # We'll allow empty symptoms but encourage providing them
+    if not data.get('symptoms'):
+        data['symptoms'] = ''  # Set default empty string for ML analysis
+    
     # Sanitize text fields
-    text_fields = ['symptoms', 'medical_history', 'family_history', 'lifestyle']
+    text_fields = ['symptoms', 'medical_history', 'family_history', 'lifestyle', 'other_conditions', 'lifestyle_other']
     for field in text_fields:
         if data.get(field):
             max_len = SecurityConfig.MAX_INPUT_LENGTH.get(field, 2000)
             data[field] = SecurityConfig.sanitize_input(data[field], max_len)
+        elif field == 'symptoms':
+            # Ensure symptoms exists as empty string for ML analysis
+            data[field] = ''
     
     return errors
 

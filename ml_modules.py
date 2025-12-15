@@ -151,21 +151,30 @@ class DiabetesMLModule:
         # Normalize risk score to 0-100
         risk_score = min(risk_score, 100)
         
-        # Determine risk level
-        if risk_score >= 70:
+        # Determine risk level with more granular categories
+        if risk_score >= 80:
             risk_level = "Critical"
             recommendation = "Immediate comprehensive diabetes screening (HbA1c, Fasting Glucose, OGTT) required"
+        elif risk_score >= 65:
+            risk_level = "Moderate-Critical"
+            recommendation = "Urgent comprehensive diabetes screening strongly recommended (HbA1c, Fasting Glucose, OGTT)"
         elif risk_score >= 50:
             risk_level = "High"
             recommendation = "Comprehensive diabetes screening strongly recommended (HbA1c, Fasting Glucose)"
+        elif risk_score >= 40:
+            risk_level = "High-Moderate"
+            recommendation = "Enhanced diabetes screening recommended (HbA1c, Fasting Glucose)"
         elif risk_score >= 30:
             risk_level = "Moderate"
             recommendation = "Standard diabetes screening recommended (Fasting Glucose, HbA1c)"
-        elif risk_score >= 15:
+        elif risk_score >= 20:
             risk_level = "Low-Moderate"
             recommendation = "Basic diabetes screening advised (Fasting Glucose)"
-        else:
+        elif risk_score >= 10:
             risk_level = "Low"
+            recommendation = "Routine screening sufficient"
+        else:
+            risk_level = "Very Low"
             recommendation = "Routine screening sufficient"
         
         return {
@@ -340,21 +349,30 @@ class HeartDiseaseMLModule:
         # Normalize risk score
         risk_score = min(risk_score, 100)
         
-        # Determine risk level
-        if risk_score >= 75:
+        # Determine risk level with more granular categories
+        if risk_score >= 80:
             risk_level = "Critical"
             recommendation = "Immediate comprehensive cardiac evaluation required (ECG, Stress Test, Echocardiography, Cardiac Markers)"
+        elif risk_score >= 65:
+            risk_level = "Moderate-Critical"
+            recommendation = "Urgent comprehensive cardiac screening strongly recommended (ECG, Stress Test, Echocardiography)"
         elif risk_score >= 55:
             risk_level = "High"
             recommendation = "Comprehensive cardiac screening strongly recommended (ECG, Stress Test, Cardiac Markers)"
+        elif risk_score >= 45:
+            risk_level = "High-Moderate"
+            recommendation = "Enhanced cardiac screening recommended (ECG, Stress Test, Lipid Profile)"
         elif risk_score >= 35:
             risk_level = "Moderate"
             recommendation = "Standard cardiac screening recommended (ECG, Lipid Profile, Cardiac Risk Markers)"
         elif risk_score >= 20:
             risk_level = "Low-Moderate"
             recommendation = "Basic cardiac screening advised (ECG, Lipid Profile)"
-        else:
+        elif risk_score >= 10:
             risk_level = "Low"
+            recommendation = "Routine screening sufficient"
+        else:
+            risk_level = "Very Low"
             recommendation = "Routine screening sufficient"
         
         return {
@@ -548,21 +566,30 @@ class ThyroidMLModule:
         # Normalize risk score
         risk_score = min(risk_score, 100)
         
-        # Determine risk level
-        if risk_score >= 70:
+        # Determine risk level with more granular categories
+        if risk_score >= 75:
             risk_level = "Critical"
             recommendation = "Immediate comprehensive thyroid evaluation required (TSH, T3, T4, Thyroid Antibodies, Thyroid Ultrasound)"
+        elif risk_score >= 60:
+            risk_level = "Moderate-Critical"
+            recommendation = "Urgent comprehensive thyroid screening strongly recommended (TSH, T3, T4, Thyroid Antibodies)"
         elif risk_score >= 50:
             risk_level = "High"
             recommendation = "Comprehensive thyroid screening strongly recommended (TSH, T3, T4, Thyroid Antibodies)"
+        elif risk_score >= 40:
+            risk_level = "High-Moderate"
+            recommendation = "Enhanced thyroid screening recommended (TSH, T3, T4)"
         elif risk_score >= 30:
             risk_level = "Moderate"
             recommendation = "Standard thyroid screening recommended (TSH, T3, T4)"
         elif risk_score >= 15:
             risk_level = "Low-Moderate"
             recommendation = "Basic thyroid screening advised (TSH)"
-        else:
+        elif risk_score >= 8:
             risk_level = "Low"
+            recommendation = "Routine screening sufficient"
+        else:
+            risk_level = "Very Low"
             recommendation = "Routine screening sufficient"
         
         return {

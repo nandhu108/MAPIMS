@@ -732,30 +732,65 @@ def analyze_health_with_ai(patient_data):
     if thyroid_risk >= 50:
         ml_adjusted_score += 8
     
-    if ml_adjusted_score >= 70:  # Critical
-        recommended_packages = ["master", "cardiac"]
-    elif ml_adjusted_score >= 50:  # High
-        # Prioritize based on ML-detected conditions
-        if diabetes_risk >= 50:
-            recommended_packages = ["diabetic", "advanced"]
-        elif heart_risk >= 50:
-            recommended_packages = ["cardiac", "advanced"]
-        elif thyroid_risk >= 50:
-            recommended_packages = ["advanced", "master"]  # Advanced includes thyroid tests
-        elif "diabetes" in medical_history or "diabetic" in medical_history:
-            recommended_packages = ["diabetic", "advanced"]
-        elif health_risks["cardiovascular"]["level"] in ["High", "Moderate-High"]:
-            recommended_packages = ["cardiac", "advanced"]
-        else:
-            recommended_packages = ["advanced", "master"]
-    elif ml_adjusted_score >= 30:  # Moderate
-        # Check if any ML module detected moderate risk
-        if diabetes_risk >= 30 or heart_risk >= 35 or thyroid_risk >= 30:
-            recommended_packages = ["standard", "advanced"]
-        else:
-            recommended_packages = ["standard", "advanced"]
-    else:  # Low
-        recommended_packages = ["basic", "standard"]
+    # Determine PRIMARY recommended package based on ML analysis and risk factors
+    primary_recommended_package = None
+    recommended_packages = []
+    
+    # Gender-specific recommendations (well_women for females)
+    if gender == "female" and age >= 35:
+        # For women 35+, consider well_women package if high risk
+        if ml_adjusted_score >= 50 or diabetes_risk >= 40 or heart_risk >= 40:
+            primary_recommended_package = "well_women"
+            recommended_packages = ["well_women", "master"]
+        elif ml_adjusted_score >= 30:
+            primary_recommended_package = "master"
+            recommended_packages = ["master", "well_women"]
+    
+    # If not gender-specific, determine based on ML analysis
+    if not primary_recommended_package:
+        if ml_adjusted_score >= 70:  # Critical
+            # Highest risk - recommend cardiac or master
+            if heart_risk >= 50:
+                primary_recommended_package = "cardiac"
+                recommended_packages = ["cardiac", "master"]
+            else:
+                primary_recommended_package = "master"
+                recommended_packages = ["master", "cardiac"]
+        elif ml_adjusted_score >= 50:  # High
+            # Prioritize based on ML-detected conditions
+            if heart_risk >= 50:
+                primary_recommended_package = "cardiac"
+                recommended_packages = ["cardiac", "master"]
+            elif diabetes_risk >= 50:
+                primary_recommended_package = "master"
+                recommended_packages = ["master", "cardiac"]
+            elif thyroid_risk >= 50:
+                primary_recommended_package = "master"
+                recommended_packages = ["master", "cardiac"]
+            elif "diabetes" in medical_history or "diabetic" in medical_history:
+                primary_recommended_package = "master"
+                recommended_packages = ["master", "cardiac"]
+            elif health_risks["cardiovascular"]["level"] in ["High", "Moderate-High"]:
+                primary_recommended_package = "cardiac"
+                recommended_packages = ["cardiac", "master"]
+            else:
+                primary_recommended_package = "master"
+                recommended_packages = ["master", "cardiac"]
+        elif ml_adjusted_score >= 30:  # Moderate
+            # Check if any ML module detected moderate risk
+            if diabetes_risk >= 30 or heart_risk >= 35 or thyroid_risk >= 30:
+                primary_recommended_package = "master"
+                recommended_packages = ["master", "basic"]
+            else:
+                primary_recommended_package = "master"
+                recommended_packages = ["master", "basic"]
+        else:  # Low
+            primary_recommended_package = "basic"
+            recommended_packages = ["basic", "master"]
+    
+    # Ensure primary is always in recommended_packages list
+    if primary_recommended_package not in recommended_packages:
+        recommended_packages.insert(0, primary_recommended_package)
     
     # ========== GENERATE HEALTH RISK EXPLANATIONS ==========
     if not health_risks["cardiovascular"]["explanation"]:
@@ -832,6 +867,7 @@ def analyze_health_with_ai(patient_data):
     return {
         "risk_score": risk_score,
         "recommended_packages": recommended_packages,
+        "primary_recommended_package": primary_recommended_package,
         "health_risks": {
             "cardiovascular": f"{health_risks['cardiovascular']['level']} - {health_risks['cardiovascular']['explanation']}",
             "metabolic": f"{health_risks['metabolic']['level']} - {health_risks['metabolic']['explanation']}",
@@ -945,17 +981,21 @@ def submit_assessment():
             age = int(data.get('age', 0))
             if age >= 50:
                 risk_score = "High"
-                packages = ["advanced", "master"]
+                packages = ["master", "cardiac"]
+                primary_package = "master"
             elif age >= 40:
                 risk_score = "Moderate"
-                packages = ["standard", "advanced"]
+                packages = ["master", "basic"]
+                primary_package = "master"
             else:
                 risk_score = "Low"
-                packages = ["basic", "standard"]
+                packages = ["basic", "master"]
+                primary_package = "basic"
             
             ai_analysis = {
                 "risk_score": risk_score,
                 "recommended_packages": packages,
+                "primary_recommended_package": primary_package,
                 "health_risks": {
                     "cardiovascular": "Standard screening recommended based on your profile",
                     "metabolic": "Routine health monitoring advised",
@@ -1075,11 +1115,17 @@ def packages():
         return redirect(url_for('assessment'))
     
     ai_analysis = session.get('ai_analysis', {})
-    recommended_packages = ai_analysis.get('recommended_packages', ['standard'])
+    recommended_packages = ai_analysis.get('recommended_packages', ['basic'])
+    primary_recommended_package = ai_analysis.get('primary_recommended_package', 'basic')
+    
+    # Fallback: if primary not set, use first recommended package
+    if not primary_recommended_package and recommended_packages:
+        primary_recommended_package = recommended_packages[0]
     
     return render_template('packages.html', 
                          packages=PACKAGES,
                          recommended_packages=recommended_packages,
+                         primary_recommended_package=primary_recommended_package,
                          addon_tests=ADDON_TESTS)
 
 @app.route('/api/select-package', methods=['POST'])

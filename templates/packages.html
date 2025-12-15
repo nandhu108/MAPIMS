@@ -30,6 +30,39 @@
         .package-card.selected .package-includes-list li {
             display: list-item;
         }
+        .package-card.primary-recommended {
+            border: 3px solid #E31837;
+            box-shadow: 0 8px 32px rgba(227, 24, 55, 0.25);
+            background: linear-gradient(135deg, #ffffff 0%, #fff5f7 100%);
+            transform: scale(1.02);
+        }
+        .package-card.primary-recommended:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 40px rgba(227, 24, 55, 0.3);
+        }
+        .primary-recommended-badge {
+            background: linear-gradient(135deg, #E31837 0%, #B8142C 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(227, 24, 55, 0.3);
+            letter-spacing: 0.5px;
+        }
+        .package-card.primary-recommended .package-includes-list li {
+            display: list-item;
+        }
+        .package-card.primary-recommended .btn-select-package.primary-selected {
+            background: #28A745;
+            color: white;
+            font-weight: 700;
+        }
+        .package-card.primary-recommended .btn-select-package.primary-selected:hover {
+            background: #218838;
+        }
     </style>
 </head>
 <body>
@@ -55,13 +88,13 @@
     <main class="packages-main">
         <div class="container">
             <h1 class="page-title" data-translate="packages.title">Recommended Health Checkup Packages</h1>
-            <p class="page-subtitle" data-translate="packages.subtitle">Choose the package that best fits your health needs</p>
+            <p class="page-subtitle" data-translate="packages.subtitle">Based on your ML-powered health analysis, we recommend the perfect package for you</p>
 
             <div class="packages-grid">
                 {% for package_id, package in packages.items() %}
-                <div class="package-card {% if package_id in recommended_packages %}recommended{% endif %}" data-package-id="{{ package_id }}" onclick="selectPackage('{{ package_id }}', event)">
-                    {% if package_id in recommended_packages %}
-                    <div class="recommended-badge" data-translate="packages.recommended">AI Recommended</div>
+                <div class="package-card {% if package_id == primary_recommended_package %}primary-recommended selected{% endif %}" data-package-id="{{ package_id }}" onclick="selectPackage('{{ package_id }}', event)">
+                    {% if package_id == primary_recommended_package %}
+                    <div class="primary-recommended-badge" data-translate="packages.primaryRecommended">⭐ AI RECOMMENDED</div>
                     {% endif %}
                     <h3 class="package-name">{{ package.name }}</h3>
                     <div class="package-price">₹{{ package.price }}</div>
@@ -71,17 +104,21 @@
                         <h4 data-translate="packages.includes">Includes:</h4>
                         <ul class="package-includes-list" data-package-includes="{{ package.includes|join('|||') }}">
                             {% for item in package.includes %}
-                            <li class="{% if loop.index > 6 %}package-item-hidden{% endif %}" data-item="{{ item }}" data-original-text="{{ item }}">{{ item }}</li>
+                            <li class="{% if package_id != primary_recommended_package and loop.index > 6 %}package-item-hidden{% endif %}" data-item="{{ item }}" data-original-text="{{ item }}">{{ item }}</li>
                             {% endfor %}
                         </ul>
-                        {% if package.includes|length > 6 %}
+                        {% if package.includes|length > 6 and package_id != primary_recommended_package %}
                         <div class="package-more-indicator" data-package-id="{{ package_id }}" style="display: none;">
                             <span class="package-more-text">+{{ package.includes|length - 6 }} more items</span>
                         </div>
                         {% endif %}
                     </div>
-                    <button class="btn-select-package" onclick="selectPackage('{{ package_id }}', event)">
+                    <button class="btn-select-package {% if package_id == primary_recommended_package %}primary-selected{% endif %}" onclick="selectPackage('{{ package_id }}', event)">
+                        {% if package_id == primary_recommended_package %}
+                        <span data-translate="packages.selected">✓ Selected</span>
+                        {% else %}
                         <span data-translate="packages.selectPackage">Select Package</span>
+                        {% endif %}
                     </button>
                 </div>
                 {% endfor %}
@@ -116,6 +153,28 @@
 
         let selectedPackage = null;
         const INITIAL_ITEMS_TO_SHOW = 6;
+        
+        // Primary recommended package from server
+        const PRIMARY_RECOMMENDED_PACKAGE = '{{ primary_recommended_package|default("") }}';
+
+        // Auto-select primary recommended package on page load
+        if (PRIMARY_RECOMMENDED_PACKAGE && PRIMARY_RECOMMENDED_PACKAGE in packagesData) {
+            selectedPackage = PRIMARY_RECOMMENDED_PACKAGE;
+            // Select the primary package visually
+            setTimeout(() => {
+                const primaryCard = document.querySelector(`.package-card[data-package-id="${PRIMARY_RECOMMENDED_PACKAGE}"]`);
+                if (primaryCard) {
+                    primaryCard.classList.add('selected');
+                    expandPackageItems(primaryCard);
+                    // Update button text
+                    const btn = primaryCard.querySelector('.btn-select-package');
+                    if (btn) {
+                        btn.classList.add('primary-selected');
+                        btn.innerHTML = '<span data-translate="packages.selected">✓ Selected</span>';
+                    }
+                }
+            }, 200);
+        }
 
         // Initialize package display - show only first few items
         function initializePackages() {
