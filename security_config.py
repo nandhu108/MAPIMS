@@ -40,7 +40,15 @@ class SecurityConfig:
     RATE_LIMIT_PER_HOUR = int(os.environ.get('RATE_LIMIT_PER_HOUR', '100'))
     
     # Session Security
-    SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'true').lower() == 'true'
+    # Only use secure cookies in production or when explicitly set
+    # In development (HTTP), secure cookies won't work
+    _is_production = os.environ.get('FLASK_ENV') == 'production'
+    _secure_setting = os.environ.get('SESSION_COOKIE_SECURE', '').lower()
+    if _secure_setting:
+        SESSION_COOKIE_SECURE = _secure_setting == 'true'
+    else:
+        # Default: secure only in production
+        SESSION_COOKIE_SECURE = _is_production
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
     SESSION_PERMANENT = False

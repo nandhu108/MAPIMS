@@ -1066,10 +1066,14 @@ def submit_assessment():
             print(f"Database error: {str(db_error)}")
             patient_id = None
         
-        # Store in session
+        # Store in session (make permanent to ensure it persists)
+        session.permanent = True
         session['patient_id'] = patient_id
         session['assessment_data'] = data
         session['ai_analysis'] = ai_analysis
+        
+        # Debug logging
+        app.logger.info(f"Submit assessment: Stored patient_id={patient_id}, ai_analysis keys={list(ai_analysis.keys()) if isinstance(ai_analysis, dict) else 'not a dict'}")
         
         return jsonify({
             'success': True,
@@ -1096,9 +1100,53 @@ def submit_assessment():
 @app.route('/analysis')
 def analysis():
     """AI Analysis Results Page"""
+    # Make session permanent
+    session.permanent = True
+    
     if 'patient_id' not in session:
+        app.logger.warning("Analysis route: No patient_id in session, redirecting to assessment")
         return redirect(url_for('assessment'))
-    ai_analysis = session.get('ai_analysis', {})
+    
+    # Get AI analysis from session
+    ai_analysis = session.get('ai_analysis')
+    
+    # Debug logging
+    app.logger.info(f"Analysis route: patient_id={session.get('patient_id')}, ai_analysis exists={ai_analysis is not None}, type={type(ai_analysis) if ai_analysis else None}")
+    
+    # If analysis not in session, try to get from database
+    if not ai_analysis:
+        try:
+            patient_id = session.get('patient_id')
+            if patient_id:
+                patient = patients_collection.find_one({'_id': ObjectId(patient_id)})
+                if patient and 'ai_analysis' in patient and patient['ai_analysis']:
+                    ai_analysis = patient['ai_analysis']
+                    session['ai_analysis'] = ai_analysis
+                    session.permanent = True
+                    app.logger.info("Analysis retrieved from database and stored in session")
+                else:
+                    app.logger.warning(f"Analysis route: No analysis found in database for patient_id={patient_id}")
+                    return redirect(url_for('assessment'))
+            else:
+                app.logger.warning("Analysis route: No patient_id available")
+                return redirect(url_for('assessment'))
+        except Exception as e:
+            app.logger.error(f"Error retrieving analysis from database: {str(e)}")
+            import traceback
+            app.logger.error(traceback.format_exc())
+            return redirect(url_for('assessment'))
+    
+    # Ensure ai_analysis is a dict (it should be from the analysis function)
+    if not isinstance(ai_analysis, dict):
+        app.logger.error(f"Analysis route: ai_analysis is not a dict, type={type(ai_analysis)}, value={ai_analysis}")
+        return redirect(url_for('assessment'))
+    
+    # Check if analysis has required keys (at minimum risk_score)
+    if 'risk_score' not in ai_analysis:
+        app.logger.warning(f"Analysis route: ai_analysis missing risk_score, keys={list(ai_analysis.keys())}")
+        # Still render, let the template handle it
+    
+    app.logger.info(f"Analysis route: Rendering analysis page with risk_score={ai_analysis.get('risk_score', 'N/A')}")
     return render_template('analysis.html', ai_analysis=ai_analysis)
 
 @app.route('/api/get-analysis')
