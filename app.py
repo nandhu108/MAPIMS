@@ -16,6 +16,7 @@ from security_config import (
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill
 import io
+from whatsapp_service import whatsapp_service
 
 # Load environment variables
 load_dotenv()
@@ -1066,14 +1067,10 @@ def submit_assessment():
             print(f"Database error: {str(db_error)}")
             patient_id = None
         
-        # Store in session (make permanent to ensure it persists)
-        session.permanent = True
+        # Store in session
         session['patient_id'] = patient_id
         session['assessment_data'] = data
         session['ai_analysis'] = ai_analysis
-        
-        # Debug logging
-        app.logger.info(f"Submit assessment: Stored patient_id={patient_id}, ai_analysis keys={list(ai_analysis.keys()) if isinstance(ai_analysis, dict) else 'not a dict'}")
         
         return jsonify({
             'success': True,
@@ -1100,53 +1097,9 @@ def submit_assessment():
 @app.route('/analysis')
 def analysis():
     """AI Analysis Results Page"""
-    # Make session permanent
-    session.permanent = True
-    
     if 'patient_id' not in session:
-        app.logger.warning("Analysis route: No patient_id in session, redirecting to assessment")
         return redirect(url_for('assessment'))
-    
-    # Get AI analysis from session
-    ai_analysis = session.get('ai_analysis')
-    
-    # Debug logging
-    app.logger.info(f"Analysis route: patient_id={session.get('patient_id')}, ai_analysis exists={ai_analysis is not None}, type={type(ai_analysis) if ai_analysis else None}")
-    
-    # If analysis not in session, try to get from database
-    if not ai_analysis:
-        try:
-            patient_id = session.get('patient_id')
-            if patient_id:
-                patient = patients_collection.find_one({'_id': ObjectId(patient_id)})
-                if patient and 'ai_analysis' in patient and patient['ai_analysis']:
-                    ai_analysis = patient['ai_analysis']
-                    session['ai_analysis'] = ai_analysis
-                    session.permanent = True
-                    app.logger.info("Analysis retrieved from database and stored in session")
-                else:
-                    app.logger.warning(f"Analysis route: No analysis found in database for patient_id={patient_id}")
-                    return redirect(url_for('assessment'))
-            else:
-                app.logger.warning("Analysis route: No patient_id available")
-                return redirect(url_for('assessment'))
-        except Exception as e:
-            app.logger.error(f"Error retrieving analysis from database: {str(e)}")
-            import traceback
-            app.logger.error(traceback.format_exc())
-            return redirect(url_for('assessment'))
-    
-    # Ensure ai_analysis is a dict (it should be from the analysis function)
-    if not isinstance(ai_analysis, dict):
-        app.logger.error(f"Analysis route: ai_analysis is not a dict, type={type(ai_analysis)}, value={ai_analysis}")
-        return redirect(url_for('assessment'))
-    
-    # Check if analysis has required keys (at minimum risk_score)
-    if 'risk_score' not in ai_analysis:
-        app.logger.warning(f"Analysis route: ai_analysis missing risk_score, keys={list(ai_analysis.keys())}")
-        # Still render, let the template handle it
-    
-    app.logger.info(f"Analysis route: Rendering analysis page with risk_score={ai_analysis.get('risk_score', 'N/A')}")
+    ai_analysis = session.get('ai_analysis', {})
     return render_template('analysis.html', ai_analysis=ai_analysis)
 
 @app.route('/api/get-analysis')
@@ -1261,7 +1214,9 @@ def create_booking():
             'payment_status': 'pending',
             'booking_status': 'confirmed',
             'created_at': datetime.utcnow(),
-            'booking_reference': f"MAP{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            'booking_reference': f"MAP{datetime.now().strftime('%Y%m%d%H%M%S')}",
+            'whatsapp_message_status': 'pending',
+            'whatsapp_message_sent_at': None
         }
         
         # Insert booking into database
@@ -1283,6 +1238,60 @@ def create_booking():
             app.logger.warning(f"Failed to update patient status: {str(e)}")
             # Don't fail the booking if patient update fails
         
+        # Send WhatsApp confirmation message
+        whatsapp_status = 'pending'
+        whatsapp_sent_at = None
+        patient_phone = patient.get('phone', '')
+        
+        if patient_phone:
+            try:
+                # Format booking date for message
+                booking_date_str = booking_date.strftime('%d-%m-%Y') if isinstance(booking_date, datetime) else str(booking_date)
+                
+                success, message = whatsapp_service.send_booking_confirmation(
+                    phone_number=patient_phone,
+                    patient_name=patient.get('name', 'Patient'),
+                    booking_reference=booking_document['booking_reference'],
+                    booking_date=booking_date_str,
+                    booking_time=booking_time,
+                    package_name=data.get('package_name', 'Health Checkup Package'),
+                    total_price=data.get('total_price', 0)
+                )
+                
+                if success:
+                    whatsapp_status = 'sent'
+                    whatsapp_sent_at = datetime.utcnow()
+                    app.logger.info(f"WhatsApp message sent successfully for booking {booking_id} to {patient_phone}")
+                else:
+                    whatsapp_status = 'failed'
+                    app.logger.warning(f"WhatsApp message failed for booking {booking_id}: {message}")
+                
+                # Update booking with WhatsApp status
+                try:
+                    bookings_collection.update_one(
+                        {'_id': ObjectId(booking_id)},
+                        {'$set': {
+                            'whatsapp_message_status': whatsapp_status,
+                            'whatsapp_message_sent_at': whatsapp_sent_at
+                        }}
+                    )
+                except Exception as e:
+                    app.logger.error(f"Failed to update WhatsApp status in booking: {str(e)}")
+                    
+            except Exception as e:
+                app.logger.error(f"Error sending WhatsApp message for booking {booking_id}: {str(e)}")
+                whatsapp_status = 'failed'
+                # Update booking with failed status
+                try:
+                    bookings_collection.update_one(
+                        {'_id': ObjectId(booking_id)},
+                        {'$set': {'whatsapp_message_status': 'failed'}}
+                    )
+                except Exception as update_error:
+                    app.logger.error(f"Failed to update WhatsApp status after error: {str(update_error)}")
+        else:
+            app.logger.warning(f"No phone number found for patient {patient_id}, skipping WhatsApp message")
+        
         # Store in session
         session['booking_id'] = booking_id
         session['booking_reference'] = booking_document['booking_reference']
@@ -1290,7 +1299,8 @@ def create_booking():
         return jsonify({
             'success': True,
             'booking_id': booking_id,
-            'booking_reference': booking_document['booking_reference']
+            'booking_reference': booking_document['booking_reference'],
+            'whatsapp_status': whatsapp_status
         })
     
     except Exception as e:
@@ -1845,5 +1855,17 @@ def api_addons():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    debug = os.environ.get('FLASK_ENV') == 'development'
-    app.run(host='0.0.0.0', port=port, debug=debug)
+
+    # Treat as development unless explicitly set to production
+    env = os.environ.get('FLASK_ENV', 'development').lower()
+    debug = env == 'development'
+
+    # Auto reload templates + auto restart server on file changes
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+
+    app.run(
+        host='0.0.0.0',
+        port=port,
+        debug=debug,
+        use_reloader=debug
+    )

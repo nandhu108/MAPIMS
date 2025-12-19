@@ -3309,18 +3309,19 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 .admin-table th {
     background: var(--mapims-red-gradient);
     color: var(--mapims-white);
-    padding: 16px;
+    padding: 10px 8px;
     text-align: left;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
 }
 
 .admin-table td {
-    padding: 16px;
+    padding: 10px 8px;
     border-bottom: 1px solid var(--mapims-grey);
-    font-size: 0.95rem;
+    font-size: 0.85rem;
 }
 
 
