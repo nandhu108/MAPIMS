@@ -301,52 +301,47 @@ def transform_form_data_to_ml_format(data):
     # Build lifestyle string from lifestyle fields
     lifestyle_parts = []
     
-    # Sleep hours
+    # Sleep hours - only include if filled
     sleep_hours = data.get('sleep_hours', '').strip()
     if sleep_hours:
-        try:
-            hours = float(sleep_hours)
-            if hours < 6:
-                lifestyle_parts.append('less sleep')
-            elif hours >= 6 and hours <= 8:
-                lifestyle_parts.append('adequate sleep')
-            else:
-                lifestyle_parts.append('excessive sleep')
-        except (ValueError, TypeError):
-            if sleep_hours.lower() in ['less', 'low', 'insufficient']:
-                lifestyle_parts.append('less sleep')
+        sleep_hours_lower = sleep_hours.lower()
+        if sleep_hours_lower in ['less_than_5']:
+            lifestyle_parts.append('less sleep')
+        elif sleep_hours_lower in ['5_to_7', '7_to_9']:
+            lifestyle_parts.append('adequate sleep')
+        elif sleep_hours_lower in ['more_than_9']:
+            lifestyle_parts.append('excessive sleep')
     
-    # Exercise frequency
+    # Exercise frequency - only include if filled
     exercise_frequency = data.get('exercise_frequency', '').strip().lower()
     if exercise_frequency:
-        if exercise_frequency in ['never', 'rarely', 'seldom']:
+        if exercise_frequency in ['almost_never']:
             lifestyle_parts.append('sedentary lifestyle')
             lifestyle_parts.append('no exercise')
-        elif exercise_frequency in ['sometimes', 'occasionally']:
+        elif exercise_frequency in ['1_to_2_days']:
             lifestyle_parts.append('low exercise')
-        elif exercise_frequency in ['regularly', 'often', 'frequently', 'daily']:
+        elif exercise_frequency in ['3_to_5_days', 'daily']:
             lifestyle_parts.append('regular exercise')
             lifestyle_parts.append('active lifestyle')
     
-    # Smoking status
+    # Smoking status - only include if filled
     smoking_status = data.get('smoking_status', '').strip().lower()
     if smoking_status:
-        if smoking_status in ['yes', 'current', 'smoker', 'regular']:
+        if smoking_status in ['sometimes', 'daily']:
             lifestyle_parts.append('smoking')
             lifestyle_parts.append('tobacco use')
-        elif smoking_status in ['former', 'quit', 'ex-smoker']:
+        elif smoking_status in ['stopped']:
             lifestyle_parts.append('former smoker')
+        # 'never' is not added to lifestyle_parts as it indicates no smoking
     
-    # Alcohol consumption
+    # Alcohol consumption - only include if filled
     alcohol_consumption = data.get('alcohol_consumption', '').strip().lower()
     if alcohol_consumption:
-        if alcohol_consumption in ['yes', 'regular', 'frequent', 'daily']:
+        if alcohol_consumption in ['regular']:
             lifestyle_parts.append('alcohol consumption')
-        elif alcohol_consumption in ['excessive', 'heavy', 'binge']:
-            lifestyle_parts.append('excessive alcohol')
-            lifestyle_parts.append('heavy drinking')
-        elif alcohol_consumption in ['occasional', 'social']:
+        elif alcohol_consumption in ['occasional']:
             lifestyle_parts.append('occasional alcohol')
+        # 'never' is not added to lifestyle_parts as it indicates no alcohol
     
     # Diet type
     diet_type = data.get('diet_type', '').strip().lower()

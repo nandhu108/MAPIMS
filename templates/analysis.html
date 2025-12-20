@@ -76,25 +76,49 @@
             return key;
         }
         
-        // Translate risk levels in ML analysis
+        // Normalize risk levels to only 3 categories: low, moderate, high
+        function normalizeRiskLevel(level) {
+            if (!level) return 'moderate'; // default fallback
+            
+            const levelLower = level.toLowerCase().trim();
+            
+            // Map all variations to 3 categories
+            if (levelLower === 'very low' || levelLower === 'very-low' || 
+                levelLower === 'low' || levelLower === 'low-moderate') {
+                return 'low';
+            } else if (levelLower === 'moderate' || levelLower === 'high-moderate') {
+                return 'moderate';
+            } else if (levelLower === 'high' || levelLower === 'moderate-critical' || 
+                       levelLower === 'critical') {
+                return 'high';
+            }
+            
+            // Default to moderate if no match
+            return 'moderate';
+        }
+        
+        // Translate risk levels in ML analysis (now only returns: Low, Moderate, High)
         function translateRiskLevel(level) {
             const lang = getCurrentLang();
-            if (lang === 'en') return level;
             
-            // Handle all risk level variations
-            const levelLower = level.toLowerCase();
-            if (levelLower === 'very low' || levelLower === 'very-low') {
-                return getTranslation('analysis.riskVeryLow') || 'Very Low';
-            } else if (levelLower === 'low' || levelLower === 'low-moderate') {
-                return getTranslation('analysis.riskLow');
-            } else if (levelLower === 'moderate' || levelLower === 'high-moderate') {
-                return getTranslation('analysis.riskModerate');
-            } else if (levelLower === 'high' || levelLower === 'moderate-critical') {
-                return getTranslation('analysis.riskHigh');
-            } else if (levelLower === 'critical') {
-                return getTranslation('analysis.riskCritical') || getTranslation('analysis.riskHigh');
+            // First normalize to 3 categories
+            const normalized = normalizeRiskLevel(level);
+            
+            // Capitalize first letter for display
+            const normalizedDisplay = normalized.charAt(0).toUpperCase() + normalized.slice(1);
+            
+            if (lang === 'en') return normalizedDisplay;
+            
+            // Translate the normalized category
+            if (normalized === 'low') {
+                return getTranslation('analysis.riskLow') || 'Low';
+            } else if (normalized === 'moderate') {
+                return getTranslation('analysis.riskModerate') || 'Moderate';
+            } else if (normalized === 'high') {
+                return getTranslation('analysis.riskHigh') || 'High';
             }
-            return level;
+            
+            return normalizedDisplay;
         }
             
         // Translate health risk description strings
@@ -322,12 +346,11 @@
                 <div class="ml-analysis-section">
                     <h3 data-translate="analysis.mlPowered">ML-Powered Specialized Analysis</h3>
                     <div class="ml-modules-grid">
-                        <div class="ml-module-card ${analysis.ml_analysis.diabetes.risk_level.toLowerCase().replace(/\s+/g, '-')}">
+                        <div class="ml-module-card ${normalizeRiskLevel(analysis.ml_analysis.diabetes.risk_level)}">
                             <h4 data-translate="analysis.diabetesRisk">🩺 Diabetes Risk Assessment</h4>
                             <div class="ml-score">
                                 <span class="score-level" data-original-level="${analysis.ml_analysis.diabetes.risk_level}">${translateRiskLevel(analysis.ml_analysis.diabetes.risk_level)}</span>
                             </div>
-                            <p class="ml-confidence"><span data-translate="analysis.confidence">Confidence</span>: ${(analysis.ml_analysis.diabetes.confidence * 100).toFixed(0)}%</p>
                             ${analysis.ml_analysis.diabetes.priority_tests.length > 0 ? `
                             <div class="ml-tests">
                                 <strong data-translate="analysis.priorityTests">Priority Tests:</strong>
@@ -341,12 +364,11 @@
                             ` : ''}
                         </div>
 
-                        <div class="ml-module-card ${analysis.ml_analysis.heart_disease.risk_level.toLowerCase().replace(/\s+/g, '-')}">
+                        <div class="ml-module-card ${normalizeRiskLevel(analysis.ml_analysis.heart_disease.risk_level)}">
                             <h4 data-translate="analysis.heartDiseaseRisk">❤️ Heart Disease Risk Assessment</h4>
                             <div class="ml-score">
                                 <span class="score-level" data-original-level="${analysis.ml_analysis.heart_disease.risk_level}">${translateRiskLevel(analysis.ml_analysis.heart_disease.risk_level)}</span>
                             </div>
-                            <p class="ml-confidence"><span data-translate="analysis.confidence">Confidence</span>: ${(analysis.ml_analysis.heart_disease.confidence * 100).toFixed(0)}%</p>
                             ${analysis.ml_analysis.heart_disease.priority_tests.length > 0 ? `
                             <div class="ml-tests">
                                 <strong data-translate="analysis.priorityTests">Priority Tests:</strong>
@@ -360,12 +382,11 @@
                             ` : ''}
                         </div>
 
-                        <div class="ml-module-card ${analysis.ml_analysis.thyroid.risk_level.toLowerCase().replace(/\s+/g, '-')}">
+                        <div class="ml-module-card ${normalizeRiskLevel(analysis.ml_analysis.thyroid.risk_level)}">
                             <h4 data-translate="analysis.thyroidRisk">🦋 Thyroid Risk Assessment</h4>
                             <div class="ml-score">
                                 <span class="score-level" data-original-level="${analysis.ml_analysis.thyroid.risk_level}">${translateRiskLevel(analysis.ml_analysis.thyroid.risk_level)}</span>
                             </div>
-                            <p class="ml-confidence"><span data-translate="analysis.confidence">Confidence</span>: ${(analysis.ml_analysis.thyroid.confidence * 100).toFixed(0)}%</p>
                             ${analysis.ml_analysis.thyroid.priority_tests.length > 0 ? `
                             <div class="ml-tests">
                                 <strong data-translate="analysis.priorityTests">Priority Tests:</strong>
@@ -379,7 +400,6 @@
                             ` : ''}
                         </div>
                     </div>
-                    <p class="ml-overall-confidence"><span data-translate="analysis.overallConfidence">Overall ML Analysis Confidence</span>: ${(analysis.ml_analysis.overall_confidence * 100).toFixed(0)}%</p>
                 </div>
                 ` : ''}
             `;

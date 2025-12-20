@@ -24,6 +24,7 @@ const translations = {
         'form.weight': 'Weight (kg)',
         'form.height': 'Height (cm)',
         'form.bmi': 'Your BMI',
+        'form.basicInfoDescription': 'Let\'s start with some basic details about you.',
         
         // Symptoms
         'form.describeSymptoms': 'Describe any symptoms you\'re experiencing',
@@ -951,7 +952,7 @@ const translations = {
         'landing.risk1Title': 'இதயநாள',
         'landing.risk1Desc': 'இதய நோய், உயர் இரத்த அழுத்தம், பக்கவாத ஆபத்துகள்',
         'landing.risk2Title': 'வளர்சிதை மாற்றம்',
-        'landing.risk2Desc': 'நீரிழிவு, தைராய்டு, கolesterாலால் பிரச்சனைகள்',
+        'landing.risk2Desc': 'நீரிழிவு, தைராய்டு, கொலஸ்ட்ரால் பிரச்சனைகள்',
         'landing.risk3Title': 'சுவாச',
         'landing.risk3Desc': 'நுரையீரல் நிலைமைகள், சுவாச பிரச்சனைகள்',
         'landing.risk4Title': 'வாழ்க்கை முறை',
@@ -971,7 +972,7 @@ const translations = {
         'landing.step3Title': 'பரிந்துரைகளைப் பெறுங்கள்',
         'landing.step3Desc': 'தனிப்பயனாக்கப்பட்ட தொகுப்பு பரிந்துரைகளைப் பெறுங்கள்',
         'landing.step4Title': 'முன்பதிவு & கட்டணம்',
-        'landing.step4Desc': 'உங்கள் தொகுப்பைத் தேர்ந்தெடுத்து க appointmentsட்சி நாளைத் திட்டமிடுங்கள்',
+        'landing.step4Desc': 'உங்கள் தொகுப்பைத் தேர்ந்தெடுத்து அப்பாயின்ட்மென்ட் நாளைத் திட்டமிடுங்கள்',
         
         // Testimonials Section
         'landing.testimonialsTitle': 'எங்கள் நோயாளிகள் என்ன சொல்கிறார்கள்',
@@ -1159,23 +1160,32 @@ function translatePage() {
     document.querySelectorAll('[data-translate]').forEach(element => {
         const key = element.getAttribute('data-translate');
         if (translations[currentLanguage] && translations[currentLanguage][key]) {
-            // Check if element has child elements that should be preserved
+            const translation = translations[currentLanguage][key];
+            
+            // Check if element has child elements that should be preserved (like <span class="required">*</span>)
             const childElements = element.querySelectorAll('*');
             if (childElements.length > 0) {
-                // If element has children (like <span>, <strong>), update only direct text nodes
-                const textNodes = Array.from(element.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
-                if (textNodes.length > 0) {
-                    // Update first text node only
-                    textNodes[0].textContent = translations[currentLanguage][key];
+                // Element has child elements - we need to preserve them
+                // Get all direct child nodes
+                const childNodes = Array.from(element.childNodes);
+                const textNodes = childNodes.filter(node => node.nodeType === Node.TEXT_NODE);
+                
+                // Remove all existing text nodes (cleanup from previous translations)
+                textNodes.forEach(node => {
+                    node.remove();
+                });
+                
+                // Insert the translation as a text node before the first child element
+                // This ensures clean translation without leftover text
+                const textNode = document.createTextNode(translation + ' ');
+                if (element.firstChild) {
+                    element.insertBefore(textNode, element.firstChild);
                 } else {
-                    // No direct text, update textContent (will preserve structure but update text)
-                    const translation = translations[currentLanguage][key];
-                    // Only update if the element's direct text content matches the original
-                    element.textContent = translation;
+                    element.appendChild(textNode);
                 }
             } else {
                 // Simple element with no children, just update textContent
-                element.textContent = translations[currentLanguage][key];
+                element.textContent = translation;
             }
         }
     });
@@ -1233,14 +1243,21 @@ function translatePage() {
     
     // Translate test names in package includes
     document.querySelectorAll('.package-includes-list li, .addon-name').forEach(element => {
-        const originalText = element.getAttribute('data-original-text') || element.textContent.trim();
-        if (!element.getAttribute('data-original-text')) {
+        let originalText = element.getAttribute('data-original-text');
+        
+        // If data-original-text doesn't exist, set it to current text (should be English from server)
+        // This ensures we always have the original English text preserved
+        if (!originalText) {
+            originalText = element.textContent.trim();
             element.setAttribute('data-original-text', originalText);
         }
+        
+        // Always use the original English text from data-original-text for translation
+        // This ensures proper translation in both directions (English <-> Tamil)
         const translated = translateTestName(originalText);
-        if (translated !== originalText) {
-            element.textContent = translated;
-        }
+        
+        // Update the text content with the translation
+        element.textContent = translated;
     });
     
     // Translate differences titles
@@ -1255,14 +1272,19 @@ function translatePage() {
     
     // Translate differences list items
     document.querySelectorAll('.differences-list li').forEach(element => {
-        const originalText = element.getAttribute('data-original-text') || element.textContent.trim();
-        if (!element.getAttribute('data-original-text')) {
+        let originalText = element.getAttribute('data-original-text');
+        
+        // If data-original-text doesn't exist, set it to current text (should be English from server)
+        if (!originalText) {
+            originalText = element.textContent.trim();
             element.setAttribute('data-original-text', originalText);
         }
+        
+        // Always use the original English text from data-original-text for translation
         const translated = translateTestName(originalText);
-        if (translated !== originalText) {
-            element.textContent = translated;
-        }
+        
+        // Update the text content with the translation
+        element.textContent = translated;
     });
     
     // Translate "hours" in package duration
