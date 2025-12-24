@@ -395,14 +395,8 @@ def validate_assessment_input(data):
     if not has_family_answer:
         errors.append("Please answer at least one family history question (required for accurate health analysis)")
     
-    # Lifestyle fields - required for ML analysis
-    sleep_hours = data.get('sleep_hours', '').strip() if data.get('sleep_hours') else ''
-    if not sleep_hours:
-        errors.append("Sleep hours is required (needed for health risk assessment)")
-    
-    exercise_frequency = data.get('exercise_frequency', '').strip() if data.get('exercise_frequency') else ''
-    if not exercise_frequency:
-        errors.append("Exercise frequency is required (needed for health risk assessment)")
+    # Lifestyle fields - all optional, only filled fields will be included in ML analysis
+    # No validation required - if fields are empty, they won't be included in analysis
     
     # Symptoms - if not provided, set empty string (ML can work without it, but prefer it)
     # We'll allow empty symptoms but encourage providing them

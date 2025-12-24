@@ -1011,7 +1011,6 @@ body {
     line-height: 1.2;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    hyphens: auto;
     max-width: 100%;
 }
 
@@ -1971,6 +1970,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     letter-spacing: -0.5px;
     width: 100%;
     max-width: 100%;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .page-subtitle {
@@ -1980,6 +1981,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     font-size: 1.1rem;
     width: 100%;
     max-width: 100%;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .risk-score-card {
@@ -2158,7 +2161,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
     border: 2px solid var(--mapims-grey);
-    transition: all 0.3s ease;
     position: relative;
     overflow: visible;
     width: 100%;
@@ -2171,12 +2173,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     opacity: 1 !important;
 }
 
-.ml-module-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-color: var(--mapims-red);
-}
-
 .ml-module-card::before {
     content: '';
     position: absolute;
@@ -2185,32 +2181,20 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     right: 0;
     height: 5px;
     background: var(--mapims-grey);
-    transition: var(--transition);
     border-radius: 16px 16px 0 0;
 }
 
-/* Risk level top border colors - handle all variations */
-.ml-module-card.high::before,
-.ml-module-card.moderate-critical::before {
+/* Risk level top border colors - 3 categories only */
+.ml-module-card.high::before {
     background: var(--mapims-red);
 }
 
-.ml-module-card.critical::before {
-    background: linear-gradient(90deg, #E31837, #B8142C);
-}
-
-.ml-module-card.moderate::before,
-.ml-module-card.high-moderate::before {
+.ml-module-card.moderate::before {
     background: var(--mapims-warning);
 }
 
-.ml-module-card.low::before,
-.ml-module-card.low-moderate::before {
+.ml-module-card.low::before {
     background: var(--mapims-success);
-}
-
-.ml-module-card.very-low::before {
-    background: #d4edda;
 }
 
 
@@ -2259,51 +2243,28 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     text-align: center;
     min-width: 200px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
     display: inline-block !important;
     visibility: visible !important;
     opacity: 1 !important;
 }
 
-/* Score level badge colors - handle all risk level variations */
-.ml-module-card.high .score-level,
-.ml-module-card.critical .score-level,
-.ml-module-card.moderate-critical .score-level {
+/* Score level badge colors - 3 categories only */
+.ml-module-card.high .score-level {
     background: linear-gradient(135deg, #E31837 0%, #B8142C 100%);
     color: var(--mapims-white);
     box-shadow: 0 4px 12px rgba(227, 24, 55, 0.3);
 }
 
-.ml-module-card.moderate .score-level,
-.ml-module-card.high-moderate .score-level {
+.ml-module-card.moderate .score-level {
     background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
     color: var(--mapims-soft-black);
     box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
 }
 
-.ml-module-card.low .score-level,
-.ml-module-card.low-moderate .score-level {
+.ml-module-card.low .score-level {
     background: linear-gradient(135deg, #28A745 0%, #20C997 100%);
     color: var(--mapims-white);
     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-}
-
-.ml-module-card.very-low .score-level {
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-    color: var(--mapims-soft-black);
-    box-shadow: 0 4px 12px rgba(212, 237, 218, 0.3);
-}
-
-.ml-module-card.high .score-level:hover,
-.ml-module-card.critical .score-level:hover,
-.ml-module-card.moderate-critical .score-level:hover,
-.ml-module-card.moderate .score-level:hover,
-.ml-module-card.high-moderate .score-level:hover,
-.ml-module-card.low .score-level:hover,
-.ml-module-card.low-moderate .score-level:hover,
-.ml-module-card.very-low .score-level:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .ml-confidence {
@@ -2465,7 +2426,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     letter-spacing: 0.5px;
 }
 
-.package-card.primary-recommended .package-includes-list li {
+.package-card.primary-recommended.selected .package-includes-list li {
     display: list-item !important;
 }
 
@@ -2564,18 +2525,19 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 }
 
 .package-card.selected::after {
-    content: '✓ Selected';
+    content: '✓';
     position: absolute;
     top: 20px;
-    right: 20px;
+    left: 20px;
     background: #28a745;
     color: var(--mapims-white);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.85rem;
+    border-radius: 50%;
+    font-size: 1.2rem;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
     box-shadow: var(--shadow-sm);
     z-index: 11;
     animation: fadeIn 0.3s ease;
@@ -2688,6 +2650,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     z-index: 1;
     width: 100%;
     text-align: left;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.4;
 }
 
 .package-price {
@@ -2707,6 +2672,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
     font-size: 0.95rem;
     position: relative;
     z-index: 1;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .package-duration {
@@ -2776,6 +2743,21 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
         0 2px 6px rgba(8, 92, 46, 0.2);
     position: relative;
     z-index: 1;
+}
+
+.package-card.selected .btn-select-package,
+.btn-select-package.selected {
+    background: #28A745 !important;
+    color: white !important;
+    font-weight: 700;
+    box-shadow: 
+        0 4px 12px rgba(40, 167, 69, 0.3),
+        0 2px 6px rgba(40, 167, 69, 0.2);
+}
+
+.package-card.selected .btn-select-package:hover,
+.btn-select-package.selected:hover {
+    background: #218838 !important;
 }
 
 
@@ -3542,7 +3524,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
         white-space: normal;
         word-break: break-word;
         overflow-wrap: break-word;
-        hyphens: auto;
         max-width: 100%;
         text-align: center;
         overflow: visible;
