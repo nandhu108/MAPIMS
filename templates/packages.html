@@ -94,7 +94,7 @@
                 {% for package_id, package in packages.items() %}
                 <div class="package-card {% if package_id == primary_recommended_package %}primary-recommended selected{% endif %}" data-package-id="{{ package_id }}" onclick="selectPackage('{{ package_id }}', event)">
                     {% if package_id == primary_recommended_package %}
-                    <div class="primary-recommended-badge" data-translate="packages.primaryRecommended">⭐ AI RECOMMENDED</div>
+                    <div class="primary-recommended-badge" data-translate="packages.primaryRecommended">⭐ MAPIMS RECOMMENDED</div>
                     {% endif %}
                     <h3 class="package-name">{{ package.name }}</h3>
                     <div class="package-price">₹{{ package.price }}</div>
