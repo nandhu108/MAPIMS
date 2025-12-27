@@ -31,15 +31,6 @@ An AI-powered web application that collects patient details and recommends perso
 pip install -r requirements.txt
 ```
 
-3. **Configure Environment Variables (Optional)**:
-   - MongoDB connection string is already configured in `app.py`
-   - OpenAI API key is already configured in `app.py`
-   - For production, consider using environment variables:
-     ```bash
-     export MONGODB_URI="mongodb+srv://APDCH:Nani@apdch.zdewrol.mongodb.net/"
-     export OPENAI_API_KEY="your-api-key-here"
-     ```
-
 ## Running the Application
 
 ### Development Mode
